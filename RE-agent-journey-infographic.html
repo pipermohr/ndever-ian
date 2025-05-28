@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Agent Onboarding Journeys: Industry Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light Slate Blue-Gray */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px; /* Max width for readability */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Base height */
+            max-height: 350px; /* Max height */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .chart-container {
+                height: 320px;
+            }
+        }
+        .section-title {
+            color: #073B4C; /* Midnight Green */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem; /* 12px */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-value {
+            color: #118AB2; /* Blue NCS */
+            font-weight: 700;
+            font-size: 2.5rem; /* 40px */
+        }
+        .phase-icon {
+            font-size: 2rem; /* 32px */
+            color: #FFD166; /* Sunglow */
+        }
+        .issue-icon {
+            font-size: 1.5rem; /* 24px */
+            margin-right: 0.5rem; /* 8px */
+            color: #FF6B6B; /* Fiery Rose */
+        }
+        .solution-icon {
+            font-size: 1rem; /* 16px */
+            margin-right: 0.25rem; /* 4px */
+            color: #06D6A0; /* Caribbean Green */
+        }
+        .sticky-nav {
+            position: -webkit-sticky; /* For Safari */
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="sticky-nav shadow-md py-3 px-4 md:px-8">
+        <div class="container mx-auto flex flex-wrap justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-sky-700">Agent Onboarding Insights</h1>
+            <div class="space-x-2 md:space-x-4 text-sm md:text-base">
+                <a href="#newAgentJourney" class="text-sky-600 hover:text-sky-800 font-semibold">New Agents</a>
+                <a href="#transferringAgentJourney" class="text-sky-600 hover:text-sky-800 font-semibold">Transferring Agents</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold section-title mb-3">Real Estate Agent Onboarding Journeys</h1>
+            <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">Understanding Key Phases, Common Challenges, and Solutions for Agent Success in Today's Market</p>
+        </header>
+
+        <section id="newAgentJourney" class="mb-16">
+            <h2 class="text-3xl font-bold section-title text-center mb-10">The "New to Real Estate" Journey</h2>
+            <p class="text-center text-slate-600 mb-10 max-w-2xl mx-auto">Navigating the initial steps into the real estate industry requires a robust support system and proactive learning. This journey typically unfolds in three critical phases, each with unique hurdles.</p>
+
+            <div class="mb-12 p-6 md:p-8 card">
+                <div class="flex items-center mb-4">
+                    <span class="phase-icon mr-3">🌱</span>
+                    <h3 class="text-2xl font-semibold text-sky-700">Phase 1: Licensing & Foundations (0-3 Months)</h3>
+                </div>
+                <p class="text-slate-600 mb-6"><strong>Goal:</strong> Get licensed, join a brokerage, learn the absolute basics of real estate operations and compliance.</p>
+                <p class="text-slate-600 mb-6"><strong>Key Milestones:</strong> License Obtained, Brokerage Joined, Basic Tech Setup Complete.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">🤯</span><h4 class="text-lg font-semibold text-rose-500">Issue: Information Overload</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">New agents often feel swamped by new terms, legalities, technology, and business setup requirements.</p>
+                        <div class="chart-container h-56 md:h-64"><canvas id="infoOverloadChart"></canvas></div>
+                        <p class="text-xs text-center text-slate-500 mt-1">Percentage of new agents reporting information overload.</p>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Structured, phased onboarding.</li>
+                                <li>"First 30-60-90 Days" checklist.</li>
+                                <li>Prioritize critical knowledge delivery.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Focus on 1-2 key learnings per week.</li>
+                                <li>Break down larger goals.</li>
+                                <li>Actively seek mentorship.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">💸</span><h4 class="text-lg font-semibold text-rose-500">Issue: Initial Financial Strain</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">Underestimating startup costs and the typical timeframe to the first commission check is a common pitfall.</p>
+                        <div class="text-center my-8 py-6 bg-sky-50 rounded-lg">
+                            <p class="text-slate-700 text-lg">Average Time to First Commission:</p>
+                            <p class="stat-value text-5xl">4-6</p>
+                            <p class="text-slate-600 text-lg">Months</p>
+                        </div>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Transparent discussion on ramp-up income.</li>
+                                <li>Provide realistic startup cost estimates.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Save 3-6 months of living expenses.</li>
+                                <li>Create a lean startup budget.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-12 p-6 md:p-8 card">
+                <div class="flex items-center mb-4">
+                    <span class="phase-icon mr-3">🛠️</span>
+                    <h3 class="text-2xl font-semibold text-sky-700">Phase 2: Skill Development & Business Setup (2-4 Months)</h3>
+                </div>
+                <p class="text-slate-600 mb-6"><strong>Goal:</strong> Learn core real estate skills, understand the local market, and draft a foundational business plan.</p>
+                <p class="text-slate-600 mb-6"><strong>Key Milestones:</strong> CRM/MLS Proficiency, Business Plan Drafted, First Client Consultation.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">🎣</span><h4 class="text-lg font-semibold text-rose-500">Issue: Fear of Prospecting / Inconsistent Lead Gen</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">Hesitation to actively seek leads and the lack of a consistent daily/weekly plan are significant hurdles.</p>
+                         <div class="chart-container h-56 md:h-64"><canvas id="leadGenChallengeChart"></canvas></div>
+                        <p class="text-xs text-center text-slate-500 mt-1">Top challenges reported by new agents.</p>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Training on diverse lead gen methods.</li>
+                                <li>Provide scripts & role-playing sessions.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Commit to daily lead generation activities.</li>
+                                <li>Track efforts and results. Start with Sphere of Influence (SOI).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">⏱️</span><h4 class="text-lg font-semibold text-rose-500">Issue: Poor Time Management</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">As independent contractors, new agents struggle with structuring their day and prioritizing tasks effectively.</p>
+                        <div class="text-center my-8 py-6 bg-sky-50 rounded-lg">
+                             <p class="text-slate-700 text-lg">Effective Time Management can boost productivity by:</p>
+                            <p class="stat-value text-5xl">30%+</p>
+                            <p class="text-slate-600 text-md">(Industry Estimate)</p>
+                        </div>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Offer ideal weekly schedule templates.</li>
+                                <li>Encourage time-blocking for key activities.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Implement time-blocking (prospecting, learning).</li>
+                                <li>Use a planner; set daily non-negotiables.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8 card">
+                <div class="flex items-center mb-4">
+                    <span class="phase-icon mr-3">🚀</span>
+                    <h3 class="text-2xl font-semibold text-sky-700">Phase 3: Active Engagement & First Transactions (3-6+ Months)</h3>
+                </div>
+                <p class="text-slate-600 mb-6"><strong>Goal:</strong> Actively work with clients, write offers, and successfully close initial deals.</p>
+                <p class="text-slate-600 mb-6"><strong>Key Milestones:</strong> First Listing/Buyer Agreement Signed, First Offer Accepted, First Closing!</p>
+                 <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">📜</span><h4 class="text-lg font-semibold text-rose-500">Issue: Navigating Complex Contracts</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">Feeling intimidated by legal paperwork and the multi-step transaction process.</p>
+                         <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Hands-on contract training.</li>
+                                <li>Transaction coordination support/training.</li>
+                                <li>Mentor guidance through early deals.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Review blank contracts diligently. Ask many questions.</li>
+                                <li>Shadow mentors. Create transaction checklists.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">🎢</span><h4 class="text-lg font-semibold text-rose-500">Issue: Emotional Rollercoaster</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">Dealing with rejections, deals falling through, and the stress of client management.</p>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Mentorship and peer support groups.</li>
+                                <li>Normalize the ups and downs of the business.</li>
+                                <li>Offer stress management resources.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Focus on controllable processes, not just outcomes.</li>
+                                <li>Practice resilience. Celebrate small wins. Seek support.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="transferringAgentJourney" class="mb-16">
+            <h2 class="text-3xl font-bold section-title text-center mb-10">The "Agent Transferring Agencies" Journey</h2>
+             <p class="text-center text-slate-600 mb-10 max-w-2xl mx-auto">Experienced agents changing brokerages face a different set of challenges, primarily around integration, adaptation, and leveraging new opportunities while maintaining business momentum.</p>
+
+            <div class="mb-12 p-6 md:p-8 card">
+                <div class="flex items-center mb-4">
+                    <span class="phase-icon mr-3">🔄</span>
+                    <h3 class="text-2xl font-semibold text-sky-700">Phase 1: Transition & System Integration (2-4 Weeks)</h3>
+                </div>
+                <p class="text-slate-600 mb-6"><strong>Goal:</strong> Smooth license transfer, learn new brokerage systems, and communicate the move effectively to clients.</p>
+                <p class="text-slate-600 mb-6"><strong>Key Milestones:</strong> License Transferred, New Systems Access & Basic Proficiency, Client Transition Communication Sent.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">⚙️</span><h4 class="text-lg font-semibold text-rose-500">Issue: Resistance to New Systems/Processes</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">The "that's not how we did it at my old brokerage" mentality can hinder adoption of new, potentially better, tools.</p>
+                        <div class="chart-container h-56 md:h-64"><canvas id="systemResistanceChart"></canvas></div>
+                        <p class="text-xs text-center text-slate-500 mt-1">Transferring agents citing tech adaptation as a hurdle.</p>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Clearly explain the "why" and benefits of new systems.</li>
+                                <li>Patient, thorough training; offer 1-on-1 support.</li>
+                            </ul>
+                        </div>
+                         <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Maintain an open-minded approach.</li>
+                                <li>Focus on learning one new system at a time. Ask for help.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">🔗</span><h4 class="text-lg font-semibold text-rose-500">Issue: Client & Data Transition Snags</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">Difficulties in moving client data (ethically/legally), active listings, or pending deals smoothly.</p>
+                         <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Clear policy and dedicated support for transitions.</li>
+                                <li>Assistance with CRM data import (if applicable).</li>
+                                <li>Guidance on compliant client communication.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Understand prior contractual obligations thoroughly.</li>
+                                <li>Plan data migration in advance. Communicate professionally.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-12 p-6 md:p-8 card">
+                 <div class="flex items-center mb-4">
+                    <span class="phase-icon mr-3">🚀</span>
+                    <h3 class="text-2xl font-semibold text-sky-700">Phase 2: Operational Acclimation & Business Relaunch (1-2 Months)</h3>
+                </div>
+                <p class="text-slate-600 mb-6"><strong>Goal:</strong> Fully adopt new processes, integrate into the company culture, and relaunch marketing efforts under the new brand.</p>
+                <p class="text-slate-600 mb-6"><strong>Key Milestones:</strong> First Transaction Initiated at New Brokerage, Full Adoption of Tools, Updated Business Plan.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">🧩</span><h4 class="text-lg font-semibold text-rose-500">Issue: Culture Shock or Feeling Like an Outsider</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">Difficulty fitting into the new office culture or building rapport with new colleagues can affect morale and collaboration.</p>
+                         <div class="text-center my-8 py-6 bg-sky-50 rounded-lg">
+                             <p class="text-slate-700 text-lg">Strong Culture Fit Increases Agent Retention by up to:</p>
+                            <p class="stat-value text-5xl">25%</p>
+                             <p class="text-slate-600 text-md">(Industry Observation)</p>
+                        </div>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Foster a welcoming environment. Assign a "buddy."</li>
+                                <li>Facilitate introductions. Host inclusive events.</li>
+                            </ul>
+                        </div>
+                         <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Actively participate in meetings/events.</li>
+                                <li>Introduce yourself. Offer to collaborate. Be approachable.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">🛠️</span><h4 class="text-lg font-semibold text-rose-500">Issue: Underutilizing New Brokerage's Resources</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">Overlooking or not taking full advantage of the specific tools, training, or support the new brokerage offers.</p>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Clearly showcase all resources during onboarding and ongoing.</li>
+                                <li>Provide success stories and practical use cases.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Proactively explore all offerings.</li>
+                                <li>Ask how top agents leverage these resources. Schedule learning time.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8 card">
+                <div class="flex items-center mb-4">
+                    <span class="phase-icon mr-3">📈</span>
+                    <h3 class="text-2xl font-semibold text-sky-700">Phase 3: Growth & Optimization (Ongoing from Month 2-3+)</h3>
+                </div>
+                <p class="text-slate-600 mb-6"><strong>Goal:</strong> Exceed previous production levels, leverage advanced brokerage resources, and become a contributor to the brokerage community.</p>
+                <p class="text-slate-600 mb-6"><strong>Key Milestones:</strong> Consistent/Increased Production, Leveraging Advanced Tools, Contributing to Brokerage Success.</p>
+                 <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">📉</span><h4 class="text-lg font-semibold text-rose-500">Issue: Temporary Productivity Dip</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">The move itself, learning curves, and re-establishing routines can cause a short-term slowdown in business.</p>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Streamlined onboarding process. Offer immediate support.</li>
+                                <li>Set realistic productivity expectations for the first 30-60 days.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Prioritize income-producing activities.</li>
+                                <li>Time-block for learning new systems. Don't get discouraged.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="p-6 rounded-lg border border-slate-200">
+                        <div class="flex items-center mb-2"><span class="issue-icon">🏳️</span><h4 class="text-lg font-semibold text-rose-500">Issue: Re-establishing Market Presence</h4></div>
+                        <p class="text-sm text-slate-600 mb-3">Ensuring past clients and sphere know about the change and associate the agent with the new brokerage brand.</p>
+                        <div class="mt-4">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Brokerage Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Provide co-branded marketing materials.</li>
+                                <li>Support announcement campaigns and initiatives.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="text-md font-semibold text-sky-600 mb-1">Agent Solutions:</h5>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Consistent marketing with new branding.</li>
+                                <li>Personal outreach to key contacts. Update all online profiles promptly.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center mt-16 py-8 border-t border-slate-300">
+            <p class="text-slate-600">Ndever App: Streamlining Agent Journeys for Peak Performance.</p>
+            <p class="text-sm text-slate-500 mt-1">&copy; <span id="currentYear"></span> Ndever. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Shared function to wrap labels
+        function wrapLabels(label, maxWidth) {
+            const words = label.split(' ');
+            let lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + word).length > maxWidth) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            });
+            lines.push(currentLine.trim());
+            return lines.length > 1 ? lines : label; // Return as array only if multiple lines
+        }
+        
+        // Shared tooltip title callback
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            }
+            return label;
+        };
+
+        // Chart 1: Information Overload (Donut Chart)
+        const infoOverloadCtx = document.getElementById('infoOverloadChart').getContext('2d');
+        new Chart(infoOverloadCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Feeling Overloaded', 'Feeling Prepared'],
+                datasets: [{
+                    label: 'New Agent Preparedness',
+                    data: [75, 25], // Example data: 75% feel overloaded
+                    backgroundColor: ['#FF6B6B', '#06D6A0'],
+                    borderColor: ['#FFFFFF', '#FFFFFF'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } },
+                    title: { display: false }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Chart 2: Lead Gen Challenge (Bar Chart)
+        const leadGenChallengeCtx = document.getElementById('leadGenChallengeChart').getContext('2d');
+        const rawLabelsLeadGen = ['Lead Generation & Prospecting', 'Financial Strain & Irregular Income', 'Time Management & Self-Discipline', 'Understanding Contracts & Paperwork'];
+        const wrappedLabelsLeadGen = rawLabelsLeadGen.map(label => wrapLabels(label, 16));
+
+        new Chart(leadGenChallengeCtx, {
+            type: 'bar',
+            data: {
+                labels: wrappedLabelsLeadGen,
+                datasets: [{
+                    label: 'Percentage of Agents Reporting Challenge',
+                    data: [45, 30, 15, 10], // Example data
+                    backgroundColor: ['#FF6B6B', '#FFD166', '#118AB2', '#06D6A0'],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Horizontal bar chart for better label readability
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { beginAtZero: true, max: 50, ticks: { font: { size: 10 } } },
+                    y: { ticks: { font: { size: 10 }, autoSkip: false } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } },
+                    title: { display: false }
+                }
+            }
+        });
+
+        // Chart 3: System Resistance for Transferring Agents (Donut Chart)
+        const systemResistanceCtx = document.getElementById('systemResistanceChart').getContext('2d');
+        new Chart(systemResistanceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Difficulty Adapting to New Tech', 'Smooth Tech Transition'],
+                datasets: [{
+                    label: 'Tech Adaptation',
+                    data: [60, 40], // Example data: 60% find it a hurdle
+                    backgroundColor: ['#FFD166', '#118AB2'],
+                    borderColor: ['#FFFFFF', '#FFFFFF'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } },
+                    title: { display: false }
+                },
+                cutout: '60%'
+            }
+        });
+        
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const offsetTop = targetElement.offsetTop - 70; // Adjust for sticky nav height
+                     window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
