@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Owner Dashboard MVP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .progress-bar {
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #3b82f6; /* blue-500 */
+            border-radius: 3px;
+            transition: width 0.3s ease-in-out;
+        }
+        .metric-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            padding: 24px;
+        }
+        .chat-window {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+        }
+        .chat-header {
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-body {
+            flex-grow: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chat-input {
+            padding: 12px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+        }
+        .chat-message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+        }
+        .chat-message.user {
+            background-color: #e0f2fe; /* blue-50 */
+            align-self: flex-end;
+        }
+        .chat-message.coach {
+            background-color: #f0fdf4; /* green-50 */
+            align-self: flex-start;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div class="text-2xl font-bold text-gray-800">GrowthPath Agency</div>
+        <nav class="space-x-4">
+            <span class="text-gray-600 font-medium">Welcome, Agency Owner!</span>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">Logout</button>
+        </nav>
+    </header>
+
+    <main class="flex-grow p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div class="metric-card lg:col-span-1">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Agency Performance</h2>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-sm text-gray-500">Annual Revenue Target (Policies Sold / GCI)</p>
+                    <p class="text-3xl font-semibold text-blue-600">$1,000,000</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Current Year-to-Date Revenue (Auto-synced from QuickBooks)</p>
+                    <p class="text-3xl font-semibold text-green-600" id="currentAgencyRevenue">$350,000</p>
+                </div>
+                <div class="progress-bar mt-4">
+                    <div id="agencyRevenueProgress" class="progress-fill" style="width: 35%;"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">35% of Annual Target Achieved</p>
+            </div>
+            <p class="text-xs text-green-700 mt-4 bg-green-50 p-2 rounded-md">✓ Data from QuickBooks connected via IPaaS</p>
+        </div>
+
+        <div class="metric-card lg:col-span-2">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Team Playbook Progress</h2>
+            <div class="space-y-4">
+                <div class="flex items-center space-x-4 p-3 border rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" data-agent-id="john-doe">
+                    <div class="flex-shrink-0">
+                        <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40/FF5733/FFFFFF?text=JD" alt="John Doe">
+                    </div>
+                    <div class="flex-grow">
+                        <p class="font-semibold text-gray-800">John Doe (Real Estate Agent)</p>
+                        <p class="text-sm text-gray-600">Playbook: $250K GCI Real Estate Agent Playbook</p>
+                        <div class="progress-bar mt-1">
+                            <div class="progress-fill" style="width: 70%;"></div>
+                        </div>
+                        <p class="text-xs text-gray-500">70% Complete - On track for Q2 goals.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 p-3 border rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" data-agent-id="jane-smith">
+                    <div class="flex-shrink-0">
+                        <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40/33A2FF/FFFFFF?text=JS" alt="Jane Smith">
+                    </div>
+                    <div class="flex-grow">
+                        <p class="font-semibold text-gray-800">Jane Smith (Insurance Agent)</p>
+                        <p class="text-sm text-gray-600">Playbook: 100+ New Policies Per Quarter</p>
+                        <div class="progress-bar mt-1">
+                            <div class="progress-fill" style="width: 45%;"></div>
+                        </div>
+                        <p class="text-xs text-gray-500">45% Complete - Needs support on conversion rates.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 p-3 border rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors" data-agent-id="bob-johnson">
+                    <div class="flex-shrink-0">
+                        <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40/FF33A2/FFFFFF?text=BJ" alt="Bob Johnson">
+                    </div>
+                    <div class="flex-grow">
+                        <p class="font-semibold text-gray-800">Bob Johnson (New Insurance Agent)</p>
+                        <p class="text-sm text-gray-600">Playbook: New Agent Onboarding & Ramp-Up</p>
+                        <div class="progress-bar mt-1">
+                            <div class="progress-fill" style="width: 15%;"></div>
+                        </div>
+                        <p class="text-xs text-gray-500">15% Complete - Just started, auto-assigned via HRIS.</p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-xs text-green-700 mt-4 bg-green-50 p-2 rounded-md">✓ Playbook progress updated automatically as agents complete tasks.</p>
+        </div>
+
+        <div class="metric-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Integrated Systems</h2>
+            <div class="space-y-3">
+                <div class="flex items-center bg-gray-50 p-3 rounded-md">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Salesforce.com_logo.svg/800px-Salesforce.com_logo.svg.png" alt="Salesforce" class="h-6 w-6 mr-3">
+                    <div>
+                        <p class="font-medium text-gray-800">CRM (Salesforce/HubSpot)</p>
+                        <p class="text-sm text-gray-600">Real-time Lead & Opportunity updates for agents.</p>
+                    </div>
+                </div>
+                <div class="flex items-center bg-gray-50 p-3 rounded-md">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/QuickBooks_Logo.svg/2560px-QuickBooks_Logo.svg.png" alt="QuickBooks" class="h-6 w-6 mr-3">
+                    <div>
+                        <p class="font-medium text-gray-800">Financial (QuickBooks)</p>
+                        <p class="text-sm text-gray-600">Automated revenue tracking & commission reconciliation.</p>
+                    </div>
+                </div>
+                <div class="flex items-center bg-gray-50 p-3 rounded-md">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Slack_icon.svg/512px-Slack_icon.svg.png" alt="Slack" class="h-6 w-6 mr-3">
+                    <div>
+                        <p class="font-medium text-gray-800">Communication (Slack/Teams)</p>
+                        <p class="text-sm text-gray-600">Automated team alerts & performance digests.</p>
+                    </div>
+                </div>
+                <div class="flex items-center bg-gray-50 p-3 rounded-md">
+                    <img src="https://www.shrm.org/Shrm/PublishingImages/Partners/ADP_Logo.jpg" alt="ADP" class="h-6 w-6 mr-3">
+                    <div>
+                        <p class="font-medium text-gray-800">HRIS (ADP/Workday)</p>
+                        <p class="text-sm text-gray-600">Auto-assign Playbooks to new hires & role changes.</p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-xs text-green-700 mt-4 bg-green-50 p-2 rounded-md">✓ Powered by IPaaS, seamlessly connecting your tools.</p>
+        </div>
+
+        <div class="metric-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Automated Actions & Insights</h2>
+            <div class="space-y-3">
+                <div class="bg-blue-50 p-3 rounded-md">
+                    <p class="font-medium text-blue-800">New Agent Onboarding (Automated)</p>
+                    <p class="text-sm text-blue-700">When Bob Johnson was hired (via HRIS), his 'New Agent Onboarding' Playbook was automatically assigned.</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-md">
+                    <p class="font-medium text-blue-800">Performance Alert (AI-Driven Nudge)</p>
+                    <p class="text-sm text-blue-700">Jane Smith's lead conversion rate (from CRM) is trending below target. A 'Conversion Booster' Milestone has been suggested to her Playbook.</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-md">
+                    <p class="font-medium text-blue-800">Weekly Team Performance Digest</p>
+                    <p class="text-sm text-blue-700">Automatically sent to your Slack channel every Monday morning.</p>
+                </div>
+            </div>
+            <p class="text-xs text-green-700 mt-4 bg-green-50 p-2 rounded-md">✓ IPaaS triggers these actions based on real-time data & rules.</p>
+        </div>
+
+        <div class="metric-card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Your Coaching Support</h2>
+            <p class="text-gray-600 mb-4">Your dedicated coach is here to help you interpret data, strategize, and optimize your agency's growth.</p>
+            <button id="openOwnerChatBtn" class="bg-green-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-600 transition-colors flex items-center justify-center w-full">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                Chat with My Coach
+            </button>
+            <p class="text-xs text-gray-500 mt-3">Currently, your coach manually reviews your high-level data to provide tailored insights.</p>
+        </div>
+
+    </main>
+
+    <div id="agentDetailModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-20 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-11/12 max-w-4xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800" id="agentDetailName"></h2>
+                <button id="closeAgentDetailModalBtn" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
+            </div>
+            <div id="agentDetailContent" class="space-y-6">
+                </div>
+            <p class="text-sm text-gray-500 mt-6">Note: In this MVP, detailed agent data and performance metrics are provided by your concierge team upon request.</p>
+        </div>
+    </div>
+
+    <div id="ownerChatWindow" class="chat-window">
+        <div class="chat-header">
+            <span class="font-semibold">Your Coach</span>
+            <button id="closeOwnerChatBtn" class="text-white text-xl font-bold">&times;</button>
+        </div>
+        <div id="ownerChatBody" class="chat-body">
+            <div class="chat-message coach">Hello, Agency Owner! What insights are you looking for today?</div>
+            <div class="chat-message user">Can you tell me why Jane's conversion rate is down?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="ownerChatInput" placeholder="Type your message..." class="flex-grow p-2 border border-gray-300 rounded-md">
+            <button id="sendOwnerChatBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Dynamic Content & Simulation Logic ---
+        const agentsData = {
+            'john-doe': {
+                name: 'John Doe',
+                role: 'Real Estate Agent',
+                playbook: '$250K GCI Real Estate Agent Playbook',
+                progress: 70,
+                status: 'On track for Q2 goals. Needs support on LinkedIn messaging conversion.',
+                journeys: [
+                    { name: 'Financial Blueprint & Goal Setting', progress: 100, status: 'Set up by concierge coach.', details: 'Annual Target: $250,000 GCI | Required Transactions: 10 | Required Qualified Leads: 100' },
+                    { name: 'Lead Generation & Prospecting Mastery', progress: 80, status: 'Consistently hitting call targets, working on social media leads.', details: 'This Week: 8/10 Qualified Leads | This Month: 2/3 Listing Appointments' },
+                    { name: 'Conversion & Closing Techniques', progress: 50, status: 'Actively mastering buyer consultations and objection handling.', details: 'Completed Buyer Consultation Script Review.' }
+                ]
+            },
+            'jane-smith': {
+                name: 'Jane Smith',
+                role: 'Insurance Agent',
+                playbook: '100+ New Policies Per Quarter',
+                progress: 45,
+                status: 'Needs support on conversion rates.',
+                journeys: [
+                    { name: 'Financial Blueprint & Goal Setting', progress: 100, status: 'Set up by concierge coach.', details: 'Annual Target: $150,000 Premium | Required New Policies: 50' },
+                    { name: 'New Policy Acquisition', progress: 60, status: 'Strong prospecting, but lead conversion is below target.', details: 'This Week: 25 calls, 10 quotes sent | This Month: 5 new policies.' },
+                    { name: 'Client Relationship & Retention', progress: 20, status: 'Just started this journey, focusing on initial client satisfaction.', details: 'Scheduled 3 initial client check-ins.' }
+                ]
+            },
+            'bob-johnson': {
+                name: 'Bob Johnson',
+                role: 'New Insurance Agent',
+                playbook: 'New Agent Onboarding & Ramp-Up',
+                progress: 15,
+                status: 'Just started, auto-assigned via HRIS.',
+                journeys: [
+                    { name: 'Onboarding Essentials', progress: 30, status: 'Completing initial licensing and system access.', details: 'Completed P&C License Course Module 1.' },
+                    { name: 'Foundational Product Training', progress: 5, status: 'Beginning product deep dive.', details: 'Reviewed Auto Insurance Product Guide.' }
+                ]
+            }
+        };
+
+        // --- Agent Detail Modal Logic ---
+        const agentDetailModal = document.getElementById('agentDetailModal');
+        const closeAgentDetailModalBtn = document.getElementById('closeAgentDetailModalBtn');
+        const agentDetailName = document.getElementById('agentDetailName');
+        const agentDetailContent = document.getElementById('agentDetailContent');
+        const agentCards = document.querySelectorAll('.metric-card .cursor-pointer');
+
+        agentCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const agentId = card.dataset.agentId;
+                const agent = agentsData[agentId];
+                if (agent) {
+                    agentDetailName.textContent = `${agent.name}'s Playbook Progress`;
+                    agentDetailContent.innerHTML = `
+                        <p class="text-lg font-semibold text-gray-700 mb-4">Playbook: ${agent.playbook}</p>
+                        <p class="text-gray-600 mb-6">Overall Progress: <span class="font-bold text-blue-600">${agent.progress}%</span> - <span class="text-sm">${agent.status}</span></p>
+                        <h3 class="text-xl font-bold text-gray-700 mb-3">Key Journeys:</h3>
+                        ${agent.journeys.map(journey => `
+                            <div class="mb-4 bg-gray-50 p-4 rounded-lg">
+                                <p class="font-semibold text-gray-800">${journey.name}</p>
+                                <div class="progress-bar mt-1 mb-2">
+                                    <div class="progress-fill" style="width: ${journey.progress}%;"></div>
+                                </div>
+                                <p class="text-sm text-gray-600">${journey.progress}% Complete - ${journey.status}</p>
+                                <p class="text-xs text-gray-500 mt-1">${journey.details}</p>
+                            </div>
+                        `).join('')}
+                    `;
+                    agentDetailModal.classList.remove('hidden');
+                }
+            });
+        });
+
+        closeAgentDetailModalBtn.addEventListener('click', () => {
+            agentDetailModal.classList.add('hidden');
+        });
+
+
+        // --- Concierge Chat Logic (for Agency Owner) ---
+        const openOwnerChatBtn = document.getElementById('openOwnerChatBtn');
+        const closeOwnerChatBtn = document.getElementById('closeOwnerChatBtn');
+        const ownerChatWindow = document.getElementById('ownerChatWindow');
+        const ownerChatBody = document.getElementById('ownerChatBody');
+        const ownerChatInput = document.getElementById('ownerChatInput');
+        const sendOwnerChatBtn = document.getElementById('sendOwnerChatBtn');
+
+        openOwnerChatBtn.addEventListener('click', () => {
+            ownerChatWindow.style.display = 'flex';
+        });
+
+        closeOwnerChatBtn.addEventListener('click', () => {
+            ownerChatWindow.style.display = 'none';
+        });
+
+        sendOwnerChatBtn.addEventListener('click', () => {
+            const message = ownerChatInput.value.trim();
+            if (message) {
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'chat-message user';
+                userMessageDiv.textContent = message;
+                ownerChatBody.appendChild(userMessageDiv);
+                ownerChatInput.value = '';
+                ownerChatBody.scrollTop = ownerChatBody.scrollHeight;
+
+                setTimeout(() => {
+                    const coachMessageDiv = document.createElement('div');
+                    coachMessageDiv.className = 'chat-message coach';
+                    coachMessageDiv.textContent = "Thank you for your message! Your coach will review this insight and respond shortly.";
+                    ownerChatBody.appendChild(coachMessageDiv);
+                    ownerChatBody.scrollTop = ownerChatBody.scrollHeight;
+                }, 1000);
+            }
+        });
+
+        ownerChatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendOwnerChatBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
