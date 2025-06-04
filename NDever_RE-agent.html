@@ -187,7 +187,7 @@
         }
         .metric-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fR));
             gap: 16px;
         }
         .metric-box {
@@ -249,7 +249,7 @@
                 <p class="text-gray-600 mb-6">Your primary business and personal goals, broken down into key performance indicators. **(Data auto-synced via IPaaS)**</p>
 
                 <!-- Business Objective -->
-                <div id="objective-business" class="objective-card p-4 rounded-lg shadow-sm mb-4">
+                <div id="objective-business" class="objective-card p-4 rounded-lg shadow-sm mb-4" data-objective-id="business">
                     <h2 class="text-xl font-semibold text-gray-700 mb-3">Business Objective: Achieve $250K GCI in 2024</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
@@ -286,7 +286,7 @@
                 </div>
 
                 <!-- Personal Objective -->
-                <div id="objective-personal" class="objective-card p-4 rounded-lg border border-gray-200 bg-gray-50 shadow-sm">
+                <div id="objective-personal" class="objective-card p-4 rounded-lg border border-gray-200 bg-gray-50 shadow-sm" data-objective-id="personal">
                     <h2 class="text-xl font-semibold text-gray-700 mb-3">Personal Objective: Complete First Marathon in November</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
@@ -487,8 +487,8 @@
                     { type: 'Insight', title: 'Lead Source Optimization', message: "Your CRM data shows that leads from online ads have a 2x higher conversion rate to appointment compared to cold calls. Consider reallocating 20% of your prospecting time from cold calls to optimizing your online ad campaigns or follow-up strategies.", action: { label: "View 'Online Lead Nurturing' Playbook", link: "#" } },
                     { type: 'Recommendation', title: 'Improve Negotiation Skills', message: "Your 'Avg. Days to Close' metric has increased by 10 days in the last quarter, impacting your GCI velocity. This often indicates challenges in negotiation or overcoming objections. I recommend the 'Advanced Negotiation Tactics' recipe. Shall I add it to your current Playbook?", action: { label: "Add Recipe to Playbook", link: "#" } },
                     { type: 'Proactive Alert', title: 'Potential Client Churn', message: "Based on recent activity patterns, Client A (from CRM) shows reduced engagement. Consider a proactive check-in. I've drafted a personalized email for you.", action: { label: "View Draft Email", link: "#" } },
-                    { type: 'Marketplace Recommendation', title: 'Advanced Negotiation Training', message: "To sharpen your negotiation skills, I recommend the 'Mastering Real Estate Negotiations' online course available in the Ndever Marketplace. It features live role-playing sessions with certified coaches.", action: { label: "Explore Course in Marketplace", link: "#" } },
-                    { type: 'Marketplace Recommendation', title: 'Local SEO Specialist', message: "To boost your organic lead generation, consider connecting with a 'Local Real Estate SEO Specialist' from the Ndever Marketplace. They can help optimize your online presence.", action: { label: "Find Specialist in Marketplace", link: "#" } }
+                    { type: 'AI-Recommended Coach', title: 'Certified Real Estate Coach', message: "For personalized training and advanced strategies, consider a 1:1 session with a 'Certified Real Estate Coach' from the Ndever Marketplace. They can provide tailored advice.", action: { label: "Find Coach in Ndever Marketplace", link: "#" } },
+                    { type: 'AI-Recommended Training', title: 'Advanced Negotiation Course', message: "To optimize your closing skills, explore the 'Advanced Real Estate Negotiation' online course via the Ndever Marketplace. Proper negotiation is crucial for maximizing GCI.", action: { label: "Explore Course in Ndever Marketplace", link: "#" } }
                 ]
             },
             'personal': {
@@ -561,8 +561,8 @@
                     { type: 'Insight', title: 'Pace Optimization', message: "Your Strava data suggests you could benefit from more targeted speed work to hit your race pace goal. Consider adding an extra interval session per week.", action: { label: "View 'Interval Training' Recipe", link: "#" } },
                     { type: 'Recommendation', title: 'Injury Prevention Focus', message: "Your weekly mileage is increasing rapidly. To prevent injury, I recommend the 'Pre-Run Dynamic Stretches' recipe and ensuring adequate post-run recovery. Shall I add it to your current Playbook?", action: { label: "Add Recipe to Playbook", link: "#" } },
                     { type: 'Proactive Alert', title: 'Hydration Check', message: "Based on your activity levels and weather data, you might be at risk of dehydration. Remember to track your water intake today.", action: { label: "Log Water Intake", link: "#" } },
-                    { type: 'Marketplace Recommendation', title: 'Certified Running Coach', message: "For personalized training and injury prevention, consider a 1:1 session with a 'Certified Running Coach' from the Ndever Marketplace. They can provide tailored advice.", action: { label: "Find Coach in Marketplace", link: "#" } },
-                    { type: 'Marketplace Recommendation', title: 'Sports Nutritionist', message: "To optimize your performance and recovery, explore connecting with a 'Sports Nutritionist' via the Ndever Marketplace. Proper fueling is crucial for marathon training.", action: { label: "Find Nutritionist in Marketplace", link: "#" } }
+                    { type: 'AI-Recommended Coach', title: 'Certified Running Coach', message: "For personalized training and injury prevention, consider a 1:1 session with a 'Certified Running Coach' from the Ndever Marketplace. They can provide tailored advice.", action: { label: "Find Coach in Ndever Marketplace", link: "#" } },
+                    { type: 'AI-Recommended Training', title: 'Sports Nutritionist', message: "To optimize your performance and recovery, explore connecting with a 'Sports Nutritionist' via the Ndever Marketplace. Proper fueling is crucial for marathon training.", action: { label: "Find Nutritionist in Ndever Marketplace", link: "#" } }
                 ]
             }
         };
@@ -658,7 +658,7 @@
                 aiNudgeDiv.className = 'bg-blue-50 p-4 rounded-lg shadow-sm mb-4 border border-blue-200';
                 aiNudgeDiv.innerHTML = `
                     <div class="flex items-start gap-3">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-content-center text-white font-bold text-sm">AI</div>
                         <div class="flex-grow">
                             <p class="font-semibold text-blue-800 mb-1">Ndever Coach AI Suggestion:</p>
                             <p class="text-sm text-blue-700">"${playbook.aiNudge.message}"</p>
@@ -747,7 +747,7 @@
 
             if (sender === 'ai') {
                 const aiIcon = document.createElement('div');
-                aiIcon.className = 'flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm';
+                aiIcon.className = 'flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-content-center text-white font-bold text-sm';
                 aiIcon.textContent = 'AI';
                 messageWrapper.appendChild(aiIcon);
 
@@ -815,8 +815,135 @@
             }
         });
 
-        // Initial setup: activate the business objective by default
-        setActiveObjective('business');
+        // --- Objective Detail Modal Functions ---
+        function openObjectiveDetail(objectiveId) {
+            const data = userObjectivesData[objectiveId];
+            if (!data) return;
+
+            objectiveDetailTitle.textContent = data.title;
+            objectiveDetailDescription.textContent = data.description;
+
+            // Render Overview Tab
+            renderMetrics(data.overviewMetricsDetail, overviewMetricsGrid);
+            overviewAiInsight.textContent = data.overviewInsightDetail;
+
+            // Render Performance Breakdown Tab
+            renderMetrics(data.performanceMetricsDetail, performanceMetricsGrid);
+            performanceAiInsight.textContent = data.performanceInsightDetail;
+
+            // Render Activity Contribution Tab
+            activitiesDescription.textContent = data.activitiesDescriptionDetail;
+            renderActivities(data.activitiesDetail, activitiesList);
+            activitiesAiInsight.textContent = data.activitiesInsightDetail;
+
+            // Render AI Insights Tab
+            renderAiInsights(data.aiInsightsDetail, aiInsightsList);
+
+            objectiveDetailModal.classList.add('show');
+            showTab('overview'); // Default to overview tab
+        }
+
+        function closeObjectiveDetail() {
+            objectiveDetailModal.classList.remove('show');
+        }
+
+        function showTab(tabId) {
+            tabContents.forEach(content => content.classList.add('hidden'));
+            tabButtons.forEach(button => button.classList.remove('active'));
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        function renderMetrics(metricsArray, targetGrid) {
+            targetGrid.innerHTML = ''; // Clear existing metrics
+            metricsArray.forEach(metric => {
+                const metricBox = document.createElement('div');
+                metricBox.className = 'metric-box';
+                let progressBarHtml = '';
+                if (metric.progress !== undefined) {
+                    progressBarHtml = `
+                        <div class="progress-bar-sm w-full mt-2">
+                            <div class="progress-fill-sm" style="width: ${metric.progress}%;"></div>
+                        </div>
+                    `;
+                }
+                let sourceTagHtml = '';
+                if (metric.source) {
+                    sourceTagHtml = `<span class="data-source-tag ${metric.source}">${metric.sourceText}</span>`;
+                }
+
+                metricBox.innerHTML = `
+                    <p class="text-sm text-gray-500">${metric.label}</p>
+                    <p class="text-2xl font-bold ${metric.source === 'ipaas' ? 'text-green-600' : (metric.source === 'manual' ? 'text-gray-700' : 'text-blue-600')}">${metric.value}</p>
+                    ${sourceTagHtml}
+                    ${progressBarHtml}
+                `;
+                targetGrid.appendChild(metricBox);
+            });
+        }
+
+        function renderActivities(activitiesArray, targetList) {
+            targetList.innerHTML = ''; // Clear existing activities
+            activitiesArray.forEach(activity => {
+                const activityDiv = document.createElement('div');
+                activityDiv.className = 'bg-gray-50 p-4 rounded-lg';
+                let progressBarHtml = '';
+                if (activity.progress !== undefined) {
+                    progressBarHtml = `
+                        <div class="progress-bar-sm w-full mt-2">
+                            <div class="progress-fill-sm" style="width: ${activity.progress}%;"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">${activity.progress}% of weekly target</p>
+                    `;
+                }
+                let sourceTagHtml = '';
+                if (activity.source) {
+                    sourceTagHtml = `<span class="data-source-tag ${activity.source}">${activity.sourceText}</span>`;
+                }
+
+                activityDiv.innerHTML = `
+                    <h4 class="font-semibold text-gray-800 mb-2">${activity.title}</h4>
+                    <p class="text-lg font-bold text-blue-600">${activity.value}</p>
+                    ${sourceTagHtml}
+                    ${progressBarHtml}
+                `;
+                targetList.appendChild(activityDiv);
+            });
+        }
+
+        function renderAiInsights(insightsArray, targetList) {
+            targetList.innerHTML = ''; // Clear existing insights
+            insightsArray.forEach(insight => {
+                const insightDiv = document.createElement('div');
+                insightDiv.className = 'bg-blue-50 p-4 rounded-lg border border-blue-200';
+                let actionButtonHtml = '';
+                if (insight.action) {
+                    actionButtonHtml = `<button class="text-blue-600 text-sm mt-2 hover:underline">${insight.action.label}</button>`;
+                }
+                insightDiv.innerHTML = `
+                    <p class="font-semibold text-blue-800 mb-2">${insight.type}: ${insight.title}</p>
+                    <p class="text-sm text-blue-700">${insight.message}</p>
+                    ${actionButtonHtml}
+                `;
+                targetList.appendChild(insightDiv);
+            });
+        }
+
+        // --- Event Listeners for Modal ---
+        // Attach event listeners to the objective cards to open the modal
+        objectiveBusinessCard.addEventListener('click', () => openObjectiveDetail('business'));
+        objectivePersonalCard.addEventListener('click', () => openObjectiveDetail('personal'));
+        closeObjectiveDetailBtn.addEventListener('click', closeObjectiveDetail);
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                showTab(button.dataset.tab);
+            });
+        });
+
+        // Initial setup on page load
+        setActiveObjective('business'); // Set default active objective on dashboard
         renderMainDashboardObjectiveMetrics(); // Render metrics for both objectives on load
     </script>
 </body>
