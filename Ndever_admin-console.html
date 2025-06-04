@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ndever Coach Admin Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: #1a202c; /* bg-gray-900 */
+            color: #e2e8f0; /* text-gray-200 */
+            padding: 24px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .sidebar-link:hover {
+            background-color: #2d3748; /* gray-800 */
+        }
+        .sidebar-link.active {
+            background-color: #3b82f6; /* blue-500 */
+            font-weight: 600;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            padding: 24px;
+        }
+        .metric-box {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-green { background-color: #10b981; } /* green-500 */
+        .status-yellow { background-color: #f59e0b; } /* yellow-500 */
+        .status-red { background-color: #ef4444; } /* red-500 */
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar flex flex-col">
+        <div class="text-3xl font-bold text-blue-400 mb-10">Ndever Admin</div>
+        <nav class="flex-grow">
+            <ul>
+                <li><a href="#" class="sidebar-link active" data-section="dashboard">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7m7-7v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Dashboard
+                </a></li>
+                <li><a href="#" class="sidebar-link" data-section="playbooks">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"></path></svg>
+                    Playbook Management
+                </a></li>
+                <li><a href="#" class="sidebar-link" data-section="ai-tuning">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                    AI Tuning & Review
+                </a></li>
+                <li><a href="#" class="sidebar-link" data-section="users">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H2v-2a3 3 0 015.356-1.857M17 20v-2c0-.653-.146-1.28-.423-1.857M9 20v-2a3 3 0 015.356-1.857M12 12a3 3 0 100-6 3 3 0 000 6zm-3 8a9 9 0 1118 0H9z"></path></svg>
+                    User Management
+                </a></li>
+                <li><a href="#" class="sidebar-link" data-section="integrations">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    Integrations
+                </a></li>
+            </ul>
+        </nav>
+        <div class="mt-auto text-xs text-gray-500">
+            Ndever Coach Admin v1.0
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard Overview</h1>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="metric-box">
+                    <p class="text-sm text-gray-500">Active Users</p>
+                    <p class="text-4xl font-bold text-blue-600">85</p>
+                    <p class="text-xs text-gray-400">+12% last month</p>
+                </div>
+                <div class="metric-box">
+                    <p class="text-sm text-gray-500">Active Playbooks</p>
+                    <p class="text-4xl font-bold text-purple-600">12</p>
+                    <p class="text-xs text-gray-400">3 new this quarter</p>
+                </div>
+                <div class="metric-box">
+                    <p class="text-sm text-gray-500">AI Nudges Sent (Last 24h)</p>
+                    <p class="text-4xl font-bold text-green-600">210</p>
+                    <p class="text-xs text-gray-400">98% accepted by users</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Top 3 Active Playbooks</h2>
+                    <ul class="space-y-3">
+                        <li class="flex justify-between items-center text-gray-700">
+                            <span>$250K GCI Real Estate Agent Playbook</span>
+                            <span class="font-semibold text-blue-600">78% Avg. Progress</span>
+                        </li>
+                        <li class="flex justify-between items-center text-gray-700">
+                            <span>New Insurance Agent Onboarding</span>
+                            <span class="font-semibold text-purple-600">65% Avg. Progress</span>
+                        </li>
+                        <li class="flex justify-between items-center text-gray-700">
+                            <span>First-Time Marathon Mastery</span>
+                            <span class="font-semibold text-green-600">55% Avg. Progress</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">IPaaS Integration Health</h2>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-gray-700">
+                            <span class="status-indicator status-green"></span>
+                            <span>Salesforce CRM: <span class="font-semibold">Active</span></span>
+                        </li>
+                        <li class="flex items-center text-gray-700">
+                            <span class="status-indicator status-green"></span>
+                            <span>QuickBooks: <span class="font-semibold">Active</span></span>
+                        </li>
+                        <li class="flex items-center text-gray-700">
+                            <span class="status-indicator status-yellow"></span>
+                            <span>Strava: <span class="font-semibold">Partial Sync</span> (1 user disconnected)</span>
+                        </li>
+                        <li class="flex items-center text-gray-700">
+                            <span class="status-indicator status-red"></span>
+                            <span>AMS (Agency Management System): <span class="font-semibold">Error</span> (Last Sync Failed)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Playbook Management Section -->
+        <section id="playbooks" class="content-section hidden">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Playbook Management</h1>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-700">All Playbooks</h2>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                    + Create New Playbook
+                </button>
+            </div>
+            <div class="card overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Playbook Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Target Audience</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Min. SKU</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">The $250K GCI Real Estate Agent Playbook</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Real Estate Agent</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Pro</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">Active</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-blue-600 hover:text-blue-900 mr-4 edit-playbook-btn" data-playbook="real-estate">Edit</button>
+                                <button class="text-red-600 hover:text-red-900">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">New Insurance Agent Onboarding</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Insurance Agent, Agency Owner</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Pro</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">Active</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-blue-600 hover:text-blue-900 mr-4 edit-playbook-btn" data-playbook="insurance-onboarding">Edit</button>
+                                <button class="text-red-600 hover:text-red-900">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">First-Time Marathon Mastery</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Individual</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Solo</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">Beta</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-blue-600 hover:text-blue-900 mr-4 edit-playbook-btn" data-playbook="marathon">Edit</button>
+                                <button class="text-red-600 hover:text-red-900">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Playbook Editor (Hidden by default) -->
+            <div id="playbook-editor" class="card mt-8 hidden">
+                <h2 class="text-xl font-bold text-gray-800 mb-4" id="editor-playbook-title">Edit Playbook: [Playbook Name]</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label for="playbook-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="playbook-description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                    </div>
+
+                    <!-- Objectives Section -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Objectives</h3>
+                        <div id="editor-objectives-list" class="space-y-4 bg-gray-50 p-4 rounded-lg">
+                            <!-- Objective items will be dynamically loaded here -->
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Business Objective: Achieve 100 New Policies in Q3 2024</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Key Metrics (JSON)</label>
+                                <textarea rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"targetPolicies": 100, "ytdPolicies": 35, "quoteBindRate": 19.4}</textarea>
+                                <div class="mt-2 text-xs text-gray-500">💡 This data feeds directly into AI analysis.</div>
+                            </div>
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Personal Objective: Complete First Marathon in November</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Key Metrics (JSON)</label>
+                                <textarea rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"targetMileage": 300, "ytdMileage": 120, "longestRun": 10}</textarea>
+                                <div class="mt-2 text-xs text-gray-500">💡 This data feeds directly into AI analysis.</div>
+                            </div>
+                        </div>
+                        <button class="mt-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">+ Add Objective</button>
+                    </div>
+
+                    <!-- Journeys Section -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Journeys</h3>
+                        <div id="editor-journeys-list" class="space-y-4 bg-gray-50 p-4 rounded-lg">
+                            <!-- Journey items will be dynamically loaded here -->
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Journey: Lead Generation & Prospecting Mastery</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">Establish a robust and diverse pipeline of qualified buyer and seller leads.</textarea>
+                                <div class="mt-4">
+                                    <h5 class="text-md font-semibold text-gray-700 mb-2">Milestones</h5>
+                                    <div class="space-y-2 bg-gray-100 p-3 rounded-md">
+                                        <div class="border p-2 rounded-md bg-white">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="font-medium text-gray-800">Milestone: Generate 10 Qualified Buyer Leads This Week</span>
+                                                <button class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+                                            </div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tasks (one per line)</label>
+                                            <textarea rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">Make 20 Cold Calls (outboundCalls)
+Send 15 Personalized LinkedIn Messages (linkedinMessages)
+Host 2 Open Houses (openHouses)</textarea>
+                                            <label class="block text-sm font-medium text-gray-700 mt-2 mb-1">AI Nudge Condition (JSON)</label>
+                                            <textarea rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"metric": "leads_generated", "threshold": 5, "operator": "<", "message": "Your leads are low. Review 'Cold Call Openers' recipe."}</textarea>
+                                            <div class="mt-2 text-xs text-gray-500">💡 Define conditions for AI to suggest recipes/actions.</div>
+                                        </div>
+                                        <button class="mt-2 bg-gray-200 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-300 text-sm">+ Add Milestone</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="mt-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">+ Add Journey</button>
+                    </div>
+
+                    <div class="flex justify-end space-x-4 mt-8">
+                        <button class="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors">Cancel</button>
+                        <button class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">Save Playbook</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Tuning & Review Section -->
+        <section id="ai-tuning" class="content-section hidden">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">AI Tuning & Review</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">AI Nudge Review Queue</h2>
+                    <p class="text-gray-600 mb-4">Review and approve/reject AI-generated nudges before they are sent to users. (Human-in-the-loop for early AI)</p>
+                    <ul class="space-y-4">
+                        <li class="border p-3 rounded-md bg-gray-50">
+                            <p class="text-sm font-medium text-gray-800">To: Jane Smith (Insurance Agent)</p>
+                            <p class="text-sm text-gray-700 mb-2">"Your quote-to-bind rate for auto policies is slightly below average. Consider reviewing 'Presenting Value Over Price' recipe."</p>
+                            <div class="flex justify-end space-x-2">
+                                <button class="bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600">Approve</button>
+                                <button class="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600">Reject</button>
+                            </div>
+                        </li>
+                        <li class="border p-3 rounded-md bg-gray-50">
+                            <p class="text-sm font-medium text-gray-800">To: John Doe (Real Estate Agent)</p>
+                            <p class="text-sm text-gray-700 mb-2">"Your LinkedIn message engagement is lower than expected. Review 'Crafting Compelling Outreach' recipe."</p>
+                            <div class="flex justify-end space-x-2">
+                                <button class="bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600">Approve</button>
+                                <button class="bg-red-500 text-white px-3 py-1 rounded-md text-sm hover:bg-red-600">Reject</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">AI Content Generation Tools</h2>
+                    <p class="text-gray-600 mb-4">Leverage AI to assist in creating new Playbook content.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="ai-content-prompt" class="block text-sm font-medium text-gray-700 mb-1">Prompt AI for new recipe ideas:</label>
+                            <textarea id="ai-content-prompt" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="e.g., 'Generate 5 milestone ideas for a 'Q3 Sales Growth' Playbook for independent insurance agents.'"></textarea>
+                            <button class="mt-2 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors">Generate Content</button>
+                        </div>
+                        <div>
+                            <label for="ai-content-output" class="block text-sm font-medium text-gray-700 mb-1">Generated Content:</label>
+                            <textarea id="ai-content-output" rows="5" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm sm:text-sm" readonly placeholder="AI-generated content will appear here..."></textarea>
+                            <button class="mt-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors">Add to Playbook</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Management Section -->
+        <section id="users" class="content-section hidden">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">User Management</h1>
+            <div class="card overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active Playbook</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Jane Smith</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Insurance Agent</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">First-Time Marathon Mastery</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">40%</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-blue-600 hover:text-blue-900 mr-4">View</button>
+                                <button class="text-purple-600 hover:text-purple-900">Assign Playbook</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">John Doe</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Real Estate Agent</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$250K GCI Playbook</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">78%</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-blue-600 hover:text-blue-900 mr-4">View</button>
+                                <button class="text-purple-600 hover:text-purple-900">Assign Playbook</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Bob Johnson</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">New Insurance Agent</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">New Agent Onboarding</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">15%</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-blue-600 hover:text-blue-900 mr-4">View</button>
+                                <button class="text-purple-600 hover:text-purple-900">Assign Playbook</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Integrations Section -->
+        <section id="integrations" class="content-section hidden">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Integrations Management</h1>
+            <div class="card">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">IPaaS Connectors & Health</h2>
+                <p class="text-gray-600 mb-4">Manage and monitor the health of your IPaaS connections to external systems.</p>
+                <ul class="space-y-4">
+                    <li class="flex items-center justify-between p-3 rounded-md border bg-gray-50">
+                        <div class="flex items-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Salesforce.com_logo.svg/800px-Salesforce.com_logo.svg.png" alt="Salesforce" class="h-6 w-6 mr-3">
+                            <div>
+                                <p class="font-medium text-gray-800">Salesforce CRM</p>
+                                <p class="text-sm text-gray-600">Last Sync: 5 mins ago</p>
+                            </div>
+                        </div>
+                        <span class="status-indicator status-green"></span>
+                        <button class="text-blue-600 hover:text-blue-900 text-sm">Configure</button>
+                    </li>
+                    <li class="flex items-center justify-between p-3 rounded-md border bg-gray-50">
+                        <div class="flex items-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/QuickBooks_Logo.svg/2560px-QuickBooks_Logo.svg.png" alt="QuickBooks" class="h-6 w-6 mr-3">
+                            <div>
+                                <p class="font-medium text-gray-800">QuickBooks</p>
+                                <p class="text-sm text-gray-600">Last Sync: 1 hour ago</p>
+                            </div>
+                        </div>
+                        <span class="status-indicator status-green"></span>
+                        <button class="text-blue-600 hover:text-blue-900 text-sm">Configure</button>
+                    </li>
+                    <li class="flex items-center justify-between p-3 rounded-md border bg-gray-50">
+                        <div class="flex items-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Strava_Logo.svg/1200px-Strava_Logo.svg.png" alt="Strava" class="h-6 w-6 mr-3">
+                            <div>
+                                <p class="font-medium text-gray-800">Strava</p>
+                                <p class="text-sm text-gray-600">Last Sync: 2 hours ago (Partial)</p>
+                            </div>
+                        </div>
+                        <span class="status-indicator status-yellow"></span>
+                        <button class="text-blue-600 hover:text-blue-900 text-sm">Configure</button>
+                    </li>
+                     <li class="flex items-center justify-between p-3 rounded-md border bg-gray-50">
+                        <div class="flex items-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Slack_icon.svg/512px-Slack_icon.svg.png" alt="Slack" class="h-6 w-6 mr-3">
+                            <div>
+                                <p class="font-medium text-gray-800">Slack</p>
+                                <p class="text-sm text-gray-600">Last Sync: 10 mins ago</p>
+                            </div>
+                        </div>
+                        <span class="status-indicator status-green"></span>
+                        <button class="text-blue-600 hover:text-blue-900 text-sm">Configure</button>
+                    </li>
+                    <li class="flex items-center justify-between p-3 rounded-md border bg-gray-50">
+                        <div class="flex items-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/ADP_logo.svg/2560px-ADP_logo.svg.png" alt="ADP" class="h-6 w-6 mr-3">
+                            <div>
+                                <p class="font-medium text-gray-800">ADP (HRIS)</p>
+                                <p class="text-sm text-gray-600">Last Sync: 2 days ago</p>
+                            </div>
+                        </div>
+                        <span class="status-indicator status-red"></span>
+                        <button class="text-blue-600 hover:text-blue-900 text-sm">Configure</button>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const playbookEditor = document.getElementById('playbook-editor');
+            const editPlaybookBtns = document.querySelectorAll('.edit-playbook-btn');
+
+            // --- Navigation Logic ---
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetSectionId = e.currentTarget.dataset.section;
+
+                    // Remove active class from all links
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    e.currentTarget.classList.add('active');
+
+                    // Hide all content sections
+                    contentSections.forEach(section => section.classList.add('hidden'));
+                    // Show the target section
+                    document.getElementById(targetSectionId).classList.remove('hidden');
+
+                    // Hide playbook editor if not in playbook section
+                    if (targetSectionId !== 'playbooks') {
+                        playbookEditor.classList.add('hidden');
+                    }
+                });
+            });
+
+            // --- Playbook Editor Logic ---
+            editPlaybookBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const playbookType = btn.dataset.playbook;
+                    const editorTitle = document.getElementById('editor-playbook-title');
+                    const playbookDescription = document.getElementById('playbook-description');
+                    const editorObjectivesList = document.getElementById('editor-objectives-list');
+                    const editorJourneysList = document.getElementById('editor-journeys-list');
+
+                    playbookEditor.classList.remove('hidden');
+                    // Simulate loading playbook data based on type
+                    if (playbookType === 'real-estate') {
+                        editorTitle.textContent = 'Edit Playbook: The $250K GCI Real Estate Agent Playbook';
+                        playbookDescription.value = 'This Playbook provides a systematic guide for real estate agents to build a consistent pipeline and achieve a $250,000 GCI target.';
+                        editorObjectivesList.innerHTML = `
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Business Objective: Achieve $250K GCI in 2024</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Key Metrics (JSON)</label>
+                                <textarea rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"targetGci": 250000, "avgCommission": 2.5, "avgTransactionValue": 250000, "leadConversionRate": 0.035}</textarea>
+                                <div class="mt-2 text-xs text-gray-500">💡 This data feeds directly into AI analysis.</div>
+                            </div>
+                        `;
+                        editorJourneysList.innerHTML = `
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Journey: Lead Generation & Prospecting Mastery</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">Establish a robust and diverse pipeline of qualified buyer and seller leads.</textarea>
+                                <div class="mt-4">
+                                    <h5 class="text-md font-semibold text-gray-700 mb-2">Milestones</h5>
+                                    <div class="space-y-2 bg-gray-100 p-3 rounded-md">
+                                        <div class="border p-2 rounded-md bg-white">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="font-medium text-gray-800">Milestone: Generate 10 Qualified Buyer Leads This Week</span>
+                                                <button class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+                                            </div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tasks (one per line, with (metric_id) for IPaaS/AI)</label>
+                                            <textarea rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">Make 20 Cold Calls (calls_made)
+Send 15 Personalized LinkedIn Messages (linkedin_messages_sent)
+Host 2 Open Houses (open_houses_hosted)</textarea>
+                                            <label class="block text-sm font-medium text-gray-700 mt-2 mb-1">AI Nudge Condition (JSON)</label>
+                                            <textarea rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"metric": "leads_generated", "threshold": 5, "operator": "<", "message": "Your leads are low. Review 'Cold Call Openers' recipe."}</textarea>
+                                            <div class="mt-2 text-xs text-gray-500">💡 Define conditions for AI to suggest recipes/actions.</div>
+                                        </div>
+                                        <button class="mt-2 bg-gray-200 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-300 text-sm">+ Add Milestone</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (playbookType === 'insurance-onboarding') {
+                        editorTitle.textContent = 'Edit Playbook: New Insurance Agent Onboarding';
+                        playbookDescription.value = 'A comprehensive path for new insurance agents to navigate licensing, acquire product knowledge, and launch sales activities.';
+                        editorObjectivesList.innerHTML = `
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Onboarding Objective: Agent Licensed & Productive in 90 Days</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Key Metrics (JSON)</label>
+                                <textarea rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"days_to_license_target": 30, "first_policy_days_target": 60, "training_completion_rate": 0.9}</textarea>
+                                <div class="mt-2 text-xs text-gray-500">💡 This data feeds directly into AI analysis.</div>
+                            </div>
+                        `;
+                        editorJourneysList.innerHTML = `
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Journey: Foundational Licensing & Compliance</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">Secure all necessary licenses and understand core compliance requirements.</textarea>
+                                <div class="mt-4">
+                                    <h5 class="text-md font-semibold text-gray-700 mb-2">Milestones</h5>
+                                    <div class="space-y-2 bg-gray-100 p-3 rounded-md">
+                                        <div class="border p-2 rounded-md bg-white">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="font-medium text-gray-800">Milestone: Complete Property & Casualty Licensing Course</span>
+                                                <button class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+                                            </div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tasks (one per line, with (metric_id) for IPaaS/AI)</label>
+                                            <textarea rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">Enroll in online P&C licensing course (lms_enrollment)
+Complete Modules 1-3 (lms_module_completion)
+Review practice quizzes and identify weak areas</textarea>
+                                            <label class="block text-sm font-medium text-gray-700 mt-2 mb-1">AI Nudge Condition (JSON)</label>
+                                            <textarea rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"metric": "lms_module_completion", "threshold": 0.5, "operator": "<", "message": "You're halfway through your licensing course. Need any study tips?"}</textarea>
+                                            <div class="mt-2 text-xs text-gray-500">💡 Define conditions for AI to suggest recipes/actions.</div>
+                                        </div>
+                                        <button class="mt-2 bg-gray-200 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-300 text-sm">+ Add Milestone</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (playbookType === 'marathon') {
+                        editorTitle.textContent = 'Edit Playbook: First-Time Marathon Mastery';
+                        playbookDescription.value = 'A comprehensive guide to prepare for and complete your first marathon.';
+                        editorObjectivesList.innerHTML = `
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Personal Objective: Complete First Marathon in November</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Key Metrics (JSON)</label>
+                                <textarea rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"targetMileage": 300, "ytdMileage": 120, "avgPace": "10:30"}</textarea>
+                                <div class="mt-2 text-xs text-gray-500">💡 This data feeds directly into AI analysis.</div>
+                            </div>
+                        `;
+                        editorJourneysList.innerHTML = `
+                            <div class="border p-3 rounded-md bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-gray-800">Journey: Building Endurance & Mileage</h4>
+                                    <button class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">Focus on progressively increasing running distance and stamina.</textarea>
+                                <div class="mt-4">
+                                    <h5 class="text-md font-semibold text-gray-700 mb-2">Milestones</h5>
+                                    <div class="space-y-2 bg-gray-100 p-3 rounded-md">
+                                        <div class="border p-2 rounded-md bg-white">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="font-medium text-gray-800">Milestone: Complete 30 Miles This Week</span>
+                                                <button class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+                                            </div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tasks (one per line, with (metric_id) for IPaaS/AI)</label>
+                                            <textarea rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">Long Run: 10 miles (strava_miles_long)
+Tempo Run: 5 miles (strava_miles_tempo)
+Easy Run: 3 miles (strava_miles_easy)</textarea>
+                                            <label class="block text-sm font-medium text-gray-700 mt-2 mb-1">AI Nudge Condition (JSON)</label>
+                                            <textarea rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono text-xs">{"metric": "avg_pace", "threshold": "10:00", "operator": ">", "message": "Your pace is slowing. Review 'Interval Training' recipe."}</textarea>
+                                            <div class="mt-2 text-xs text-gray-500">💡 Define conditions for AI to suggest recipes/actions.</div>
+                                        </div>
+                                        <button class="mt-2 bg-gray-200 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-300 text-sm">+ Add Milestone</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
