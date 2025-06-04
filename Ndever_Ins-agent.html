@@ -3,23 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ndever Coach: AI-Native Insurance Agent Dashboard</title>
+    <title>Ndever Coach: Insurance Agent Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/images/favicon-8a0b0b8ec06b7ab28dc121e2a7527bc7.png?vsn=d">
     <style>
+        /* CSS Variables for Chart Theming from Ndever app's code */
+        :root {
+            --title-color: #111827;
+            --subtitle-color: #6B7280;
+            --text-color: #374151;
+            --text-muted: #6B7280;
+            --grid-color: rgba(107, 114, 128, 0.1);
+            --chart-bg: #ffffff;
+            --legend-color: #374151;
+            --axis-color: #6B7280;
+            --tooltip-bg: #ffffff;
+            --tooltip-border: #e5e7eb;
+            --tooltip-text: #111827;
+        }
+        .dark {
+            --title-color: #F9FAFB;
+            --subtitle-color: #D1D5DB;
+            --text-color: #D1D5DB;
+            --text-muted: #9CA3AF;
+            --grid-color: rgba(156, 163, 175, 0.1);
+            --chart-bg: #1f2937;
+            --legend-color: #D1D5DB;
+            --axis-color: #9CA3AF;
+            --tooltip-bg: #374151;
+            --tooltip-border: #4b5563;
+            --tooltip-text: #F9FAFB;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
+            /* Incorporating Ndever app's body styles */
+            background-color: #f0f2f5; /* Default light background */
+            color: #374151; /* Default text color from :root --text-color */
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* font-sans */
+            -webkit-font-smoothing: antialiased; /* antialiased */
         }
+        /* Dark mode styles for body and overall background, mirroring Ndever app's body */
+        html.dark body {
+            background-color: #1f2937; /* bg-gray-950 equivalent */
+            color: #D1D5DB; /* text-gray-400 equivalent */
+        }
+
         .card {
             background-color: white;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
             padding: 24px;
         }
+        html.dark .card {
+            background-color: #1f2937; /* dark:bg-gray-800 */
+            border: 1px solid #4b5563; /* dark:border-gray-700 */
+        }
+
         .objective-card {
             cursor: pointer;
             transition: all 0.2s ease-in-out;
+            border: 1px solid #e2e8f0; /* Default border */
+        }
+        html.dark .objective-card {
+            border: 1px solid #4b5563; /* dark:border-gray-700 */
+            background-color: #1f2937; /* dark:bg-gray-800 */
         }
         .objective-card:hover {
             transform: translateY(-2px);
@@ -30,11 +79,19 @@
             background-color: #eff6ff; /* Tailwind blue-50 */
             box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
+        html.dark .objective-card.highlighted {
+            border-color: #60a5fa; /* dark:blue-400 */
+            background-color: #1e3a8a; /* dark:blue-900/30 */
+        }
+
         .progress-bar {
             height: 8px;
             background-color: #e0e0e0;
             border-radius: 4px;
             overflow: hidden;
+        }
+        html.dark .progress-bar {
+            background-color: #4b5563; /* dark:gray-600 */
         }
         .progress-fill {
             height: 100%;
@@ -42,14 +99,21 @@
             border-radius: 4px;
             transition: width 0.3s ease-in-out;
         }
+        html.dark .progress-fill {
+            background-color: #60a5fa; /* dark:blue-400 */
+        }
         .chat-window {
             height: 500px; /* Fixed height for demo */
             display: flex;
             flex-direction: column;
             border-radius: 12px;
             overflow: hidden;
-            background-color: #f8fafc; /* Light blue-gray for chat background */
+            background-color: #f8fafc;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        html.dark .chat-window {
+            background-color: #1f2937; /* dark:bg-gray-800 */
+            border: 1px solid #4b5563; /* dark:border-gray-700 */
         }
         .chat-body {
             flex-grow: 1;
@@ -61,10 +125,14 @@
         }
         .chat-input-area {
             padding: 16px;
-            border-top: 1px solid #e2e8f0; /* Light gray border */
+            border-top: 1px solid #e2e8f0;
             display: flex;
             gap: 12px;
             background-color: white;
+        }
+        html.dark .chat-input-area {
+            border-top: 1px solid #4b5563; /* dark:border-gray-700 */
+            background-color: #1f2937; /* dark:bg-gray-800 */
         }
         .chat-message {
             max-width: 85%;
@@ -74,15 +142,23 @@
             line-height: 1.4;
         }
         .chat-message.user {
-            background-color: #dbeafe; /* blue-100 */
+            background-color: #dbeafe;
             align-self: flex-end;
-            color: #1e40af; /* blue-800 */
+            color: #1e40af;
+        }
+        html.dark .chat-message.user {
+            background-color: #3b82f6; /* blue-600 */
+            color: white;
         }
         .chat-message.ai {
-            background-color: #ecfdf5; /* green-50 */
+            background-color: #ecfdf5;
             align-self: flex-start;
-            color: #065f46; /* green-800 */
+            color: #065f46;
             position: relative;
+        }
+        html.dark .chat-message.ai {
+            background-color: #065f46; /* green-800 */
+            color: white;
         }
         .ai-icon {
             position: absolute;
@@ -91,7 +167,7 @@
             transform: translateY(-50%);
             width: 24px;
             height: 24px;
-            background-color: #10b981; /* green-500 */
+            background-color: #10b981;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -100,38 +176,198 @@
             font-size: 0.75rem;
             font-weight: bold;
         }
+        html.dark .ai-icon {
+            background-color: #34d399; /* green-400 */
+        }
         .ai-message-bubble {
-            background-color: #ecfdf5; /* green-50 */
+            background-color: #ecfdf5;
             padding: 10px 16px;
             border-radius: 18px;
             position: relative;
-            margin-left: 40px; /* Space for icon */
+            margin-left: 40px;
         }
-        .ai-message-bubble::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 15px;
-            width: 0;
-            height: 0;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-right: 10px solid #ecfdf5;
+        html.dark .ai-message-bubble {
+            background-color: #065f46; /* green-800 */
+        }
+        html.dark .ai-message-bubble::before {
+            border-right-color: #065f46; /* green-800 */
+        }
+
+        /* Modal Specific Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease-in-out;
+        }
+        html.dark .modal-content {
+            background-color: #1f2937; /* dark:bg-gray-800 */
+            border: 1px solid #4b5563; /* dark:border-gray-700 */
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        html.dark .modal-header {
+            border-bottom: 1px solid #4b5563; /* dark:border-gray-700 */
+        }
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+        html.dark .tabs {
+            border-bottom: 1px solid #4b5563; /* dark:border-gray-700 */
+        }
+        .tab-button {
+            padding: 12px 20px;
+            font-weight: 500;
+            color: #64748b; /* slate-500 */
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        html.dark .tab-button {
+            color: #9ca3af; /* dark:text-gray-400 */
+        }
+        .tab-button.active {
+            color: #3b82f6; /* blue-500 */
+            border-color: #3b82f6;
+        }
+        html.dark .tab-button.active {
+            color: #60a5fa; /* dark:blue-400 */
+            border-color: #60a5fa;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fR));
+            gap: 16px;
+        }
+        .metric-box {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        html.dark .metric-box {
+            background-color: #374151; /* dark:bg-gray-700 */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .data-source-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+        .data-source-tag.ipaas {
+            background-color: #e0f2fe; /* blue-100 */
+            color: #1e40af; /* blue-800 */
+        }
+        html.dark .data-source-tag.ipaas {
+            background-color: #1e40af; /* dark:blue-800 */
+            color: #93c5fd; /* dark:blue-200 */
+        }
+        .data-source-tag.manual {
+            background-color: #fffbeb; /* yellow-100 */
+            color: #b45309; /* yellow-800 */
+        }
+        html.dark .data-source-tag.manual {
+            background-color: #b45309; /* dark:yellow-800 */
+            color: #fcd34d; /* dark:yellow-300 */
+        }
+        .ai-insight-box {
+            background-color: #ecfdf5; /* green-50 */
+            border-left: 4px solid #10b981; /* green-500 */
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 24px;
+        }
+        html.dark .ai-insight-box {
+            background-color: #065f46; /* dark:green-800 */
+            border-left: 4px solid #34d399; /* dark:green-400 */
+            color: #d1fae5; /* dark:green-100 */
+        }
+        html.dark .ai-insight-box p {
+            color: #d1fae5; /* dark:green-100 */
+        }
+        html.dark .ai-insight-box .font-semibold {
+            color: #a7f3d0; /* dark:green-200 */
+        }
+        .progress-bar-sm {
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        html.dark .progress-bar-sm {
+            background-color: #4b5563; /* dark:gray-600 */
+        }
+        .progress-fill-sm {
+            height: 100%;
+            background-color: #3b82f6;
+            border-radius: 3px;
+        }
+        html.dark .progress-fill-sm {
+            background-color: #60a5fa; /* dark:blue-400 */
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
     <!-- Header -->
-    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-        <div class="text-2xl font-bold text-gray-800">Ndever Coach</div>
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center dark:bg-gray-900 dark:border-b dark:border-gray-700">
+        <div class="text-2xl font-bold text-gray-800 dark:text-white">Ndever Coach</div>
         <nav class="space-x-4">
-            <span class="text-gray-600 font-medium">Welcome, Jane Smith (Insurance Agent)</span>
-            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">Logout</button>
+            <a href="#" class="text-gray-600 hover:text-blue-600 font-medium dark:text-gray-400 dark:hover:text-blue-400">Objectives</a>
+            <a href="#" class="text-gray-600 hover:text-blue-600 font-medium dark:text-gray-400 dark:hover:text-blue-400">Playbooks</a>
+            <span class="text-gray-600 font-medium dark:text-gray-400">Welcome, Jane Smith (Insurance Agent)</span>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700">Logout</button>
         </nav>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- Main Dashboard Content -->
     <main class="flex-grow p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- Left Column: Objectives & Playbook -->
@@ -139,78 +375,78 @@
 
             <!-- My Active Objectives Card (Multiple 'Objective' objects) -->
             <div class="card">
-                <h1 class="text-2xl font-bold text-gray-800 mb-4">My Active Objectives</h1>
-                <p class="text-gray-600 mb-6">Your primary business and personal goals, broken down into key performance indicators. **(Data auto-synced via IPaaS)**</p>
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">My Active Objectives</h1>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">Your primary business and personal goals, broken down into key performance indicators. **(Data auto-synced via IPaaS)**</p>
 
                 <!-- Business Objective -->
-                <div id="objective-business" class="objective-card mb-8 p-4 rounded-lg border border-gray-200 bg-gray-50 shadow-sm">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-3">Business Objective: Achieve 100 New Policies in Q3 2024</h2>
+                <div id="objective-business" class="objective-card p-4 rounded-lg shadow-sm mb-4" data-objective-id="business">
+                    <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">Business Objective: Achieve 100 New Policies in Q3 2024</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
-                            <p class="text-sm text-gray-500">Target New Policies</p>
-                            <p class="text-xl font-semibold text-blue-600">100</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Target New Policies</p>
+                            <p class="text-xl font-semibold text-blue-600 dark:text-blue-400">100</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">YTD New Policies (from AMS)</p>
-                            <p class="text-xl font-semibold text-green-600" id="ytdPolicies">35</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">YTD New Policies (from AMS)</p>
+                            <p class="text-xl font-semibold text-green-600 dark:text-green-400" id="ytdPolicies">35</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Policy Progress</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Policy Progress</p>
                             <div class="progress-bar mt-1">
                                 <div class="progress-fill" id="policyProgressBar" style="width: 35%;"></div>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1"><span id="policyPercentage">35</span>% of target</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1"><span id="policyPercentage">35</span>% of target</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <p class="text-sm text-gray-500">Required Quotes</p>
-                            <p class="text-xl font-semibold text-gray-700">500</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Required Quotes</p>
+                            <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">500</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">YTD Quotes (from Quoting Software)</p>
-                            <p class="text-xl font-semibold text-green-600" id="ytdQuotes">180</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">YTD Quotes (from Quoting Software)</p>
+                            <p class="text-xl font-semibold text-green-600 dark:text-green-400" id="ytdQuotes">180</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Quote-to-Bind Rate (from AMS)</p>
-                            <p class="text-xl font-semibold text-purple-600" id="quoteBindRate">19.4%</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Quote-to-Bind Rate (from AMS)</p>
+                            <p class="text-xl font-semibold text-purple-600 dark:text-purple-400" id="quoteBindRate">19.4%</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Personal Objective -->
-                <div id="objective-personal" class="objective-card p-4 rounded-lg border border-gray-200 bg-gray-50 shadow-sm">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-3">Personal Objective: Complete First Marathon in November</h2>
+                <div id="objective-personal" class="objective-card p-4 rounded-lg border border-gray-200 bg-gray-50 shadow-sm" data-objective-id="personal">
+                    <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">Personal Objective: Complete First Marathon in November</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
-                            <p class="text-sm text-gray-500">Target Mileage (Training Plan)</p>
-                            <p class="text-xl font-semibold text-blue-600">300 miles</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Target Mileage (Training Plan)</p>
+                            <p class="text-xl font-semibold text-blue-600 dark:text-blue-400">300 miles</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">YTD Mileage (from Strava)</p>
-                            <p class="text-xl font-semibold text-green-600" id="ytdMileage">120 miles</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">YTD Mileage (from Strava)</p>
+                            <p class="text-xl font-semibold text-green-600 dark:text-green-400" id="ytdMileage">120 miles</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Training Progress</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Training Progress</p>
                             <div class="progress-bar mt-1">
                                 <div class="progress-fill" id="marathonProgressBar" style="width: 40%;"></div>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1"><span id="marathonPercentage">40</span>% of target</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1"><span id="marathonPercentage">40</span>% of target</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <p class="text-sm text-gray-500">Longest Run Achieved</p>
-                            <p class="text-xl font-semibold text-gray-700">10 miles</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Longest Run Achieved</p>
+                            <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">10 miles</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Avg. Weekly Runs</p>
-                            <p class="text-xl font-semibold text-green-600">3</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Avg. Weekly Runs</p>
+                            <p class="text-xl font-semibold text-green-600 dark:text-green-400">3</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Avg. Pace (min/mile)</p>
-                            <p class="text-xl font-semibold text-purple-600">10:30</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Avg. Pace (min/mile)</p>
+                            <p class="text-xl font-semibold text-purple-600 dark:text-purple-400">10:30</p>
                         </div>
                     </div>
                 </div>
@@ -218,68 +454,12 @@
 
             <!-- Active Playbook Journey Card -->
             <div class="card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4" id="activePlaybookTitle">Active Playbook: New Policy Acquisition Mastery</h2>
-                <p class="text-gray-600 mb-6" id="activePlaybookDescription">Your current focus to build a robust pipeline and convert prospects into clients. **(Aligned with 'Achieve 100 New Policies' Objective)**</p>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4" id="activePlaybookTitle">Active Playbook: [Select an Objective Above]</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-6" id="activePlaybookDescription">Click on an objective above to view its associated Playbook and track your progress.</p>
 
                 <!-- Dynamic Milestone/Task Content -->
                 <div id="playbookContent">
-                    <!-- Milestone: Generate 20 Qualified Leads This Week -->
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm mb-4">
-                        <h3 class="text-xl font-medium text-gray-700 mb-3">Milestone: Generate 20 Qualified Leads This Week</h3>
-                        <div class="progress-bar mb-3">
-                            <div id="leadsMilestoneProgress" class="progress-fill" style="width: 0%;"></div>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" id="task1" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
-                                <label for="task1" class="text-gray-700 flex-grow">Make 30 Outbound Calls</label>
-                                <input type="number" id="outboundCalls" placeholder="Calls Made" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" id="task2" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
-                                <label for="task2" class="text-gray-700 flex-grow">Send 25 Personalized Prospect Emails</label>
-                                <input type="number" id="prospectEmails" placeholder="Emails Sent" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" id="task3" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
-                                <label for="task3" class="text-gray-700 flex-grow">Engage with 5 Local Businesses</label>
-                                <input type="number" id="localBusinesses" placeholder="Engagements" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-3">*(IPaaS: Calls/Emails auto-logged from CRM. Business engagements manually input.)*</p>
-                    </div>
-
-                    <!-- AI Nudge Example within Playbook -->
-                    <div class="bg-blue-50 p-4 rounded-lg shadow-sm mb-4 border border-blue-200">
-                        <div class="flex items-start gap-3">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
-                            <div class="flex-grow">
-                                <p class="font-semibold text-blue-800 mb-1">Ndever Coach AI Suggestion:</p>
-                                <p class="text-sm text-blue-700">"Jane, your quote-to-bind rate for auto policies is slightly below your average. Consider reviewing the 'Presenting Value Over Price' recipe in your 'Conversion Techniques' Journey. I've added it to your queue."</p>
-                                <button class="text-blue-600 text-sm mt-2 hover:underline">View Recipe</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Milestone: Secure 5 Client Meetings This Week -->
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm mb-4">
-                        <h3 class="text-xl font-medium text-gray-700 mb-3">Milestone: Secure 5 Client Meetings This Week</h3>
-                        <div class="progress-bar mb-3">
-                            <div id="meetingsMilestoneProgress" class="progress-fill" style="width: 0%;"></div>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" id="task4" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
-                                <label for="task4" class="text-gray-700 flex-grow">Follow up on 15 Open Quotes</label>
-                                <input type="number" id="openQuotesFollowup" placeholder="Follow-ups" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" id="task5" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
-                                <label for="task5" class="text-gray-700 flex-grow">Conduct 2 Policy Review Calls</label>
-                                <input type="number" id="policyReviews" placeholder="Reviews" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
-                            </div>
-                        </div>
-                    </div>
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-10">Select an objective above to see its associated Playbook.</div>
                 </div>
             </div>
         </div>
@@ -287,27 +467,93 @@
         <!-- Right Column: Ndever Coach AI Chat -->
         <div class="lg:col-span-1">
             <div class="chat-window card">
-                <div class="text-xl font-bold text-gray-800 p-4 border-b border-gray-200">Ndever Coach AI</div>
+                <div class="text-xl font-bold text-gray-800 dark:text-white p-4 border-b border-gray-200 dark:border-gray-700">Ndever Coach AI</div>
                 <div id="chatBody" class="chat-body">
                     <!-- Initial AI message will be set by JS -->
                 </div>
                 <div class="chat-input-area">
-                    <input type="text" id="chatInput" placeholder="Ask Ndever Coach..." class="flex-grow p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                    <button id="sendChatBtn" class="bg-blue-500 text-white px-5 py-3 rounded-md hover:bg-blue-600 transition-colors">Send</button>
+                    <input type="text" id="chatInput" placeholder="Ask Ndever Coach..." class="flex-grow p-3 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
+                    <button id="sendChatBtn" class="bg-blue-500 text-white px-5 py-3 rounded-md hover:bg-blue-600 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700">Send</button>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Objective Detail Modal -->
+    <div id="objective-detail-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white" id="objective-detail-title"></h2>
+                <button id="close-objective-detail-btn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="overview">Overview</button>
+                    <button class="tab-button" data-tab="performance">Performance Breakdown</button>
+                    <button class="tab-button" data-tab="activities">Activity Contribution</button>
+                    <button class="tab-button" data-tab="insights">AI Insights</button>
+                </div>
+
+                <!-- Tab Content: Overview -->
+                <div id="tab-overview" class="tab-content">
+                    <p class="text-gray-600 dark:text-gray-400 mb-6" id="objective-detail-description"></p>
+                    <div class="metric-grid mb-8" id="overview-metrics-grid">
+                        <!-- Metrics will be dynamically loaded here -->
+                    </div>
+                    <div class="ai-insight-box">
+                        <p class="font-semibold text-green-800 dark:text-green-200 mb-2">Ndever Coach AI Insight:</p>
+                        <p class="text-gray-700 dark:text-gray-100" id="overview-ai-insight"></p>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Performance Breakdown -->
+                <div id="tab-performance" class="tab-content hidden">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Key Performance Indicators</h3>
+                    <div class="metric-grid mb-8" id="performance-metrics-grid">
+                        <!-- Metrics will be dynamically loaded here -->
+                    </div>
+                    <div class="ai-insight-box">
+                        <p class="font-semibold text-green-800 dark:text-green-200 mb-2">Ndever Coach AI Insight:</p>
+                        <p class="text-gray-700 dark:text-gray-100" id="performance-ai-insight"></p>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Activity Contribution -->
+                <div id="tab-activities" class="tab-content hidden">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Activities Contributing to Objective</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4" id="activities-description"></p>
+                    <div class="space-y-4" id="activities-list">
+                        <!-- Activities will be dynamically loaded here -->
+                    </div>
+                    <div class="ai-insight-box">
+                        <p class="font-semibold text-green-800 dark:text-green-200 mb-2">Ndever Coach AI Insight:</p>
+                        <p class="text-gray-700 dark:text-gray-100" id="activities-ai-insight"></p>
+                    </div>
+                </div>
+
+                <!-- Tab Content: AI Insights -->
+                <div id="tab-insights" class="tab-content hidden">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">AI-Driven Insights & Recommendations</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">Personalized recommendations from Ndever Coach AI to optimize your objective.</p>
+                    <div class="space-y-4" id="ai-insights-list">
+                        <!-- AI Insights will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- Data & Progress Simulation ---
-        const objectivesData = {
+        // --- DATA STRUCTURES ---
+        const userObjectivesData = {
             'business': {
                 title: 'Achieve 100 New Policies in Q3 2024',
-                description: 'Your current focus to build a robust pipeline and convert prospects into clients. **(Aligned with \'Achieve 100 New Policies\' Objective)**',
-                metrics: {
+                description: 'Your primary financial goal for the quarter, broken down into key performance indicators and tracking your progress towards predictable new policy acquisition.',
+                metrics: { // For main dashboard card display
                     targetPolicies: 100,
                     ytdPolicies: 35,
+                    policyProgress: 35,
+                    requiredQuotes: 500,
                     ytdQuotes: 180,
                     quoteBindRate: 19.4 // %
                 },
@@ -340,14 +586,48 @@
                         recipeLink: "View Recipe"
                     }
                 },
-                aiChatInitialMessage: "Good morning, Jane! Your business objective to achieve 100 New Policies in Q3 is currently highlighted, and you're 35% towards your target. How can I help you with your progress today?"
+                aiChatInitialMessage: "Good morning, Jane! Your business objective to achieve 100 New Policies in Q3 is currently highlighted, and you're 35% towards your target. How can I help you with your progress today?",
+                // --- Objective Detail Modal Data ---
+                overviewMetricsDetail: [
+                    { label: 'Target New Policies', value: '100', source: null },
+                    { label: 'Current YTD New Policies', value: '35', source: 'ipaas', sourceText: 'Auto-synced from AMS' },
+                    { label: 'Policy Progress', value: '35%', progress: 35, source: null },
+                    { label: 'Required Quotes', value: '500', source: null },
+                    { label: 'YTD Quotes Issued', value: '180', source: 'ipaas', sourceText: 'Auto-synced from Quoting Software' },
+                    { label: 'Quote-to-Bind Rate', value: '19.4%', source: 'ipaas', sourceText: 'Auto-synced from AMS' }
+                ],
+                overviewInsightDetail: "Your current pace of 35 new policies suggests you're slightly behind to hit 100 policies by quarter-end. We need to accelerate your quote-to-bind conversion or increase lead volume. Let's dive deeper into your sales efficiency.",
+                performanceMetricsDetail: [
+                    { label: 'Total Leads Generated', value: '250', source: 'ipaas', sourceText: 'Auto-synced from CRM' },
+                    { label: 'Lead-to-Quote Rate', value: '72%', source: 'ipaas', sourceText: 'Auto-calculated from CRM' },
+                    { label: 'Quote-to-Bind Rate', value: '19.4%', source: 'ipaas', sourceText: 'Auto-calculated from AMS' },
+                    { label: 'Avg. Days to Bind', value: '14 days', source: 'ipaas', sourceText: 'Auto-synced from AMS' },
+                    { label: 'Referral Policies (QTD)', value: '5', source: 'manual', sourceText: 'Manually Entered (from surveys)' },
+                    { label: 'Social Media Engagement (Avg. per post)', value: '85 interactions', source: 'ipaas', sourceText: 'Auto-synced from Social Analytics' }
+                ],
+                performanceInsightDetail: "Your Quote-to-Bind rate (19.4%) is below the top 20% of agents in your market (25%). This suggests an opportunity to refine your closing techniques. Consider focusing on the 'Presenting Value Over Price' recipe.",
+                activitiesDescriptionDetail: "How your daily actions are building towards your New Policies goal.",
+                activitiesDetail: [
+                    { title: 'Outbound Calls (Target: 30/week)', value: '25 calls logged this week', progress: 83, source: 'ipaas', sourceText: 'Auto-logged from CRM Dialer' },
+                    { title: 'Prospect Emails (Target: 25/week)', value: '20 emails sent this week', progress: 80, source: 'ipaas', sourceText: 'Auto-logged from Email Platform' },
+                    { title: 'Local Business Engagements (Target: 5/week)', value: '3 engagements this week', progress: 60, source: 'manual', sourceText: 'Manually Logged' }
+                ],
+                activitiesInsightDetail: "While your call and email volume is strong, your local business engagements are lagging. This might be impacting your community-based lead generation. Focus on hitting this target for the rest of the week.",
+                aiInsightsDetail: [
+                    { type: 'Insight', title: 'Conversion Rate Optimization', message: "Your AMS data shows your quote-to-bind rate is 19.4%, below the agency average of 25%. This indicates a need to refine your closing skills. Focus on presenting value over price.", action: { label: "View 'Presenting Value Over Price' Recipe", link: "#" } },
+                    { type: 'Recommendation', title: 'Cross-Selling Life Insurance', message: "Your client base has a high potential for cross-selling life insurance. I recommend the 'Identifying Life Insurance Needs' recipe to help you uncover these opportunities. Shall I add it to your current Playbook?", action: { label: "Add Recipe to Playbook", link: "#" } },
+                    { type: 'Proactive Alert', title: 'Policy Renewal Alert', message: "Client B's auto policy is due for renewal in 30 days. Consider a proactive check-in to ensure retention. I've drafted a personalized renewal email for you.", action: { label: "View Draft Renewal Email", link: "#" } },
+                    { type: 'AI-Recommended Coach', title: 'Certified Insurance Sales Coach (Ndever Marketplace)', message: "For personalized training and advanced sales strategies, consider a 1:1 session with a 'Certified Insurance Sales Coach' from the Ndever Marketplace. They can provide tailored advice.", action: { label: "Find Coach in Ndever Marketplace", link: "#" } },
+                    { type: 'AI-Recommended Training', title: 'Advanced Policy Underwriting Course (Ndever Marketplace)', message: "To deepen your product knowledge and improve quoting accuracy, explore the 'Advanced Policy Underwriting' online course via the Ndever Marketplace. This can boost your bind rate.", action: { label: "Explore Course in Ndever Marketplace", link: "#" } }
+                ]
             },
             'personal': {
                 title: 'Complete First Marathon in November',
-                description: 'Your current focus on building endurance and preparing for race day. **(Aligned with \'Complete First Marathon\' Objective)**',
-                metrics: {
+                description: 'This objective outlines your personal training journey, tracking mileage, pace, and recovery to ensure you\'re fully prepared for your first marathon.',
+                metrics: { // For main dashboard card display
                     targetMileage: 300,
                     ytdMileage: 120,
+                    marathonProgress: 40,
                     longestRun: 10,
                     avgWeeklyRuns: 3,
                     avgPace: "10:30"
@@ -357,7 +637,7 @@
                     description: 'Your current focus on building endurance and preparing for race day. **(Aligned with \'Complete First Marathon\' Objective)**',
                     milestones: [
                         {
-                            id: 'mileageMilestoneProgress', // Changed ID for clarity
+                            id: 'mileageMilestoneProgress',
                             title: 'Complete 30 Miles This Week',
                             tasks: [
                                 { id: 'task1', label: 'Long Run: 10 miles', valueInputId: 'longRunMiles', currentVal: 0, targetVal: 10 },
@@ -367,7 +647,7 @@
                             note: '*(IPaaS: Mileage auto-logged from Strava/Apple Health. Manual input for specific run types.)*'
                         },
                         {
-                            id: 'strengthMilestoneProgress', // Changed ID for clarity
+                            id: 'strengthMilestoneProgress',
                             title: 'Complete 3 Strength Sessions This Week',
                             tasks: [
                                 { id: 'task4', label: 'Strength Training Session 1', valueInputId: 'strengthSession1', currentVal: 0, targetVal: 60 },
@@ -381,11 +661,43 @@
                         recipeLink: "View Recipe"
                     }
                 },
-                aiChatInitialMessage: "Good morning, Jane! Your personal objective to complete your first marathon is currently highlighted, and you're 40% towards your 300-mile target. How was your long run this week?"
+                aiChatInitialMessage: "Good morning, Jane! Your personal objective to complete your first marathon is currently highlighted, and you're 40% towards your 300-mile target. How was your long run this week?",
+                // --- Objective Detail Modal Data ---
+                overviewMetricsDetail: [
+                    { label: 'Target Mileage (Training Plan)', value: '300 miles', source: null },
+                    { label: 'YTD Mileage (from Strava)', value: '120 miles', source: 'ipaas', sourceText: 'Auto-synced from Strava' },
+                    { label: 'Training Progress', value: '40%', progress: 40, source: null },
+                    { label: 'Longest Run Achieved', value: '10 miles', source: null },
+                    { label: 'Avg. Weekly Runs', value: '3', source: 'ipaas', sourceText: 'Auto-synced from Strava' },
+                    { label: 'Avg. Pace (min/mile)', value: '10:30', source: 'ipaas', sourceText: 'Auto-synced from Strava' }
+                ],
+                overviewInsightDetail: "Your current mileage of 120 miles puts you at 40% of your 300-mile target. Consistency is key for marathon training. Let's ensure your weekly mileage targets are realistic and sustainable.",
+                performanceMetricsDetail: [
+                    { label: 'Avg. Long Run Pace', value: '9:45 min/mile', source: 'ipaas', sourceText: 'Auto-calculated from Strava' },
+                    { label: 'Avg. Tempo Run Pace', value: '8:30 min/mile', source: 'ipaas', sourceText: 'Auto-calculated from Strava' },
+                    { label: 'Weekly Mileage Consistency', value: '85%', source: 'ipaas', sourceText: 'Auto-calculated from Strava' },
+                    { label: 'Strength Sessions (Last 4 weeks)', value: '8', source: 'manual', sourceText: 'Manually Logged' },
+                    { label: 'Recovery Days Adhered', value: '90%', source: 'manual', sourceText: 'Manually Logged' }
+                ],
+                performanceInsightDetail: "Your average pace on tempo runs has slowed slightly. This might indicate fatigue or a need to adjust your training intensity. Consider reviewing your recovery strategies.",
+                activitiesDescriptionDetail: "Your weekly training activities contributing to your marathon goal.",
+                activitiesDetail: [
+                    { title: 'Long Run (Target: 10 miles)', value: '8 miles completed this week', progress: 80, source: 'ipaas', sourceText: 'Auto-logged from Strava' },
+                    { title: 'Tempo Run (Target: 5 miles)', value: '3 miles completed this week', progress: 60, source: 'ipaas', sourceText: 'Auto-logged from Strava' },
+                    { title: 'Strength Training (Target: 1 session)', value: '1 session completed this week', progress: 100, source: 'manual', sourceText: 'Manually Logged' }
+                ],
+                activitiesInsightDetail: "While your long run is progressing, your tempo run mileage is behind target. This could impact your race pace. Try to prioritize that tempo run this week.",
+                aiInsightsDetail: [
+                    { type: 'Insight', title: 'Pace Optimization', message: "Your Strava data suggests you could benefit from more targeted speed work to hit your race pace goal. Consider adding an extra interval session per week.", action: { label: "View 'Interval Training' Recipe", link: "#" } },
+                    { type: 'Recommendation', title: 'Injury Prevention Focus', message: "Your weekly mileage is increasing rapidly. To prevent injury, I recommend the 'Pre-Run Dynamic Stretches' recipe and ensuring adequate post-run recovery. Shall I add it to your current Playbook?", action: { label: "Add Recipe to Playbook", link: "#" } },
+                    { type: 'Proactive Alert', title: 'Hydration Check', message: "Based on your activity levels and weather data, you might be at risk of dehydration. Remember to track your water intake today.", action: { label: "Log Water Intake", link: "#" } },
+                    { type: 'AI-Recommended Coach', title: 'Certified Running Coach (Ndever Marketplace)', message: "For personalized training and injury prevention, consider a 1:1 session with a 'Certified Running Coach' from the Ndever Marketplace. They can provide tailored advice.", action: { label: "Find Coach in Ndever Marketplace", link: "#" } },
+                    { type: 'AI-Recommended Training', title: 'Sports Nutritionist (Ndever Marketplace)', message: "To optimize your performance and recovery, explore connecting with a 'Sports Nutritionist' via the Ndever Marketplace. Proper fueling is crucial for marathon training.", action: { label: "Find Nutritionist in Ndever Marketplace", link: "#" } }
+                ]
             }
         };
 
-        let currentObjectiveId = 'personal'; // Default active objective
+        let currentObjectiveId = 'business'; // Default active objective for Insurance Agent
 
         const objectiveBusinessCard = document.getElementById('objective-business');
         const objectivePersonalCard = document.getElementById('objective-personal');
@@ -398,26 +710,48 @@
         const chatInput = document.getElementById('chatInput');
         const sendChatBtn = document.getElementById('sendChatBtn');
 
+        // --- Objective Detail Modal Elements ---
+        const objectiveDetailModal = document.getElementById('objective-detail-modal');
+        const closeObjectiveDetailBtn = document.getElementById('close-objective-detail-btn');
+        const objectiveDetailTitle = document.getElementById('objective-detail-title');
+        const objectiveDetailDescription = document.getElementById('objective-detail-description');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        const overviewMetricsGrid = document.getElementById('overview-metrics-grid');
+        const overviewAiInsight = document.getElementById('overview-ai-insight');
+        const performanceMetricsGrid = document.getElementById('performance-metrics-grid');
+        const performanceAiInsight = document.getElementById('performance-ai-insight');
+        const activitiesDescription = document.getElementById('activities-description');
+        const activitiesList = document.getElementById('activities-list');
+        const activitiesAiInsight = document.getElementById('activities-ai-insight');
+        const aiInsightsList = document.getElementById('ai-insights-list');
+
+
+        // --- FUNCTIONS ---
+
         /**
-         * Renders the metrics for a given objective.
-         * @param {string} objectiveId - The ID of the objective ('business' or 'personal').
+         * Renders the metrics for a given objective's main dashboard card.
+         * This function is called on initial load and when objectives are switched.
          */
-        function renderObjectiveMetrics(objectiveId) {
-            const obj = objectivesData[objectiveId];
-            if (objectiveId === 'business') {
-                const policyPercentage = (obj.metrics.ytdPolicies / obj.metrics.targetPolicies) * 100;
-                document.getElementById('ytdPolicies').textContent = obj.metrics.ytdPolicies;
-                document.getElementById('policyProgressBar').style.width = `${Math.min(policyPercentage, 100)}%`;
-                document.getElementById('policyPercentage').textContent = policyPercentage.toFixed(0);
-                document.getElementById('ytdQuotes').textContent = obj.metrics.ytdQuotes;
-                document.getElementById('quoteBindRate').textContent = `${obj.metrics.quoteBindRate}%`;
-            } else if (objectiveId === 'personal') {
-                const marathonPercentage = (obj.metrics.ytdMileage / obj.metrics.targetMileage) * 100;
-                document.getElementById('ytdMileage').textContent = `${obj.metrics.ytdMileage} miles`;
-                document.getElementById('marathonProgressBar').style.width = `${Math.min(marathonPercentage, 100)}%`;
-                document.getElementById('marathonPercentage').textContent = marathonPercentage.toFixed(0);
-            }
+        function renderMainDashboardObjectiveMetrics() {
+            // Business Objective Metrics
+            const businessObj = userObjectivesData.business;
+            const policyPercentage = (businessObj.metrics.ytdPolicies / businessObj.metrics.targetPolicies) * 100;
+            document.getElementById('ytdPolicies').textContent = businessObj.metrics.ytdPolicies;
+            document.getElementById('policyProgressBar').style.width = `${Math.min(policyPercentage, 100)}%`;
+            document.getElementById('policyPercentage').textContent = policyPercentage.toFixed(0);
+            document.getElementById('ytdQuotes').textContent = businessObj.metrics.ytdQuotes;
+            document.getElementById('quoteBindRate').textContent = `${businessObj.metrics.quoteBindRate}%`;
+
+            // Personal Objective Metrics
+            const personalObj = userObjectivesData.personal;
+            const marathonPercentage = (personalObj.metrics.ytdMileage / personalObj.metrics.targetMileage) * 100;
+            document.getElementById('ytdMileage').textContent = `${personalObj.metrics.ytdMileage} miles`;
+            document.getElementById('marathonProgressBar').style.width = `${Math.min(marathonPercentage, 100)}%`;
+            document.getElementById('marathonPercentage').textContent = marathonPercentage.toFixed(0);
         }
+
 
         /**
          * Renders the milestones and tasks for the active playbook.
@@ -430,7 +764,7 @@
                 const milestoneDiv = document.createElement('div');
                 milestoneDiv.className = 'bg-gray-50 p-4 rounded-lg shadow-sm mb-4';
                 milestoneDiv.innerHTML = `
-                    <h3 class="text-xl font-medium text-gray-700 mb-3">Milestone: ${milestone.title}</h3>
+                    <h3 class="text-xl font-medium text-gray-700 dark:text-gray-200 mb-3">Milestone: ${milestone.title}</h3>
                     <div class="progress-bar mb-3">
                         <div id="${milestone.id}" class="progress-fill" style="width: 0%;"></div>
                     </div>
@@ -438,12 +772,12 @@
                         ${milestone.tasks.map(task => `
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="${task.id}" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
-                                <label for="${task.id}" class="text-gray-700 flex-grow">${task.label}</label>
-                                ${task.valueInputId ? `<input type="number" id="${task.valueInputId}" placeholder="${task.label.split(':')[0].trim()}" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="${task.currentVal}">` : ''}
+                                <label for="${task.id}" class="text-gray-700 dark:text-gray-200 flex-grow">${task.label}</label>
+                                ${task.valueInputId ? `<input type="number" id="${task.valueInputId}" placeholder="${task.label.split(':')[0].trim()}" class="w-28 p-2 border border-gray-300 rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" min="0" value="${task.currentVal}">` : ''}
                             </div>
                         `).join('')}
                     </div>
-                    ${milestone.note ? `<p class="text-xs text-gray-500 mt-3">${milestone.note}</p>` : ''}
+                    ${milestone.note ? `<p class="text-xs text-gray-500 dark:text-gray-400 mt-3">${milestone.note}</p>` : ''}
                 `;
                 playbookContentDiv.appendChild(milestoneDiv);
             });
@@ -454,11 +788,11 @@
                 aiNudgeDiv.className = 'bg-blue-50 p-4 rounded-lg shadow-sm mb-4 border border-blue-200';
                 aiNudgeDiv.innerHTML = `
                     <div class="flex items-start gap-3">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-content-center text-white font-bold text-sm">AI</div>
                         <div class="flex-grow">
-                            <p class="font-semibold text-blue-800 mb-1">Ndever Coach AI Suggestion:</p>
-                            <p class="text-sm text-blue-700">"${playbook.aiNudge.message}"</p>
-                            <button class="text-blue-600 text-sm mt-2 hover:underline">${playbook.aiNudge.recipeLink}</button>
+                            <p class="font-semibold text-blue-800 dark:text-blue-200 mb-1">Ndever Coach AI Suggestion:</p>
+                            <p class="text-sm text-blue-700 dark:text-blue-100">"${playbook.aiNudge.message}"</p>
+                            <button class="text-blue-600 text-sm mt-2 hover:underline dark:text-blue-400">${playbook.aiNudge.recipeLink}</button>
                         </div>
                     </div>
                 `;
@@ -475,7 +809,7 @@
                     if (task.valueInputId) {
                         const input = document.getElementById(task.valueInputId);
                         if (input) {
-                            input.addEventListener('input', updateMilestoneProgress); // Input changes also update progress
+                            input.addEventListener('input', updateMilestoneProgress);
                         }
                     }
                 });
@@ -485,7 +819,7 @@
 
         /**
          * Sets the active objective, updates UI, and refreshes chat.
-         * @param {string} objectiveId - The ID of the objective to activate ('business' or 'personal').
+         * @param {string} objectiveId - The ID of the objective ('business' or 'personal').
          */
         function setActiveObjective(objectiveId) {
             // Remove highlight from all objective cards
@@ -502,7 +836,7 @@
             currentObjectiveId = objectiveId; // Update global active objective
 
             // Update Active Playbook section
-            const activeObjective = objectivesData[currentObjectiveId];
+            const activeObjective = userObjectivesData[currentObjectiveId];
             activePlaybookTitle.textContent = `Active Playbook: ${activeObjective.playbook.title}`;
             activePlaybookDescription.innerHTML = activeObjective.playbook.description;
             renderPlaybookContent(activeObjective.playbook);
@@ -518,7 +852,7 @@
 
         // --- Milestone Progress Update Logic ---
         function updateMilestoneProgress() {
-            const activeObjective = objectivesData[currentObjectiveId];
+            const activeObjective = userObjectivesData[currentObjectiveId];
             activeObjective.playbook.milestones.forEach(milestone => {
                 let completedTasks = 0;
                 let totalTasks = milestone.tasks.length;
@@ -530,7 +864,7 @@
                 });
                 const progress = (completedTasks / totalTasks) * 100;
                 const progressBar = document.getElementById(milestone.id);
-                if (progressBar) { // Ensure the progress bar exists for the current playbook
+                if (progressBar) {
                     progressBar.style.width = `${progress}%`;
                 }
             });
@@ -543,7 +877,7 @@
 
             if (sender === 'ai') {
                 const aiIcon = document.createElement('div');
-                aiIcon.className = 'flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm';
+                aiIcon.className = 'flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-content-center text-white font-bold text-sm';
                 aiIcon.textContent = 'AI';
                 messageWrapper.appendChild(aiIcon);
 
@@ -557,7 +891,6 @@
                 userMessageDiv.textContent = text;
                 messageWrapper.appendChild(userMessageDiv);
             }
-            chatBody.appendChild(messageWrapper);
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
@@ -568,7 +901,8 @@
                 chatInput.value = '';
 
                 setTimeout(() => {
-                    let aiResponse = "Thanks for your message! Your Ndever Coach is reviewing your data and will provide a tailored response shortly.";
+                    let aiResponse = "I'm processing your request. Please hold while I consult your data.";
+
                     if (currentObjectiveId === 'business') {
                         if (message.toLowerCase().includes("bind rate") || message.toLowerCase().includes("closing")) {
                             aiResponse = "I understand your concern about your bind rate. Your AMS data shows your quote volume is strong, but your quote-to-bind rate is 19.4%, which is below the agency average of 25%. Let's focus on improving your closing techniques. Would you like me to pull up the 'Presenting Value Over Price' recipe from your Playbook?";
@@ -576,6 +910,10 @@
                             aiResponse = "I understand your concern about leads. Based on your current objective and AMS data, we need to boost your qualified lead count. Let's explore some strategies. Would you like to review the 'Optimizing Digital Prospecting' recipe?";
                         } else if (message.toLowerCase().includes("cross-selling")) {
                             aiResponse = "Cross-selling is a great way to boost policy count! I recommend the 'Identifying Life Insurance Needs' recipe. I can also initiate a quick role-play simulation with you right here. Shall we try that?";
+                        } else if (message.toLowerCase().includes("quotes")) {
+                             aiResponse = "I see your YTD quotes are at 180. That's good volume! Are you looking for ways to increase quote accuracy or speed up the quoting process?";
+                        } else if (message.toLowerCase().includes("policies")) {
+                            aiResponse = "You've bound 35 policies so far this quarter, which is 35% of your target. What's one challenge you're facing right now in getting more policies bound?";
                         }
                     } else if (currentObjectiveId === 'personal') {
                         if (message.toLowerCase().includes("pace") || message.toLowerCase().includes("speed")) {
@@ -584,10 +922,16 @@
                             aiResponse = "For knee pain, I recommend the 'Strength & Stability Exercises for Runners' recipe. I can also initiate a quick form check with you right here. Shall we try that?";
                         } else if (message.toLowerCase().includes("long run")) {
                             aiResponse = "How was your last long run? Remember consistency is key for endurance building. Do you want to review your next week's training plan?";
+                        } else if (message.toLowerCase().includes("mileage")) {
+                            aiResponse = `You've completed ${userObjectivesData.personal.metrics.ytdMileage} miles so far, which is 40% of your ${userObjectivesData.personal.metrics.targetMileage} mile target. Keep up the great work! Is there anything making it hard to hit your weekly mileage goals?`;
+                        } else if (message.toLowerCase().includes("training plan")) {
+                            aiResponse = "I can definitely help with your training plan. Are you looking to adjust your weekly mileage, add more speed work, or focus on recovery?";
+                        } else {
+                            aiResponse = "I'm here to help with your marathon training. Please ask me about mileage, pace, or injury prevention.";
                         }
                     }
                     addMessage('ai', aiResponse);
-                }, 1500); // Simulate network delay
+                }, 1500);
             }
         });
 
@@ -597,9 +941,124 @@
             }
         });
 
-        // Initial setup: activate the personal objective by default
-        setActiveObjective('personal');
-        updateObjectiveDisplay(); // Update all objective metrics on load
+        // --- Objective Detail Modal Functions ---
+        function openObjectiveDetail(objectiveId) {
+            const data = userObjectivesData[objectiveId];
+            if (!data) return;
+
+            objectiveDetailTitle.textContent = data.title;
+            objectiveDetailDescription.textContent = data.description;
+
+            // Render Overview Tab
+            renderMetrics(data.overviewMetricsDetail, overviewMetricsGrid);
+            overviewAiInsight.textContent = data.overviewInsightDetail;
+
+            // Render Performance Breakdown Tab
+            renderMetrics(data.performanceMetricsDetail, performanceMetricsGrid);
+            performanceAiInsight.textContent = data.performanceInsightDetail;
+
+            // Render Activity Contribution Tab
+            activitiesDescription.textContent = data.activitiesDescriptionDetail;
+            renderActivities(data.activitiesDetail, activitiesList);
+            activitiesAiInsight.textContent = data.activitiesInsightDetail;
+
+            // Render AI Insights Tab
+            renderAiInsights(data.aiInsightsDetail, aiInsightsList);
+
+            objectiveDetailModal.classList.add('show');
+            showTab('overview'); // Default to overview tab
+        }
+
+        function closeObjectiveDetail() {
+            objectiveDetailModal.classList.remove('show');
+        }
+
+        function showTab(tabId) {
+            tabContents.forEach(content => content.classList.add('hidden'));
+            tabButtons.forEach(button => button.classList.remove('active'));
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        function renderMetrics(metricsArray, targetGrid) {
+            targetGrid.innerHTML = ''; // Clear existing metrics
+            metricsArray.forEach(metric => {
+                const metricBox = document.createElement('div');
+                metricBox.className = 'metric-box';
+                let progressBarHtml = '';
+                if (metric.progress !== undefined) {
+                    progressBarHtml = `
+                        <div class="progress-bar-sm w-full mt-2">
+                            <div class="progress-fill-sm" style="width: ${metric.progress}%;"></div>
+                        </div>
+                    `;
+                }
+                let sourceTagHtml = '';
+                if (metric.source) {
+                    sourceTagHtml = `<span class="data-source-tag ${metric.source}">${metric.sourceText}</span>`;
+                }
+
+                metricBox.innerHTML = `
+                    <p class="text-sm text-gray-500 dark:text-gray-400">${metric.label}</p>
+                    <p class="text-2xl font-bold ${metric.source === 'ipaas' ? 'text-green-600 dark:text-green-400' : (metric.source === 'manual' ? 'text-gray-700 dark:text-gray-200' : 'text-blue-600 dark:text-blue-400')}">${metric.value}</p>
+                    ${sourceTagHtml}
+                    ${progressBarHtml}
+                `;
+                targetGrid.appendChild(metricBox);
+            });
+        }
+
+        function renderActivities(activitiesArray, targetList) {
+            targetList.innerHTML = ''; // Clear existing activities
+            activitiesArray.forEach(activity => {
+                const activityDiv = document.createElement('div');
+                activityDiv.className = 'bg-gray-50 p-4 rounded-lg';
+                let progressBarHtml = '';
+                if (activity.progress !== undefined) {
+                    progressBarHtml = `
+                        <div class="progress-bar-sm w-full mt-2">
+                            <div class="progress-fill-sm" style="width: ${activity.progress}%;"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">${activity.progress}% of weekly target</p>
+                    `;
+                }
+                let sourceTagHtml = '';
+                if (activity.source) {
+                    sourceTagHtml = `<span class="data-source-tag ${activity.source}">${activity.sourceText}</span>`;
+                }
+
+                activityDiv.innerHTML = `
+                    <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">${activity.title}</h4>
+                    <p class="text-lg font-bold text-blue-600 dark:text-blue-400">${activity.value}</p>
+                    ${sourceTagHtml}
+                    ${progressBarHtml}
+                `;
+                targetList.appendChild(activityDiv);
+            });
+        }
+
+        function renderAiInsights(insightsArray, targetList) {
+            targetList.innerHTML = ''; // Clear existing insights
+            insightsArray.forEach(insight => {
+                const insightDiv = document.createElement('div');
+                insightDiv.className = 'bg-blue-50 p-4 rounded-lg border border-blue-200';
+                let actionButtonHtml = '';
+                if (insight.action) {
+                    actionButtonHtml = `<button class="text-blue-600 text-sm mt-2 hover:underline dark:text-blue-400">${insight.action.label}</button>`;
+                }
+                insightDiv.innerHTML = `
+                    <p class="font-semibold text-blue-800 dark:text-blue-200 mb-2">${insight.type}: ${insight.title}</p>
+                    <p class="text-sm text-blue-700 dark:text-blue-100">${insight.message}</p>
+                    ${actionButtonHtml}
+                `;
+                targetList.appendChild(insightDiv);
+            });
+        }
+
+        // Initial setup on page load
+        setActiveObjective('business'); // Set default active objective on dashboard
+        renderMainDashboardObjectiveMetrics(); // Render metrics for both objectives on load
     </script>
 </body>
 </html>
