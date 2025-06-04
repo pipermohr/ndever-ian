@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ndever Coach: AI-Native Insurance Agent Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            padding: 24px;
+        }
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            border-radius: 4px;
+            transition: width 0.3s ease-in-out;
+        }
+        .chat-window {
+            height: 500px; /* Fixed height for demo */
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #f8fafc; /* Light blue-gray for chat background */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .chat-body {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-input-area {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0; /* Light gray border */
+            display: flex;
+            gap: 12px;
+            background-color: white;
+        }
+        .chat-message {
+            max-width: 85%;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .chat-message.user {
+            background-color: #dbeafe; /* blue-100 */
+            align-self: flex-end;
+            color: #1e40af; /* blue-800 */
+        }
+        .chat-message.ai {
+            background-color: #ecfdf5; /* green-50 */
+            align-self: flex-start;
+            color: #065f46; /* green-800 */
+            position: relative;
+        }
+        .ai-icon {
+            position: absolute;
+            left: -32px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background-color: #10b981; /* green-500 */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .ai-message-bubble {
+            background-color: #ecfdf5; /* green-50 */
+            padding: 10px 16px;
+            border-radius: 18px;
+            position: relative;
+            margin-left: 40px; /* Space for icon */
+        }
+        .ai-message-bubble::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 15px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 10px solid #ecfdf5;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div class="text-2xl font-bold text-gray-800">Ndever Coach</div>
+        <nav class="space-x-4">
+            <span class="text-gray-600 font-medium">Welcome, Jane Smith (Insurance Agent)</span>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">Logout</button>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Left Column: Objectives & Playbook -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <!-- My Active Objectives Card (Multiple 'Objective' objects) -->
+            <div class="card">
+                <h1 class="text-2xl font-bold text-gray-800 mb-4">My Active Objectives</h1>
+                <p class="text-gray-600 mb-6">Your primary business and personal goals, broken down into key performance indicators. **(Data auto-synced via IPaaS)**</p>
+
+                <!-- Business Objective - HIGHLIGHTED -->
+                <div class="mb-8 p-4 rounded-lg border-2 border-blue-500 bg-blue-50 shadow-md">
+                    <h2 class="text-xl font-semibold text-blue-800 mb-3">Business Objective: Achieve 100 New Policies in Q3 2024</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Target New Policies</p>
+                            <p class="text-xl font-semibold text-blue-600">100</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">YTD New Policies (from AMS)</p>
+                            <p class="text-xl font-semibold text-green-600" id="ytdPolicies">35</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Policy Progress</p>
+                            <div class="progress-bar mt-1">
+                                <div class="progress-fill" id="policyProgressBar" style="width: 35%;"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1"><span id="policyPercentage">35</span>% of target</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Required Quotes</p>
+                            <p class="text-xl font-semibold text-gray-700">500</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">YTD Quotes (from Quoting Software)</p>
+                            <p class="text-xl font-semibold text-green-600" id="ytdQuotes">180</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Quote-to-Bind Rate (from AMS)</p>
+                            <p class="text-xl font-semibold text-purple-600" id="quoteBindRate">19.4%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Objective -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-3">Personal Objective: Complete First Marathon in November</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Target Mileage (Training Plan)</p>
+                            <p class="text-xl font-semibold text-blue-600">300 miles</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">YTD Mileage (from Strava)</p>
+                            <p class="text-xl font-semibold text-green-600" id="ytdMileage">120 miles</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Training Progress</p>
+                            <div class="progress-bar mt-1">
+                                <div class="progress-fill" id="marathonProgressBar" style="width: 40%;"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1"><span id="marathonPercentage">40</span>% of target</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Longest Run Achieved</p>
+                            <p class="text-xl font-semibold text-gray-700">10 miles</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Avg. Weekly Runs</p>
+                            <p class="text-xl font-semibold text-green-600">3</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Avg. Pace (min/mile)</p>
+                            <p class="text-xl font-semibold text-purple-600">10:30</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Playbook Journey Card -->
+            <div class="card">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Active Playbook: New Policy Acquisition Mastery</h2>
+                <p class="text-gray-600 mb-6">Your current focus to build a robust pipeline and convert prospects into clients.</p>
+
+                <!-- Milestone: Generate 20 Qualified Leads This Week -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow-sm mb-4">
+                    <h3 class="text-xl font-medium text-gray-700 mb-3">Milestone: Generate 20 Qualified Leads This Week</h3>
+                    <div class="progress-bar mb-3">
+                        <div id="leadsMilestoneProgress" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="task1" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
+                            <label for="task1" class="text-gray-700 flex-grow">Make 30 Outbound Calls</label>
+                            <input type="number" id="outboundCalls" placeholder="Calls Made" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="task2" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
+                            <label for="task2" class="text-gray-700 flex-grow">Send 25 Personalized Prospect Emails</label>
+                            <input type="number" id="prospectEmails" placeholder="Emails Sent" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="task3" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
+                            <label for="task3" class="text-gray-700 flex-grow">Engage with 5 Local Businesses</label>
+                            <input type="number" id="localBusinesses" placeholder="Engagements" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3">*(IPaaS: Calls/Emails auto-logged from CRM. Business engagements manually input.)*</p>
+                </div>
+
+                <!-- AI Nudge Example within Playbook -->
+                <div class="bg-blue-50 p-4 rounded-lg shadow-sm mb-4 border border-blue-200">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-blue-800 mb-1">Ndever Coach AI Suggestion:</p>
+                            <p class="text-sm text-blue-700">"Jane, your quote-to-bind rate for auto policies is slightly below your average. Consider reviewing the 'Presenting Value Over Price' recipe in your 'Conversion Techniques' Journey. I've added it to your queue."</p>
+                            <button class="text-blue-600 text-sm mt-2 hover:underline">View Recipe</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Milestone: Secure 5 Client Meetings This Week -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow-sm mb-4">
+                    <h3 class="text-xl font-medium text-gray-700 mb-3">Milestone: Secure 5 Client Meetings This Week</h3>
+                    <div class="progress-bar mb-3">
+                        <div id="meetingsMilestoneProgress" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="task4" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
+                            <label for="task4" class="text-gray-700 flex-grow">Follow up on 15 Open Quotes</label>
+                            <input type="number" id="openQuotesFollowup" placeholder="Follow-ups" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="task5" class="form-checkbox h-5 w-5 text-blue-600 rounded-md">
+                            <label for="task5" class="text-gray-700 flex-grow">Conduct 2 Policy Review Calls</label>
+                            <input type="number" id="policyReviews" placeholder="Reviews" class="w-28 p-2 border border-gray-300 rounded-md text-sm" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Ndever Coach AI Chat -->
+        <div class="lg:col-span-1">
+            <div class="chat-window card">
+                <div class="text-xl font-bold text-gray-800 p-4 border-b border-gray-200">Ndever Coach AI</div>
+                <div id="chatBody" class="chat-body">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                        <div class="ai-message-bubble">
+                            <p>Good morning, Jane! I see you're tracking two key objectives: your business goal of 100 New Policies in Q3 (35% complete) and your personal goal to complete your first marathon (40% complete). How can I help you with your progress today?</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start justify-end gap-3">
+                        <div class="chat-message user">I'm getting lots of quotes out, but my bind rate feels low.</div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                        <div class="ai-message-bubble">
+                            <p>I understand. Your AMS data shows your quote volume is strong, but your quote-to-bind rate is 19.4%, which is below the agency average of 25%. Let's focus on improving your closing techniques. Would you like me to pull up the 'Overcoming Price Objections' recipe from your Playbook?</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start justify-end gap-3">
+                        <div class="chat-message user">Yes, please! And any tips on cross-selling life insurance?</div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                        <div class="ai-message-bubble">
+                            <p>Excellent! I've added 'Overcoming Price Objections' to your current Milestone. For cross-selling life insurance, I recommend the 'Identifying Life Insurance Needs' recipe. I can also initiate a quick role-play simulation with you right here. Shall we try that?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Ask Ndever Coach..." class="flex-grow p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <button id="sendChatBtn" class="bg-blue-500 text-white px-5 py-3 rounded-md hover:bg-blue-600 transition-colors">Send</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- Data & Progress Simulation ---
+        const objectives = {
+            business: {
+                targetPolicies: 100,
+                ytdPolicies: 35,
+                ytdQuotes: 180,
+                quoteBindRate: 19.4 // %
+            },
+            personal: {
+                targetMileage: 300,
+                ytdMileage: 120,
+                longestRun: 10,
+                avgWeeklyRuns: 3,
+                avgPace: "10:30"
+            }
+        };
+
+        const tasks = [
+            { id: 'task1', milestoneId: 'leadsMilestoneProgress', valueInputId: 'outboundCalls', currentVal: 0, targetVal: 30 },
+            { id: 'task2', milestoneId: 'leadsMilestoneProgress', valueInputId: 'prospectEmails', currentVal: 0, targetVal: 25 },
+            { id: 'task3', milestoneId: 'leadsMilestoneProgress', valueInputId: 'localBusinesses', currentVal: 0, targetVal: 5 },
+            { id: 'task4', milestoneId: 'meetingsMilestoneProgress', valueInputId: 'openQuotesFollowup', currentVal: 0, targetVal: 15 },
+            { id: 'task5', milestoneId: 'meetingsMilestoneProgress', valueInputId: 'policyReviews', currentVal: 0, targetVal: 2 }
+        ];
+
+        const milestones = {
+            'leadsMilestoneProgress': { taskIds: ['task1', 'task2', 'task3'] },
+            'meetingsMilestoneProgress': { taskIds: ['task4', 'task5'] }
+        };
+
+        function updateObjectiveDisplay() {
+            // Business Objective
+            const policyPercentage = (objectives.business.ytdPolicies / objectives.business.targetPolicies) * 100;
+            document.getElementById('ytdPolicies').textContent = objectives.business.ytdPolicies;
+            document.getElementById('policyProgressBar').style.width = `${Math.min(policyPercentage, 100)}%`;
+            document.getElementById('policyPercentage').textContent = policyPercentage.toFixed(0);
+            document.getElementById('ytdQuotes').textContent = objectives.business.ytdQuotes;
+            document.getElementById('quoteBindRate').textContent = `${objectives.business.quoteBindRate}%`;
+
+            // Personal Objective
+            const marathonPercentage = (objectives.personal.ytdMileage / objectives.personal.targetMileage) * 100;
+            document.getElementById('ytdMileage').textContent = `${objectives.personal.ytdMileage} miles`;
+            document.getElementById('marathonProgressBar').style.width = `${Math.min(marathonPercentage, 100)}%`;
+            document.getElementById('marathonPercentage').textContent = marathonPercentage.toFixed(0);
+        }
+
+        function updateMilestoneProgress() {
+            for (const milestoneId in milestones) {
+                const milestone = milestones[milestoneId];
+                let completedTasks = 0;
+                let totalTasks = milestone.taskIds.length;
+
+                milestone.taskIds.forEach(taskId => {
+                    const taskElement = document.getElementById(taskId);
+                    if (taskElement && taskElement.checked) {
+                        completedTasks++;
+                    }
+                });
+                const progress = (completedTasks / totalTasks) * 100;
+                document.getElementById(milestoneId).style.width = `${progress}%`;
+            }
+        }
+
+        // --- Event Listeners for Task Inputs ---
+        tasks.forEach(task => {
+            const checkbox = document.getElementById(task.id);
+            if (checkbox) {
+                checkbox.addEventListener('change', updateMilestoneProgress);
+            }
+            if (task.valueInputId) {
+                const input = document.getElementById(task.valueInputId);
+                if (input) {
+                    input.addEventListener('input', (e) => {
+                        task.currentVal = parseInt(e.target.value) || 0;
+                        // In a real app, this input would trigger IPaaS sync and objective updates.
+                        // For this demo, we just update the input's value.
+                    });
+                }
+            }
+        });
+
+        // Initial render
+        updateObjectiveDisplay();
+        updateMilestoneProgress();
+
+        // --- AI Chat Simulation Logic ---
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+
+        function addMessage(sender, text) {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = `flex items-start gap-3 ${sender === 'user' ? 'justify-end' : ''}`;
+
+            if (sender === 'ai') {
+                const aiIcon = document.createElement('div');
+                aiIcon.className = 'flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm';
+                aiIcon.textContent = 'AI';
+                messageWrapper.appendChild(aiIcon);
+
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'ai-message-bubble';
+                aiBubble.innerHTML = `<p>${text}</p>`;
+                messageWrapper.appendChild(aiBubble);
+            } else {
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'chat-message user';
+                userMessageDiv.textContent = text;
+                messageWrapper.appendChild(userMessageDiv);
+            }
+            chatBody.appendChild(messageWrapper);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        sendChatBtn.addEventListener('click', () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage('user', message);
+                chatInput.value = '';
+
+                // Simulate AI response (Concierge MVP: human-driven, but designed to look AI-native)
+                setTimeout(() => {
+                    let aiResponse = "Thanks for your message! Your Ndever Coach is reviewing your data and will provide a tailored response shortly.";
+                    if (message.toLowerCase().includes("bind rate") || message.toLowerCase().includes("closing")) {
+                        aiResponse = "I understand your concern about your bind rate. Your AMS data shows your quote volume is strong, but your quote-to-bind rate is 19.4%, which is below the agency average of 25%. Let's focus on improving your closing techniques. Would you like me to pull up the 'Presenting Value Over Price' recipe from your Playbook?";
+                    } else if (message.toLowerCase().includes("leads")) {
+                        aiResponse = "I understand your concern about leads. Based on your current objective and AMS data, we need to boost your qualified lead count. Let's explore some strategies. Would you like to review the 'Optimizing Digital Prospecting' recipe?";
+                    } else if (message.toLowerCase().includes("cross-selling")) {
+                        aiResponse = "Cross-selling is a great way to boost policy count! I recommend the 'Identifying Life Insurance Needs' recipe. I can also initiate a quick role-play simulation with you right here. Shall we try that?";
+                    } else if (message.toLowerCase().includes("marathon") || message.toLowerCase().includes("running")) {
+                        aiResponse = "Great progress on your marathon training! You're at 40% of your target mileage. How was your last long run? Do you want to review your next week's training plan?";
+                    }
+                    addMessage('ai', aiResponse);
+                }, 1500); // Simulate network delay
+            }
+        });
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendChatBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
