@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ndever Agent Dashboard</title>
+    <title>Ndever Agency Dashboard</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
@@ -60,7 +60,13 @@
         function App() {
           const [objectives, setObjectives] = React.useState([]);
           const [automations, setAutomations] = React.useState([]);
-          const [kpis, setKpis] = React.useState({});
+          // Initialize kpis with default structure to prevent "undefined" errors
+          const [kpis, setKpis] = React.useState({
+            ytd_revenue: { value: 0, source: '' },
+            active_clients: { value: 0, source: '' },
+            leads_this_month: { value: 0, source: '' },
+            conversion_rate_month: { value: 0, source: '' },
+          });
           const [coachMessages, setCoachMessages] = React.useState([]);
           const [upcomingTasks, setUpcomingTasks] = React.useState([]);
 
@@ -114,10 +120,10 @@
               ]);
 
               setKpis({
-                ytd_revenue: 175000,
-                active_clients: 120,
-                leads_this_month: 25,
-                conversion_rate_month: 0.07,
+                ytd_revenue: { value: 175000, source: 'Quickbooks' },
+                active_clients: { value: 120, source: 'CRM (e.g., Follow Up Boss)' },
+                leads_this_month: { value: 25, source: 'CRM (e.g., Follow Up Boss)' },
+                conversion_rate_month: { value: 0.07, source: 'Derived from CRM' },
               });
 
               setAutomations([
@@ -128,7 +134,8 @@
                   executions_today: 15,
                   executions_this_week: 75,
                   type: 'email_sequence',
-                  last_executed: '2025-06-09T14:30:00Z'
+                  last_executed: '2025-06-09T14:30:00Z',
+                  integration_source: 'Mailchimp & CRM'
                 },
                 {
                   id: 'auto2',
@@ -137,7 +144,8 @@
                   executions_today: 2,
                   executions_this_week: 8,
                   type: 'gift_delivery',
-                  last_executed: '2025-06-09T10:00:00Z'
+                  last_executed: '2025-06-09T10:00:00Z',
+                  integration_source: 'Flower Delivery Service & CRM'
                 },
                 {
                   id: 'auto3',
@@ -146,7 +154,18 @@
                   executions_today: 3,
                   executions_this_week: 12,
                   type: 'crm_update_sms',
-                  last_executed: '2025-06-09T09:15:00Z'
+                  last_executed: '2025-06-09T09:15:00Z',
+                  integration_source: 'CRM & Twilio (SMS)'
+                },
+                 {
+                  id: 'auto4',
+                  name: 'Referral Follow-up Check-in',
+                  status: 'Active',
+                  executions_today: 5,
+                  executions_this_week: 20,
+                  type: 'email_notification',
+                  last_executed: '2025-06-09T11:00:00Z',
+                  integration_source: 'CRM & Internal Ndever'
                 },
               ]);
 
@@ -157,9 +176,9 @@
               ]);
 
               setUpcomingTasks([
-                { id: 'task1', name: 'Review Q2 budget (Playbook: Financial Health)', dueDate: 'Today' },
-                { id: 'task2', name: 'Call client B for referral (Playbook: Client Retention)', dueDate: 'Wed, Jun 11' },
-                { id: 'task3', name: 'Send contract to new buyer (Playbook: Deal Closure)', dueDate: 'Tomorrow' },
+                { id: 'task1', name: 'Review Ndever Coach QuickBooks analysis of Q2 budget (Playbook: Financial Health)', dueDate: 'Today' },
+                { id: 'task2', name: 'Call client Barbara for referral (Playbook: Client Retention)', dueDate: 'Wed, Jun 11' },
+                { id: 'task3', name: 'Send contract to new buyer via CRM template (Playbook: Deal Closure)', dueDate: 'Tomorrow' },
               ]);
             };
 
@@ -231,6 +250,11 @@
                 <div>
                   <h4 className="font-medium text-gray-800">{automation.name}</h4>
                   <p className="text-xs text-gray-500">Last run: {new Date(automation.last_executed).toLocaleTimeString()}</p>
+                  {automation.integration_source && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      <span className="font-medium text-gray-600">Source:</span> {automation.integration_source}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold">{automation.executions_today} Today</p>
@@ -239,6 +263,17 @@
               </div>
             );
           };
+
+          const KPICard = ({ title, value, source }) => {
+            return (
+              <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
+                <span className="text-sm text-gray-500">{title}</span>
+                <span className="text-2xl font-bold text-indigo-700">{value}</span>
+                {source && <span className="text-xs text-gray-500 mt-1">Source: {source}</span>}
+              </div>
+            );
+          };
+
 
           return (
             <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
@@ -261,22 +296,10 @@
                 <div className="lg:col-span-2 space-y-6">
                   {/* Overview KPIs */}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
-                      <span className="text-sm text-gray-500">YTD Revenue</span>
-                      <span className="text-2xl font-bold text-indigo-700">{formatCurrency(kpis.ytd_revenue)}</span>
-                    </div>
-                    <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
-                      <span className="text-sm text-gray-500">Active Clients</span>
-                      <span className="text-2xl font-bold text-indigo-700">{kpis.active_clients}</span>
-                    </div>
-                    <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
-                      <span className="text-sm text-gray-500">Leads This Month</span>
-                      <span className="text-2xl font-bold text-indigo-700">{kpis.leads_this_month}</span>
-                    </div>
-                    <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
-                      <span className="text-sm text-gray-500">Conversion Rate (Mo)</span>
-                      <span className="text-2xl font-bold text-indigo-700">{formatPercentage(kpis.conversion_rate_month)}</span>
-                    </div>
+                    <KPICard title="YTD Revenue" value={formatCurrency(kpis.ytd_revenue.value)} source={kpis.ytd_revenue.source} />
+                    <KPICard title="Active Clients" value={kpis.active_clients.value} source={kpis.active_clients.source} />
+                    <KPICard title="Leads This Month" value={kpis.leads_this_month.value} source={kpis.leads_this_month.source} />
+                    <KPICard title="Conversion Rate (Mo)" value={formatPercentage(kpis.conversion_rate_month.value)} source={kpis.conversion_rate_month.source} />
                   </div>
 
                   {/* Objectives Section */}
@@ -359,7 +382,9 @@
         }
 
         // Mount the React App to the DOM
-        ReactDOM.render(<App />, document.getElementById('root'));
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container); // Create a root
+        root.render(<App />); // Render the App
     </script>
 </body>
 </html>
