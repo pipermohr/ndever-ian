@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ndever Agency Dashboard</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="./favicon.png"><!-- Tailwind CSS CDN -->
+    <link rel="icon" type="image/png" href="./favicon.png">
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -242,6 +243,7 @@
           });
           const [coachMessages, setCoachMessages] = React.useState([]);
           const [upcomingTasks, setUpcomingTasks] = React.useState([]);
+          const [reviews, setReviews] = React.useState([]); // New state for reviews
 
           // --- Helper Functions for Elixir-like dynamic content ---
           const greeting_by_time = () => {
@@ -257,7 +259,7 @@
             } else if (stats.todays_tasks_count > 0) {
               return `Let's tackle your ${stats.todays_tasks_count} key actions today!`;
             }
-            return "Ready to make it a productive day?";
+            return "Ready to make it a productive day!";
           };
 
           const get_focus_message = (todays_tasks_count) => {
@@ -402,6 +404,13 @@
                 { id: 'task2', name: 'Call client Barbara for referral (Playbook: Client Retention)', dueDate: 'Thu, Jun 12' },
                 { id: 'task3', name: 'Send contract to new buyer via CRM template (Playbook: Deal Closure)', dueDate: 'Tomorrow' },
               ]);
+
+              // Mock data for reviews
+              setReviews([
+                { id: 'google', name: 'Google Reviews', rating: 4.8, count: 185, link: 'https://google.com/your-business' },
+                { id: 'zillow', name: 'Zillow Premier Agent', rating: 4.9, count: 92, link: 'https://zillow.com/your-profile' },
+                { id: 'website', name: 'Website Reviews', rating: 4.7, count: 56, link: 'https://yourwebsite.com/reviews' },
+              ]);
             };
 
             fetchDashboardData();
@@ -442,6 +451,11 @@
               "hero-check": (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+              ),
+              "hero-star": ( // New star icon for reviews
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
+                  <path fillRule="evenodd" d="M10.868 2.884c.321-.772 1.415-.772 1.736 0l1.82 4.394a1.625 1.625 0 011.213.882l4.394 1.82c.772.321.772 1.415 0 1.736l-4.394 1.82a1.625 1.625 0 01-1.213.882l-1.82 4.394c-.321.772-1.415.772-1.736 0l-1.82-4.394a1.625 1.625 0 01-1.213-.882l-4.394-1.82c-.772-.321-.772-1.415 0-1.736l4.394-1.82a1.625 1.625 0 011.213-.882l1.82-4.394z" clipRule="evenodd" />
                 </svg>
               )
             };
@@ -537,6 +551,22 @@
             );
           };
 
+          // New ReviewSourceCard component
+          const ReviewSourceCard = ({ review }) => {
+            return (
+              <a href={review.link} target="_blank" rel="noopener noreferrer" className="block bg-white p-4 rounded-lg shadow-sm flex items-center space-x-3 hover:shadow-md transition-shadow">
+                <Icon name="hero-star" className="w-6 h-6 text-yellow-500 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-800">{review.name}</p>
+                  <div className="flex flex-col text-xs text-gray-600"> {/* Changed to flex-col for stacking */}
+                    <span className="font-bold">{review.rating} Stars</span> {/* Added "Stars" for clarity */}
+                    <span className="text-gray-500">({review.count} reviews)</span>
+                  </div>
+                </div>
+              </a>
+            );
+          };
+
           // Mock data for achievements (to be dynamically pulled in a real app)
           const todaysAchievements = [
               { title: "Completed 'Set Up Referral Automation' Playbook Task", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) }, // 30 mins ago
@@ -550,7 +580,8 @@
               <header className="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200">
                 <div className="flex items-center">
                   {/* Ndever Logo Image */}
-                  <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" /> {/* Updated with primary-500 color */}
+                  {/* Corrected onError to be a function */}
+                  <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/120x32/white/ed8622/white?text=Ndever+Logo'; }} />
                   <h1 className="text-xl font-semibold text-gray-800">Agency Dashboard</h1>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -707,7 +738,6 @@
                     </div>
                   )}
 
-
                   {/* Objectives Section */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Your Active Objectives</h2>
@@ -735,7 +765,7 @@
                   </section>
                 </div>
 
-                {/* Right Column: Ndever Coach, Automation Summary */}
+                {/* Right Column: Ndever Coach, Automation Summary, Client Feedback */}
                 <div className="space-y-6">
                   {/* Ndever Coach Chat */}
                   <section className="bg-white p-6 rounded-lg shadow-md h-96 flex flex-col">
@@ -778,6 +808,16 @@
                       </div>
                       {automations.map(auto => (
                         <AutomationCard key={auto.id} automation={auto} />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Client Feedback & Reputation Section - MOVED HERE */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Client Feedback & Reputation</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {reviews.map(review => (
+                        <ReviewSourceCard key={review.id} review={review} />
                       ))}
                     </div>
                   </section>
