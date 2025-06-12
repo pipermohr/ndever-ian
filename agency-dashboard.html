@@ -279,16 +279,9 @@
           };
 
           const calculate_objective_completion = (objective) => {
-            // This is a simplified calculation, in a real app this would be more complex
-            // based on the specific metrics and their weighting.
-            if (!objective || !objective.metrics_definition || !objective.current_values || !objective.target_values) {
-                return 0;
-            }
-            const primaryMetricKey = Object.keys(objective.metrics_definition)[0]; // Use the first defined metric as primary
-            if (primaryMetricKey && objective.target_values[primaryMetricKey] > 0) {
-                return Math.min(100, Math.round((objective.current_values[primaryMetricKey] / objective.target_values[primaryMetricKey]) * 100));
-            }
-            return objective.progress || 0; // Fallback to provided progress if metric not suitable
+            // Directly return the 'progress' value from the objective object
+            // This ensures consistency between the Primary Goal and the Objective Card
+            return objective.progress;
           };
 
 
@@ -300,7 +293,7 @@
                   id: 'obj1',
                   name: 'Annual GCI Target 2025',
                   status: 'on_track', // on_track, at_risk, behind, completed
-                  progress: 65,
+                  progress: 65, // This is the value that will be used for display
                   metrics_definition: {
                     gci_target: { type: 'currency', label: 'GCI Target' },
                     current_gci: { type: 'currency', label: 'Current GCI' },
