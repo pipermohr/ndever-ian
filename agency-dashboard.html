@@ -22,7 +22,7 @@
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-        border: 1px solid #d1d5db; /* gray-300 */
+        border: 1px solid var(--color-gray-300); /* gray-300 */
         border-radius: 0.25rem; /* rounded */
         width: 1.25rem; /* h-5 */
         height: 1.25rem; /* w-5 */
@@ -35,8 +35,8 @@
       }
 
       .form-checkbox:checked {
-        background-color: #4f46e5; /* indigo-600 */
-        border-color: #4f46e5; /* indigo-600 */
+        background-color: var(--color-primary-600); /* Using new theme variable */
+        border-color: var(--color-primary-600); /* Using new theme variable */
       }
 
       .form-checkbox:checked::before {
@@ -48,7 +48,179 @@
 
       .form-checkbox:focus {
         outline: none;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); /* indigo-500 with opacity */
+        box-shadow: 0 0 0 3px var(--color-primary-500); /* Using new theme variable */
+      }
+
+      /* Theme CSS Variables */
+      :root {
+        --color-casablanca-50: #fef8ee;
+        --color-casablanca-100: #fdf0d7;
+        --color-casablanca-200: #faddae;
+        --color-casablanca-300: #f4b860;
+        --color-casablanca-400: #f1a146;
+        --color-casablanca-500: #ed8622;
+        --color-casablanca-600: #de6d18;
+        --color-casablanca-700: #b95315;
+        --color-casablanca-800: #934219;
+        --color-casablanca-900: #763818;
+        --color-casablanca-950: #401b0a;
+
+        --color-primary-50: var(--color-casablanca-50);
+        --color-primary-100: var(--color-casablanca-100);
+        --color-primary-200: var(--color-casablanca-200);
+        --color-primary-300: var(--color-casablanca-300);
+        --color-primary-400: var(--color-casablanca-400);
+        --color-primary-500: var(--color-casablanca-500);
+        --color-primary-600: var(--color-casablanca-600);
+        --color-primary-700: var(--color-casablanca-700);
+        --color-primary-800: var(--color-casablanca-800);
+        --color-primary-900: var(--color-casablanca-900);
+        --color-primary-950: var(--color-casablanca-950);
+
+        /* Assuming standard Tailwind colors for these missing base definitions */
+        --color-teal-50: #f0fdfa;
+        --color-teal-100: #ccfbf1;
+        --color-teal-200: #99f6e4;
+        --color-teal-300: #5eead4;
+        --color-teal-400: #2dd4bf;
+        --color-teal-500: #14b8a6;
+        --color-teal-600: #0d9488;
+        --color-teal-700: #0f766e;
+        --color-teal-800: #115e59;
+        --color-teal-900: #134e4a;
+        --color-teal-950: #042f2e;
+
+        --color-secondary-50: var(--color-teal-50);
+        --color-secondary-100: var(--color-teal-100);
+        --color-secondary-200: var(--color-teal-200);
+        --color-secondary-300: var(--color-teal-300);
+        --color-secondary-400: var(--color-teal-400);
+        --color-secondary-500: var(--color-teal-500);
+        --color-secondary-600: var(--color-teal-600);
+        --color-secondary-700: var(--color-teal-700);
+        --color-secondary-800: var(--color-teal-800);
+        --color-secondary-900: var(--color-teal-900);
+        --color-secondary-950: var(--color-teal-950);
+
+        --color-green-50: #f0fdf4;
+        --color-green-100: #dcfce7;
+        --color-green-200: #bbf7d0;
+        --color-green-300: #86efac;
+        --color-green-400: #4ade80;
+        --color-green-500: #22c55e;
+        --color-green-600: #16a34a;
+        --color-green-700: #15803d;
+        --color-green-800: #166534;
+        --color-green-900: #14532d;
+        --color-green-950: #0d2a1b;
+
+        --color-success-50: var(--color-green-50);
+        --color-success-100: var(--color-green-100);
+        --color-success-200: var(--color-green-200);
+        --color-success-300: var(--color-green-300);
+        --color-success-400: var(--color-green-400);
+        --color-success-500: var(--color-green-500);
+        --color-success-600: var(--color-green-600);
+        --color-success-700: var(--color-green-700);
+        --color-success-800: var(--color-green-800);
+        --color-success-900: var(--color-green-900);
+        --color-success-950: var(--color-green-950);
+
+        --color-red-50: #fef2f2;
+        --color-red-100: #fee2e2;
+        --color-red-200: #fecaca;
+        --color-red-300: #fca5a5;
+        --color-red-400: #f87171;
+        --color-red-500: #ef4444;
+        --color-red-600: #dc2626;
+        --color-red-700: #b91c1c;
+        --color-red-800: #991b1b;
+        --color-red-900: #7f1d1d;
+        --color-red-950: #450a0a;
+
+        --color-danger-50: var(--color-red-50);
+        --color-danger-100: var(--color-red-100);
+        --color-danger-200: var(--color-red-200);
+        --color-danger-300: var(--color-red-300);
+        --color-danger-400: var(--color-red-400);
+        --color-danger-500: var(--color-red-500);
+        --color-danger-600: var(--color-red-600);
+        --color-danger-700: var(--color-red-700);
+        --color-danger-800: var(--color-red-800);
+        --color-danger-900: var(--color-red-900);
+        --color-danger-950: var(--color-red-950);
+
+        --color-yellow-50: #fefce8;
+        --color-yellow-100: #fef9c3;
+        --color-yellow-200: #fef08a;
+        --color-yellow-300: #fde047;
+        --color-yellow-400: #facc15;
+        --color-yellow-500: #eab308;
+        --color-yellow-600: #ca8a04;
+        --color-yellow-700: #a16207;
+        --color-yellow-800: #854d09;
+        --color-yellow-900: #713f12;
+        --color-yellow-950: #422006;
+
+        --color-warning-50: var(--color-yellow-50);
+        --color-warning-100: var(--color-yellow-100);
+        --color-warning-200: var(--color-yellow-200);
+        --color-warning-300: var(--color-yellow-300);
+        --color-warning-400: var(--color-yellow-400);
+        --color-warning-500: var(--color-yellow-500);
+        --color-warning-600: var(--color-yellow-600);
+        --color-warning-700: var(--color-yellow-700);
+        --color-warning-800: var(--color-yellow-800);
+        --color-warning-900: var(--color-yellow-900);
+        --color-warning-950: var(--color-yellow-950);
+
+        --color-sky-50: #f0f9ff;
+        --color-sky-100: #e0f2fe;
+        --color-sky-200: #bae6fd;
+        --color-sky-300: #7dd3fc;
+        --color-sky-400: #38bdf8;
+        --color-sky-500: #0ea5e9;
+        --color-sky-600: #0284c7;
+        --color-sky-700: #0369a1;
+        --color-sky-800: #075985;
+        --color-sky-900: #082f49;
+        --color-sky-950: #082f49;
+
+        --color-info-50: var(--color-sky-50);
+        --color-info-100: var(--color-sky-100);
+        --color-info-200: var(--color-sky-200);
+        --color-info-300: var(--color-sky-300);
+        --color-info-400: var(--color-sky-400);
+        --color-info-500: var(--color-sky-500);
+        --color-info-600: var(--color-sky-600);
+        --color-info-700: var(--color-sky-700);
+        --color-info-800: var(--color-sky-800);
+        --color-info-900: var(--color-sky-900);
+        --color-info-950: var(--color-sky-950);
+
+        --color-slate-50: #f8fafc;
+        --color-slate-100: #f1f5f9;
+        --color-slate-200: #e2e8f0;
+        --color-slate-300: #cbd5e1;
+        --color-slate-400: #94a3b8;
+        --color-slate-500: #64748b;
+        --color-slate-600: #475569;
+        --color-slate-700: #334155;
+        --color-slate-800: #1e293b;
+        --color-slate-900: #0f172a;
+        --color-slate-950: #020617;
+
+        --color-gray-50: var(--color-slate-50);
+        --color-gray-100: var(--color-slate-100);
+        --color-gray-200: var(--color-slate-200);
+        --color-gray-300: var(--color-slate-300);
+        --color-gray-400: var(--color-slate-400);
+        --color-gray-500: var(--color-slate-500);
+        --color-gray-600: var(--color-slate-600);
+        --color-gray-700: var(--color-slate-700);
+        --color-gray-800: var(--color-slate-800);
+        --color-gray-900: var(--color-slate-900);
+        --color-gray-950: var(--color-slate-950);
       }
     </style>
 </head>
@@ -69,6 +241,53 @@
           });
           const [coachMessages, setCoachMessages] = React.useState([]);
           const [upcomingTasks, setUpcomingTasks] = React.useState([]);
+
+          // --- Helper Functions for Elixir-like dynamic content ---
+          const greeting_by_time = () => {
+            const hour = new Date().getHours();
+            if (hour < 12) return "Good morning";
+            if (hour < 18) return "Good afternoon";
+            return "Good evening";
+          };
+
+          const get_motivational_message = (stats, todays_tasks) => {
+            if (stats.completed_today_count > 0 && stats.todays_tasks_count > 0) {
+              return `You've got this! Focus on completing your ${stats.todays_tasks_count} key actions today.`;
+            } else if (stats.todays_tasks_count > 0) {
+              return `Let's tackle your ${stats.todays_tasks_count} key actions today!`;
+            }
+            return "Ready to make it a productive day?";
+          };
+
+          const get_focus_message = (todays_tasks_count) => {
+            if (todays_tasks_count === 0) return "No high-priority actions currently identified. Great job staying ahead!";
+            if (todays_tasks_count <= 3) return "Focus on these critical actions for maximum impact.";
+            return "A focused effort on these actions will keep your momentum strong.";
+          };
+
+          const get_streak_display = (completed_today_count) => {
+            if (completed_today_count > 0) return `You've completed ${completed_today_count} tasks! Keep up the momentum.`;
+            return "Time to build momentum!";
+          };
+
+          const get_momentum_message = (completed_today_count) => {
+            if (completed_today_count > 0) return "Your consistent effort is driving results.";
+            return "Start strong and build your daily momentum.";
+          };
+
+          const calculate_objective_completion = (objective) => {
+            // This is a simplified calculation, in a real app this would be more complex
+            // based on the specific metrics and their weighting.
+            if (!objective || !objective.metrics_definition || !objective.current_values || !objective.target_values) {
+                return 0;
+            }
+            const primaryMetricKey = Object.keys(objective.metrics_definition)[0]; // Use the first defined metric as primary
+            if (primaryMetricKey && objective.target_values[primaryMetricKey] > 0) {
+                return Math.min(100, Math.round((objective.current_values[primaryMetricKey] / objective.target_values[primaryMetricKey]) * 100));
+            }
+            return objective.progress || 0; // Fallback to provided progress if metric not suitable
+          };
+
 
           React.useEffect(() => {
             // Simulate fetching initial dashboard data
@@ -187,6 +406,47 @@
             fetchDashboardData();
           }, []);
 
+          // Mock data for stats (to be dynamically pulled in a real app)
+          const mockStats = {
+            completed_today_count: 3, // Example value
+            todays_tasks_count: 5, // Example value
+            active_objectives_count: objectives.length // Derived from actual objectives
+          };
+
+          // --- React Components for Dashboard Elements ---
+
+          const Icon = ({ name, className }) => {
+            // Placeholder for Heroicons or other SVG icons
+            const icons = {
+              "hero-check-circle": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+              "hero-rocket-launch": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.379L10.32 21.75l-.94-.282m4.95-1.954l4.582 2.127L19.782 19.3m-9.354-1.574l-2.03-3.617a.75.75 0 01.92-1.047l3.618 2.029 1.574-9.354a.75.75 0 011.047-.92l3.617 2.03-2.127 4.582m-3.951 1.954l-2.127 4.582M12 18.75l-4.582 2.127M12 21.75V12m0-3V9" />
+                </svg>
+              ),
+              "hero-fire": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.001 0 0012 2.25c-5.359 0-9.75 4.341-9.75 9.75s4.391 9.75 9.75 9.75 9.75-4.341 9.75-9.75c0-1.282-.284-2.52-.802-3.662M15.362 5.214c-.066.96.002 1.918.232 2.846.12.483.202.973.232 1.464.004.064.015.127.034.189a6.012 6.012 0 01.378 1.488 6.012 6.012 0 01-.378 1.488C18.665 14.881 16.32 17.226 12 17.226c-4.321 0-6.665-2.345-6.902-4.108a6.012 6.012 0 01-.378-1.488 6.012 6.012 0 01.378-1.488c.019-.062.03-.125.034-.189.03-.491.112-.981.232-1.464.23-.928.298-1.886.232-2.846M12 10.5V1.5" />
+                </svg>
+              ),
+              "hero-trophy": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25M14.25 18a4.5 4.5 0 004.5-4.5V7.5a4.5 4.5 0 00-4.5-4.5h-1.5a.75.75 0 00-.75.75v10.5a.75.75 0 00.75.75h1.5zm-9-5.25L7.5 7.5 5.25 9.75M9.75 18A4.5 4.5 0 005.25 13.5V7.5a4.5 4.5 0 004.5-4.5h1.5a.75.75 0 00.75-.75v10.5a.75.75 0 00-.75.75h-1.5z" />
+                </svg>
+              ),
+              "hero-check": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+              )
+            };
+            return icons[name] || null;
+          };
+
           const formatCurrency = (value) => {
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
           };
@@ -214,10 +474,10 @@
 
           const ObjectiveCard = ({ objective }) => {
             const statusColor = {
-              'on_track': 'bg-green-100 text-green-800',
-              'at_risk': 'bg-yellow-100 text-yellow-800',
-              'behind': 'bg-red-100 text-red-800',
-              'completed': 'bg-blue-100 text-blue-800',
+              'on_track': 'bg-[var(--color-success-100)] text-[var(--color-success-800)]',
+              'at_risk': 'bg-[var(--color-warning-100)] text-[var(--color-warning-800)]',
+              'behind': 'bg-[var(--color-danger-100)] text-[var(--color-danger-800)]',
+              'completed': 'bg-[var(--color-info-100)] text-[var(--color-info-800)]',
             };
 
             return (
@@ -229,7 +489,7 @@
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                  <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: `${objective.progress}%` }}></div>
+                  <div className="bg-[var(--color-primary-500)] h-2.5 rounded-full" style={{ width: `${objective.progress}%` }}></div>
                 </div>
                 <p className="text-sm text-gray-600 mb-3">{objective.progress}% Progress</p>
                 <div className="space-y-1">
@@ -270,39 +530,182 @@
             return (
               <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
                 <span className="text-sm text-gray-500">{title}</span>
-                <span className="text-2xl font-bold text-indigo-700">{value}</span>
+                <span className="text-2xl font-bold text-[var(--color-primary-700)]">{value}</span>
                 {source && <span className="text-xs text-gray-500 mt-1">Source: {source}</span>}
               </div>
             );
           };
 
+          // Mock data for achievements (to be dynamically pulled in a real app)
+          const todaysAchievements = [
+              { title: "Completed 'Set Up Referral Automation' Playbook Task", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) }, // 30 mins ago
+              { title: "Sent 15 Automated Client Check-in Emails", playbook: { title: "Past Client Nurturing" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) }, // 2 hours ago
+              { title: "Updated 5 Lead Records in CRM", playbook: { title: "Lead Management Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) } // 5 hours ago
+          ];
 
           return (
             <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
               {/* Header */}
               <header className="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200">
                 <div className="flex items-center">
-                  {/* Ndever Logo Placeholder */}
-                  <span className="text-2xl font-bold text-indigo-700 mr-4">Ndever</span>
+                  {/* Ndever Logo Image */}
+                  <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" /> {/* Updated with primary-500 color */}
                   <h1 className="text-xl font-semibold text-gray-800">Agency Dashboard</h1>
                 </div>
                 <div className="flex items-center space-x-4">
                   <span className="text-gray-600">Hi, Loren!</span>
                   {/* User Avatar Placeholder */}
-                  <div className="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center text-blue-800 font-bold">L</div>
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">L</div>
                 </div>
               </header>
 
               <main className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column: Objectives, KPIs, Upcoming Tasks */}
-                <div className="lg:col-span-2 space-y-6">
-                  {/* Overview KPIs */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <KPICard title="YTD Revenue" value={formatCurrency(kpis.ytd_revenue.value)} source={kpis.ytd_revenue.source} />
-                    <KPICard title="Active Clients" value={kpis.active_clients.value} source={kpis.active_clients.source} />
-                    <KPICard title="Leads This Month" value={kpis.leads_this_month.value} source={kpis.leads_this_month.source} />
-                    <KPICard title="Conversion Rate (Mo)" value={formatPercentage(kpis.conversion_rate_month.value)} source={kpis.conversion_rate_month.source} />
+                {/* Header Section (Elixir-like from provided code) */}
+                <div className="lg:col-span-3 mb-8">
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    {greeting_by_time()}, Loren!
+                  </h1>
+                  <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
+                    {get_motivational_message(mockStats, upcomingTasks)}
+                  </p>
+                  {mockStats.completed_today_count > 0 && (
+                    <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[var(--color-success-100)] text-[var(--color-success-800)]">
+                      <Icon name="hero-check-circle" className="w-4 h-4 mr-1" />
+                      {mockStats.completed_today_count === 1
+                        ? `${mockStats.completed_today_count} win today!`
+                        : `${mockStats.completed_today_count} wins today!`}
+                    </div>
+                  )}
+                </div>
+
+                {/* Coaching Stats - Focus on Progress & Motivation */}
+                {mockStats.active_objectives_count > 0 && (
+                  <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    {/* Today's Focus */}
+                    <div className="bg-gradient-to-br from-[var(--color-info-50)] to-[var(--color-info-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-info-500)]/10 rounded-full blur-2xl"></div>
+                      <div className="relative">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-info-500)] to-[var(--color-info-600)] rounded-lg flex items-center justify-center shadow-lg">
+                            <Icon name="hero-rocket-launch" className="w-5 h-5 text-white" />
+                          </div>
+                          <span className="text-xs font-semibold text-[var(--color-info-700)] uppercase tracking-wide">
+                            Today's Focus
+                          </span>
+                        </div>
+                        <p className="text-2xl font-bold text-[var(--color-info-900)] mb-1">
+                          {mockStats.todays_tasks_count <= 3
+                            ? `${mockStats.todays_tasks_count} priority${mockStats.todays_tasks_count === 1 ? "" : " actions"}`
+                            : `${Math.min(mockStats.todays_tasks_count, 5)} key actions`}
+                        </p>
+                        <p className="text-sm text-[var(--color-info-700)] font-medium">
+                          {get_focus_message(mockStats.todays_tasks_count)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Momentum Tracker */}
+                    <div className="bg-gradient-to-br from-[var(--color-success-50)] to-[var(--color-success-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-success-500)]/10 rounded-full blur-2xl"></div>
+                      <div className="relative">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-success-500)] to-[var(--color-success-600)] rounded-lg flex items-center justify-center shadow-lg">
+                            <Icon name="hero-fire" className="w-5 h-5 text-white" />
+                          </div>
+                          <span className="text-xs font-semibold text-[var(--color-success-700)] uppercase tracking-wide">
+                            Momentum
+                          </span>
+                        </div>
+                        <p className="text-2xl font-bold text-[var(--color-success-900)] mb-1">
+                          {get_streak_display(mockStats.completed_today_count)}
+                        </p>
+                        <p className="text-sm text-[var(--color-success-700)] font-medium">
+                          {get_momentum_message(mockStats.completed_today_count)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Goal Proximity */}
+                    {objectives.length > 0 && (
+                      <div className="bg-gradient-to-br from-[var(--color-primary-50)] to-[var(--color-primary-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-primary-500)]/10 rounded-full blur-2xl"></div>
+                        <div className="relative">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-primary-600)] rounded-lg flex items-center justify-center shadow-lg">
+                              <Icon name="hero-trophy" className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="text-xs font-semibold text-[var(--color-primary-700)] uppercase tracking-wide">
+                              Primary Goal
+                            </span>
+                          </div>
+                          <p
+                            className="text-lg font-semibold text-[var(--color-primary-900)] mb-2 truncate"
+                            title={objectives[0].name}
+                          >
+                            {objectives[0].name.length > 30 ? `${objectives[0].name.slice(0, 30)}...` : objectives[0].name}
+                          </p>
+                          <div className="flex items-center space-x-2">
+                            <div className="flex-1 bg-[var(--color-primary-200)] rounded-full h-2">
+                              <div
+                                className="bg-[var(--color-primary-600)] h-2 rounded-full transition-all duration-500"
+                                style={{ width: `${calculate_objective_completion(objectives[0])}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium text-[var(--color-primary-700)]">
+                              {calculate_objective_completion(objectives[0])}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                )}
+
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Today's Achievements */}
+                  {todaysAchievements.length > 0 && (
+                    <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
+                      <div className="px-6 py-4 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-medium text-gray-900">
+                            Today's Achievements
+                          </h3>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
+                            {todaysAchievements.length} completed
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <div className="space-y-3">
+                          {todaysAchievements.map((achievement, index) => (
+                            <div key={index} className="flex items-start space-x-3">
+                              <div className="w-8 h-8 bg-[var(--color-success-100)] rounded-full flex items-center justify-center flex-shrink-0">
+                                <Icon name="hero-check" className="w-4 h-4 text-[var(--color-success-600)]" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm text-gray-900">
+                                  {achievement.title}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {achievement.playbook.title} • Completed{" "}
+                                  {new Date(achievement.completed_at).toLocaleTimeString()}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {todaysAchievements.length >= 3 && (
+                          <div className="mt-4 p-3 bg-[var(--color-success-50)] border border-[var(--color-success-200)] rounded-lg">
+                            <p className="text-sm text-[var(--color-success-800)] font-medium">
+                              <Icon name="hero-fire" className="w-4 h-4 inline mr-1" />
+                              Outstanding execution. You're demonstrating the consistent action that drives exceptional results.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
 
                   {/* Objectives Section */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
@@ -320,7 +723,7 @@
                     <ul className="space-y-3">
                       {upcomingTasks.map(task => (
                         <li key={task.id} className="flex items-center bg-gray-50 p-3 rounded-lg shadow-sm">
-                          <input type="checkbox" className="form-checkbox h-5 w-5 text-indigo-600 rounded mr-3" />
+                          <input type="checkbox" className="form-checkbox h-5 w-5 text-[var(--color-primary-600)] rounded mr-3" />
                           <div className="flex-1">
                             <p className="text-base font-medium text-gray-800">{task.name}</p>
                             <p className="text-sm text-gray-500">{task.dueDate}</p>
@@ -340,7 +743,7 @@
                       {coachMessages.map((msg, index) => (
                         <div key={index} className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                           <span className={`inline-block p-2 rounded-lg ${
-                            msg.sender === 'user' ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-800'
+                            msg.sender === 'user' ? 'bg-[var(--color-primary-500)] text-white' : 'bg-gray-200 text-gray-800'
                           }`}>
                             {msg.text}
                           </span>
@@ -352,9 +755,9 @@
                       <input
                         type="text"
                         placeholder="Message Ndever Coach..."
-                        className="flex-1 border border-gray-300 p-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="flex-1 border border-gray-300 p-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)]"
                       />
-                      <button className="bg-indigo-600 text-white p-2 rounded-r-lg hover:bg-indigo-700 transition-colors">
+                      <button className="bg-[var(--color-primary-600)] text-white p-2 rounded-r-lg hover:bg-[var(--color-primary-700)] transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
@@ -366,11 +769,11 @@
                   <section className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
                       Workflow Automations
-                      <span className="ml-2 px-2 py-1 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-full">Active: {automations.length}</span>
+                      <span className="ml-2 px-2 py-1 bg-[var(--color-primary-100)] text-[var(--color-primary-700)] text-sm font-medium rounded-full">Active: {automations.length}</span>
                     </h2>
                     <div className="space-y-3">
                       <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                        <span className="text-3xl font-bold text-indigo-700 mr-2">20</span>Automations Executed Today
+                        <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">20</span>Automations Executed Today
                       </div>
                       {automations.map(auto => (
                         <AutomationCard key={auto.id} automation={auto} />
