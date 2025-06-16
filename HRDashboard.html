@@ -41,13 +41,6 @@
         border-color: var(--color-primary-600); /* Using new theme variable */
       }
 
-      .form-checkbox:checked::before {
-        content: '\2713'; /* Checkmark unicode character */
-        color: white;
-        font-size: 0.875rem; /* text-sm */
-        line-height: 1;
-      }
-
       .form-checkbox:focus {
         outline: none;
         box-shadow: 0 0 0 3px var(--color-primary-500); /* Using new theme variable */
@@ -243,7 +236,13 @@
           });
           const [employeeList, setEmployeeList] = React.useState([]); // For Organizational Overview
           const [analyticsData, setAnalyticsData] = React.useState({}); // For Performance & Onboarding Analytics
-          const [todaysAchievements, setTodaysAchievements] = React.useState([]); // Added state for todaysAchievements
+
+          // New state for scores
+          const [objectiveScore, setObjectiveScore] = React.useState(0);
+          const [ndeverScore, setNdeverScore] = React.useState(0);
+          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0); // Points earned today for Ndever Score
+          const [objectiveScoreHistory, setObjectiveScoreHistory] = React.useState([]); // History for line chart
+
 
           // --- Helper Functions for dynamic content ---
           const greeting_by_time = () => {
@@ -253,15 +252,8 @@
             return "Good evening";
           };
 
-          const get_hr_motivational_message = (stats) => {
-            if (stats.new_hires_on_track > 0 && stats.employees_on_track > 0) {
-              return `Leading your team to success. Keep driving engagement and development!`;
-            } else if (stats.employees_on_track > 0) {
-              return `Your team's performance is looking strong. Focus on continuous improvement.`;
-            }
-            return "Ready to optimize your workforce and foster a thriving culture?";
-          };
-
+          // Removed old motivational message as score cards provide primary motivation
+          // const get_hr_motivational_message = (stats) => { ... };
           const get_onboarding_focus_message = (count) => {
             if (count === 0) return "No new hires currently in active onboarding. Great job!";
             return `Focus on supporting these ${count} new hires through their journey.`;
@@ -278,6 +270,33 @@
             return objective.progress;
           };
 
+          // NEW: Calculate the overall Objective Score - Reused from Agency Dashboard
+          const calculateOverallObjectiveScore = (objs) => {
+              if (!objs || objs.length === 0) return 0;
+              let totalWeightedProgress = 0;
+              let totalWeight = 0;
+              objs.forEach(obj => {
+                  totalWeightedProgress += (obj.progress * (obj.weight || 1)); // Default weight to 1 if not defined
+                  totalWeight += (obj.weight || 1);
+              });
+              return totalWeight === 0 ? 0 : Math.round(totalWeightedProgress / totalWeight);
+          };
+
+          // NEW: Determine the Objective Score Trend
+          const getObjectiveScoreTrend = (history) => {
+              if (history.length < 2) return "Stable"; // Need at least two points to determine a trend
+              const latestScore = history[history.length - 1];
+              const previousScore = history[history.length - 2];
+
+              if (latestScore > previousScore) {
+                  return "Upward";
+              } else if (latestScore < previousScore) {
+                  return "Downward";
+              } else {
+                  return "Stable";
+              }
+          };
+
           const formatPercentage = (value) => {
             return new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value);
           };
@@ -285,12 +304,13 @@
           React.useEffect(() => {
             // Simulate fetching initial HR dashboard data
             const fetchHRDashboardData = () => {
-              setObjectives([
+              const mockObjectives = [
                 {
                   id: 'hr_obj1',
                   name: 'Improve New Hire Time-to-Productivity',
                   status: 'on_track',
                   progress: 75,
+                  weight: 5, // Added weight for Objective Score calculation
                   metrics_definition: {
                     time_to_productivity: { type: 'days', label: 'Avg. Time to Prod.' },
                     onboarding_completion_rate: { type: 'percentage', label: 'Onboarding Comp. Rate' },
@@ -309,6 +329,7 @@
                   name: 'Boost Employee Retention Q3',
                   status: 'at_risk',
                   progress: 50,
+                  weight: 4, // Added weight for Objective Score calculation
                   metrics_definition: {
                     retention_rate: { type: 'percentage', label: 'Retention Rate' },
                     exit_interview_satisfaction: { type: 'score', label: 'Exit Interview CSAT' },
@@ -322,7 +343,8 @@
                     exit_interview_satisfaction: 4.2,
                   },
                 },
-              ]);
+              ];
+              setObjectives(mockObjectives); // Set objectives using the mock data
 
               setHrMetrics({
                 total_employees: 125,
@@ -365,27 +387,25 @@
               ]);
 
               setCoachMessages([
-                { sender: 'coach', text: "Good morning, HR Manager! Your 'Improve New Hire Time-to-Productivity' objective is at 75%. Consider reviewing the 'New Hire Engagement' playbook for best practices." },
+                { sender: 'coach', text: "Good morning, Sheila! Your 'Improve New Hire Time-to-Productivity' objective is at 75%. Consider reviewing the 'New Hire Engagement' playbook for best practices." },
                 { sender: 'user', text: "Morning! What's the latest on the Q3 retention rate? I'm concerned about recent departures." },
                 { sender: 'coach', text: "Retention is at 88%. I've flagged tasks in the 'Employee Retention Playbook' focused on manager check-ins and career pathing. Would you like to review the 'Employee Satisfaction Survey' automation results?" },
                 { sender: 'user' , text: "Yes, please. And can you suggest some actions to improve our average performance score?" },
                 { sender: 'coach', text: "Certainly. I've highlighted the 'Performance Management Training' playbook for managers, and initiated an 'Automated Feedback Request' workflow for employees nearing their review dates." },
               ]);
 
-              // Modified Upcoming Tasks structure to include a playbook object
               setUpcomingTasks([
                 { id: 'hr_task1', name: 'Schedule Q3 New Hire Orientation Session', dueDate: 'Next Week', playbook: { title: 'Onboarding Journey' } },
                 { id: 'hr_task2', name: 'Review updated Performance Review Template', dueDate: 'Fri, Jun 21', playbook: { title: 'Performance Management' } },
                 { id: 'hr_task3', name: 'Conduct 30-day check-in with new hire Jane', dueDate: 'Today', playbook: { title: 'New Hire Success' } },
               ]);
 
-              // Mock data for recent HR milestones
-              const recentHRMilestones = [
-                  { id: 'mile1', title: "New hire John Doe completed 90-day review", playbook: { title: "New Hire Success" }, completed_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) }, // 2 days ago
-                  { id: 'mile2', title: "Team lead Sarah initiated Q2 performance reviews for 5 direct reports", playbook: { title: "Performance Management" }, completed_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) }, // 1 day ago
-                  { id: 'mile3', title: "Completed onboarding checklist for new sales associate Emily", playbook: { title: "Onboarding Journey" }, completed_at: new Date(Date.now() - 6 * 60 * 60 * 1000) } // 6 hours ago
+              // Mock data for recent HR growth wins
+              const todaysGrowthWinsData = [
+                  { id: 'win1', title: "New hire John Doe completed 90-day review", playbook: { title: "New Hire Success" }, completed_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) }, // 2 days ago
+                  { id: 'win2', title: "Team lead Sarah initiated Q2 performance reviews for 5 direct reports", playbook: { title: "Performance Management" }, completed_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) }, // 1 day ago
+                  { id: 'win3', title: "Completed onboarding checklist for new sales associate Emily", playbook: { title: "Onboarding Journey" }, completed_at: new Date(Date.now() - 6 * 60 * 60 * 1000) } // 6 hours ago
               ];
-              setTodaysAchievements(recentHRMilestones); // Set the state with this data
 
               setEmployeeList([
                 {id: 'emp1', name: 'Alice Smith', department: 'Sales', status: 'Active', performance_score: 4.5},
@@ -400,44 +420,66 @@
                 attrition_rate: 0.08, // 8%
                 employee_satisfaction: 4.3 // out of 5
               });
+
+              // Calculate and set the new scores using the modified objectives
+              const calculatedObjectiveScore = calculateOverallObjectiveScore(mockObjectives);
+              setObjectiveScore(calculatedObjectiveScore);
+              setNdeverScore(1250); // Mock Ndever Score for HR Dashboard
+              setTodaysGrowthPoints(75); // Mock points earned today for HR Dashboard
+
+              // Mock objective score history for the chart
+              setObjectiveScoreHistory([70, 72, 71, 74, 76, 75, calculatedObjectiveScore]); // Last 7 days, ending with current score
             };
 
             fetchHRDashboardData();
           }, []);
-
-          // Mock stats for HR dashboard specific cards
-          const mockHRStats = {
-            new_hires_on_track: 2, // Example value
-            employees_on_track: 110, // Example value
-            avg_performance_score: hrMetrics.avg_performance_score, // from HR metrics
-            key_hr_objective_progress: objectives.length > 0 ? objectives[0].progress : 0,
-            // Added safe navigation (?.) for playbook and title to prevent errors
-            onboarding_tasks_today: upcomingTasks.filter(task => task.dueDate === 'Today' && task.playbook?.title?.includes('Onboarding')).length,
-            recent_onboarding_milestones_count: todaysAchievements.filter(ach => ach.playbook?.title?.includes('Onboarding')).length,
-          };
-
 
           // --- React Components for Dashboard Elements ---
 
           const Icon = ({ name, className }) => {
             // Placeholder for Heroicons or other SVG icons
             const icons = {
+              "hero-scale": ( // For Objective Score
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.125 12.75l-1.108 1.107A.75.75 0 018.842 14v-.825a2.25 2.25 0 00-2.25-2.25H4.125m11.25 0h-.825a2.25 2.25 0 00-2.25 2.25v.825c0 .211-.081.416-.226.561l-1.108 1.107c-.42.42-.647 1-.647 1.636v.433a2.25 2.25 0 002.25 2.25h.825m0-15l1.108-1.107A.75.75 0 0115.158 10V10.825a2.25 2.25 0 002.25 2.25h1.625M9.75 3.75v.825a2.25 2.25 0 002.25 2.25h.825m0-4.5L12 3.75l-1.108 1.107A.75.75 0 0010.842 5V5.825a2.25 2.25 0 00-2.25 2.25H4.125" />
+                </svg>
+              ),
+              "hero-sparkles": ( // For Ndever Score / Gamification
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a.75.75 0 01.75.75v16.5a.75.75 0 01-1.5 0V3.75A.75.75 0 0112 3zm.75 14.25l4.303 2.656a.75.75 0 001.233-.696l-1.02-4.839 3.636-3.486a.75.75 0 00-.435-1.32l-4.82-.587-2.288-4.478a.75.75 0 00-1.353.001L8.71 8.874l-4.82.587a.75.75 0 00-.435 1.32l3.636 3.486-1.02 4.839a.75.75 0 001.233.696L12 17.25z" />
+                </svg>
+              ),
+              "hero-arrow-trending-up": ( // For positive trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.303 4.303 7.084-7.084m0 0H18.75M21.75 5.25V7.5" />
+                  </svg>
+              ),
+              "hero-arrow-trending-down": ( // For negative trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.303-4.303 7.084 7.084m0 0H18.75M21.75 18.75V16.5" />
+                  </svg>
+              ),
+              "hero-arrows-left-right": ( // For stable trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 12h9m-9 3.75H12M18.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+              ),
               "hero-check-circle": (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               ),
-              "hero-rocket-launch": ( // Adapted for Onboarding Focus
+              "hero-rocket-launch": ( // Adapted for Onboarding Focus (now within Overview card)
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042V19.5m0-13.458L15.375 9.375M12 6.042L8.625 9.375M12 6.042V3.75m0 2.292c0 .107 0 .216-.017.323l-.865 4.323m-4.633.003L7.125 12.75l1.875-1.875M12 10.5h.008v.008H12zM12 12.75h.008v.008H12zM12 15h.008v.008H12zM12 17.25h.008v.008H12zM12 19.5h.008v.008H12z" />
                 </svg>
               ),
-              "hero-fire": ( // Adapted for Performance Pulse
+              "hero-fire": ( // Adapted for Performance Pulse (now for Growth Wins)
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 22.5 12 13.5H3.75z" />
                 </svg>
               ),
-              "hero-trophy": ( // Reused for Key HR Objective
+              "hero-trophy": ( // Reused for Key HR Objective (now within Growth Wins)
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25M14.25 18a4.5 4.5 0 004.5-4.5V7.5a4.5 4.5 0 00-4.5-4.5h-1.5a.75.75 0 00-.75.75v10.5a.75.75 0 00.75.75h1.5zm-9-5.25L7.5 7.5 5.25 9.75M9.75 18A4.5 4.5 0 005.25 13.5V7.5a4.5 4.5 0 004.5-4.5h1.5a.75.75 0 00.75-.75v10.5a.75.75 0 00-.75.75h-1.5z" />
                 </svg>
@@ -454,7 +496,7 @@
               ),
               "hero-users": ( // New icon for Organizational Overview
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.125l-7.5-7.5 7.5-7.5" />
+                  <path strokeLinecap="round" strokeLinecap="round" d="M15 19.125l-7.5-7.5 7.5-7.5" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.25 15l-3-3 3-3" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9l3 3-3 3" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 110-18 9 9 0 010 18z" />
@@ -468,6 +510,65 @@
               )
             };
             return icons[name] || null;
+          };
+
+          // NEW: ObjectiveScoreLineChart Component
+          const ObjectiveScoreLineChart = ({ data, trend }) => {
+            if (!data || data.length < 2) {
+              return (
+                <div className="text-center text-gray-500 text-sm mt-4">
+                  Not enough data for trend.
+                </div>
+              );
+            }
+
+            const width = 200; // Fixed width for the chart
+            const height = 60; // Fixed height
+            const margin = { top: 5, right: 5, bottom: 5, left: 5 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+
+            const minScore = 0; // Assuming scores are 0-100
+            const maxScore = 100;
+            const xInterval = chartWidth / (data.length - 1); // Distance between points on X axis
+
+            const points = data.map((d, i) => {
+              const x = i * xInterval;
+              const y = chartHeight - ((d - minScore) / (maxScore - minScore)) * chartHeight;
+              return `${x},${y}`;
+            }).join(' ');
+
+            let trendIcon = null;
+            let trendColor = "text-gray-500";
+            if (trend === "Upward") {
+                trendIcon = <Icon name="hero-arrow-trending-up" className="w-5 h-5" />;
+                trendColor = "text-green-500";
+            } else if (trend === "Downward") {
+                trendIcon = <Icon name="hero-arrow-trending-down" className="w-5 h-5" />;
+                trendColor = "text-red-500";
+            } else {
+                trendIcon = <Icon name="hero-arrows-left-right" className="w-5 h-5" />;
+            }
+
+
+            return (
+              <div className="relative mt-4">
+                <svg width={width} height={height}>
+                  <polyline
+                    fill="none"
+                    stroke="var(--color-info-600)"
+                    strokeWidth="2"
+                    points={points}
+                  />
+                   {/* Optional: Add a circle for the latest point */}
+                   <circle cx={xInterval * (data.length - 1)} cy={chartHeight - ((data[data.length - 1] - minScore) / (maxScore - minScore)) * chartHeight} r="3" fill="var(--color-info-600)" />
+                </svg>
+                <div className={`absolute bottom-0 right-0 flex items-center text-xs font-semibold ${trendColor}`}>
+                  {trendIcon}
+                  <span className="ml-1">{trend} Trend</span>
+                </div>
+              </div>
+            );
           };
 
           const MetricDisplay = ({ definition, value, target }) => {
@@ -568,6 +669,13 @@
             </div>
           );
 
+          // Re-purposing todaysAchievements for a general "growth wins" tracker
+          const todaysGrowthWinsData = [
+              { id: 'win1', title: "New hire John Doe completed 90-day review", playbook: { title: "New Hire Success" }, completed_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) }, // 2 days ago
+              { id: 'win2', title: "Team lead Sarah initiated Q2 performance reviews for 5 direct reports", playbook: { title: "Performance Management" }, completed_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) }, // 1 day ago
+              { id: 'win3', title: "Completed onboarding checklist for new sales associate Emily", playbook: { title: "Onboarding Journey" }, completed_at: new Date(Date.now() - 6 * 60 * 60 * 1000) } // 6 hours ago
+          ];
+
 
           return (
             <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
@@ -579,7 +687,7 @@
                   <h1 className="text-xl font-semibold text-gray-800">HR Dashboard</h1>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="text-gray-600">Hi, [HR Manager Name]!</span> {/* Dynamic user name for HR context */}
+                  <span className="text-gray-600">Hi, Sheila!</span> {/* Dynamic user name for HR context */}
                   {/* User Avatar Placeholder */}
                   <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">HR</div>
                 </div>
@@ -592,131 +700,115 @@
                     {greeting_by_time()}, HR Team!
                   </h1>
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
-                    {get_hr_motivational_message(mockHRStats)}
+                    Your Ndever growth journey in progress.
                   </p>
-                  {mockHRStats.new_hires_on_track > 0 && (
-                    <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[var(--color-info-100)] text-[var(--color-info-800)]">
-                      <Icon name="hero-check-circle" className="w-4 h-4 mr-1" />
-                      {mockHRStats.new_hires_on_track === 1
-                        ? `${mockHRStats.new_hires_on_track} new hire on track!`
-                        : `${mockHRStats.new_hires_on_track} new hires on track!`}
-                    </div>
-                  )}
                 </div>
 
-                {/* HR Coaching Stats - Focus on Onboarding & Performance */}
-                <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                  {/* Active Onboarding */}
-                  <div className="bg-gradient-to-br from-[var(--color-info-50)] to-[var(--color-info-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden">
+                {/* Growth Overview Scores (Objective Score, Ndever Score, Today's Growth Wins) */}
+                <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  {/* Objective Score Card */}
+                  <div className="bg-gradient-to-br from-[var(--color-info-50)] to-[var(--color-info-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden flex flex-col justify-between">
                     <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-info-500)]/10 rounded-full blur-2xl"></div>
-                    <div className="relative">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-info-500)] to-[var(--color-info-600)] rounded-lg flex items-center justify-center shadow-lg">
-                          <Icon name="hero-rocket-launch" className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-xs font-semibold text-[var(--color-info-700)] uppercase tracking-wide">
-                          Active Onboarding
-                        </span>
+                    <div className="relative flex items-center justify-between mb-4">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-info-500)] to-[var(--color-info-600)] rounded-lg flex items-center justify-center shadow-lg">
+                        <Icon name="hero-scale" className="w-5 h-5 text-white" />
                       </div>
-                      <p className="text-2xl font-bold text-[var(--color-info-900)] mb-1">
-                        {hrMetrics.new_hires_month} new hires
+                      <span className="text-xs font-semibold text-[var(--color-info-700)] uppercase tracking-wide">
+                        Objective Score
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <p className="text-4xl font-bold text-[var(--color-info-900)] mb-2">
+                        {objectiveScore} / 100
                       </p>
                       <p className="text-sm text-[var(--color-info-700)] font-medium">
-                        {get_onboarding_focus_message(hrMetrics.new_hires_month)}
+                        Your real-time growth momentum across objectives.
                       </p>
+                       {/* Line chart for Objective Score history */}
+                      <ObjectiveScoreLineChart data={objectiveScoreHistory} trend={getObjectiveScoreTrend(objectiveScoreHistory)} />
                     </div>
                   </div>
 
-                  {/* Performance Pulse */}
-                  <div className="bg-gradient-to-br from-[var(--color-success-50)] to-[var(--color-success-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-success-500)]/10 rounded-full blur-2xl"></div>
-                    <div className="relative">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-success-500)] to-[var(--color-success-600)] rounded-lg flex items-center justify-center shadow-lg">
-                          <Icon name="hero-fire" className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-xs font-semibold text-[var(--color-success-700)] uppercase tracking-wide">
-                          Performance Pulse
-                        </span>
+                  {/* Ndever Score Card */}
+                  <div className="bg-gradient-to-br from-[var(--color-primary-50)] to-[var(--color-primary-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden flex flex-col justify-between">
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-primary-500)]/10 rounded-full blur-2xl"></div>
+                    <div className="relative flex items-center justify-between mb-4">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-primary-600)] rounded-lg flex items-center justify-center shadow-lg">
+                        <Icon name="hero-sparkles" className="w-5 h-5 text-white" />
                       </div>
-                      <p className="text-2xl font-bold text-[var(--color-success-900)] mb-1">
-                        {hrMetrics.avg_performance_score.toFixed(1)} Avg Score
+                      <span className="text-xs font-semibold text-[var(--color-primary-700)] uppercase tracking-wide">
+                        Ndever Score
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <p className="text-4xl font-bold text-[var(--color-primary-900)] mb-2">
+                        {ndeverScore}
+                      </p>
+                      <p className="text-sm text-[var(--color-primary-700)] font-medium">
+                        Cumulative growth achievement. Next award at {ndeverScore + 250}!
+                      </p>
+                      <div className="w-full bg-[var(--color-primary-200)] rounded-full h-2 mt-2">
+                        <div className="bg-[var(--color-primary-600)] h-2 rounded-full" style={{ width: `${(ndeverScore % 250) / 2.5}%` }}></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Today's Growth Wins Card */}
+                  <div className="bg-gradient-to-br from-[var(--color-success-50)] to-[var(--color-success-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden flex flex-col justify-between">
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-success-500)]/10 rounded-full blur-2xl"></div>
+                    <div className="relative flex items-center justify-between mb-4">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-success-500)] to-[var(--color-success-600)] rounded-lg flex items-center justify-center shadow-lg">
+                        <Icon name="hero-fire" className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="text-xs font-semibold text-[var(--color-success-700)] uppercase tracking-wide">
+                        Today's Growth Wins
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <p className="text-4xl font-bold text-[var(--color-success-900)] mb-2">
+                        +{todaysGrowthPoints}
                       </p>
                       <p className="text-sm text-[var(--color-success-700)] font-medium">
-                        {get_performance_pulse_message(hrMetrics.avg_performance_score)}
+                        Points earned today. Keep up the momentum!
                       </p>
                     </div>
                   </div>
-
-                  {/* Key HR Objective */}
-                  {objectives.length > 0 && (
-                    <div className="bg-gradient-to-br from-[var(--color-primary-50)] to-[var(--color-primary-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-primary-500)]/10 rounded-full blur-2xl"></div>
-                      <div className="relative">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-primary-500)] to-[var(--color-primary-600)] rounded-lg flex items-center justify-center shadow-lg">
-                            <Icon name="hero-trophy" className="w-5 h-5 text-white" />
-                          </div>
-                          <span className="text-xs font-semibold text-[var(--color-primary-700)] uppercase tracking-wide">
-                            Key HR Objective
-                          </span>
-                        </div>
-                        <p
-                          className="text-lg font-semibold text-[var(--color-primary-900)] mb-2 truncate"
-                          title={objectives[0].name}
-                        >
-                          {objectives[0].name.length > 30 ? `${objectives[0].name.slice(0, 30)}...` : objectives[0].name}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          <div className="flex-1 bg-[var(--color-primary-200)] rounded-full h-2">
-                            <div
-                              className="bg-[var(--color-primary-600)] h-2 rounded-full transition-all duration-500"
-                              style={{ width: `${calculate_objective_completion(objectives[0])}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-sm font-medium text-[var(--color-primary-700)]">
-                            {calculate_objective_completion(objectives[0])}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 <div className="lg:col-span-2 space-y-6">
                   {/* Recent Onboarding Milestones / Employee Achievements */}
-                  {todaysAchievements.length > 0 && (
+                  {todaysGrowthWinsData.length > 0 && (
                     <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
                       <div className="px-6 py-4 border-b border-gray-200">
                         <div className="flex items-center justify-between">
                           <h3 className="text-lg font-medium text-gray-900">
-                            Recent Onboarding Milestones
+                            Recent HR Growth Wins
                           </h3>
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
-                            {todaysAchievements.length} completed
+                            {todaysGrowthWinsData.length} completed
                           </span>
                         </div>
                       </div>
                       <div className="p-6">
                         <div className="space-y-3">
-                          {todaysAchievements.map((achievement, index) => (
+                          {todaysGrowthWinsData.map((win, index) => (
                             <div key={index} className="flex items-start space-x-3">
                               <div className="w-8 h-8 bg-[var(--color-success-100)] rounded-full flex items-center justify-center flex-shrink-0">
                                 <Icon name="hero-check" className="w-4 h-4 text-[var(--color-success-600)]" />
                               </div>
                               <div className="flex-1">
                                 <p className="text-sm text-gray-900">
-                                  {achievement.title}
+                                  {win.title}
                                 </p>
                                 <p className="text-xs text-gray-500 mt-1">
-                                  {achievement.playbook.title} • Completed{" "}
-                                  {new Date(achievement.completed_at).toLocaleDateString()}
+                                  {win.playbook.title} • Completed{" "}
+                                  {new Date(win.completed_at).toLocaleDateString()}
                                 </p>
                               </div>
                             </div>
                           ))}
                         </div>
-                        {todaysAchievements.length >= 3 && (
+                        {todaysGrowthWinsData.length >= 3 && (
                           <div className="mt-4 p-3 bg-[var(--color-success-50)] border border-[var(--color-success-200)] rounded-lg">
                             <p className="text-sm text-[var(--color-success-800)] font-medium">
                               <Icon name="hero-fire" className="w-4 h-4 inline mr-1" />
