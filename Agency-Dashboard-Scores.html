@@ -237,8 +237,8 @@
           // Initialize kpis with default structure to prevent "undefined" errors
           const [kpis, setKpis] = React.useState({
             ytd_revenue: { value: 0, source: '' },
-            active_clients: { value: 0, source: '' },
-            leads_this_month: { value: 0, source: '' },
+            active_clients: { value: 0, source: '' }, // For Loren's individual clients
+            leads_this_month: { value: 0, source: '' }, // For Loren's individual leads
             conversion_rate_month: { value: 0, source: '' },
           });
           const [coachMessages, setCoachMessages] = React.useState([]);
@@ -304,7 +304,7 @@
                   id: 'obj1',
                   name: 'Annual GCI Target 2025',
                   status: 'on_track', // on_track, at_risk, behind, completed
-                  progress: 95, // Increased progress for a higher score
+                  progress: 95, // This is the value that will be used for display
                   weight: 5, // Added weight for Objective Score calculation
                   metrics_definition: {
                     gci_target: { type: 'currency', label: 'GCI Target' },
@@ -497,7 +497,7 @@
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               ),
-              "hero-users": ( // Added for Team Overview
+              "hero-users": ( // Added for Team Overview - kept for potential future use or other contexts, but removed from current view
                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.125l-7.5-7.5 7.5-7.5" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10.25 15l-3-3 3-3" />
@@ -670,33 +670,16 @@
             );
           };
 
-          // Re-purposing todaysAchievements for a general "growth wins" tracker
+          // Updated todaysGrowthWinsData for an individual agent
           const todaysGrowthWinsData = [
-              { id: 'win1', title: "Completed 'Set Up Referral Automation' Playbook Task", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
-              { id: 'win2', title: "Sent 15 Automated Client Check-in Emails", playbook: { title: "Past Client Nurturing" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-              { id: 'win3', title: "Updated 5 Lead Records in CRM", playbook: { title: "Lead Management Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
+              { id: 'win1', title: "Completed 'Automated Client Nurturing' Setup", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
+              { id: 'win2', title: "Closed a new high-value client deal", playbook: { title: "Deal Closure Mastery" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
+              { id: 'win3', title: "Generated 3 new leads from marketing efforts", playbook: { title: "Lead Generation Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
           ];
 
-          // Added team members for Agency Dashboard based on previous versions
-          const teamMembers = [
-            { id: 'agent1', name: 'Sarah Chen', role: 'Agent', status: 'Active', performance: '5 deals this QTR' },
-            { id: 'agent2', name: 'Mike Johnson', role: 'Agent', status: 'Active', performance: 'Consistent performer' },
-            { id: 'agent3', name: 'David Lee', role: 'Agent', status: 'Active', performance: 'Top performer this month' },
-            { id: 'agent4', name: 'Emily White', role: 'Agent', status: 'Active', performance: 'Developing Q3 pipeline' },
-          ];
-
-          const TeamMemberCard = ({ member }) => (
-            <div className="bg-white p-3 rounded-lg shadow-sm flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-[var(--color-secondary-200)] flex items-center justify-center text-[var(--color-secondary-800)] font-bold flex-shrink-0">
-                {member.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-800">{member.name}</p>
-                <p className="text-xs text-gray-500">{member.role} - {member.performance}</p>
-              </div>
-            </div>
-          );
-
+          // Removed teamMembers and TeamMemberCard as not relevant for individual agent
+          // Removed teamMembers state: const teamMembers = [...];
+          // Removed TeamMemberCard component
 
           return (
             <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
@@ -797,6 +780,17 @@
                 </div>
 
                 <div className="lg:col-span-2 space-y-6">
+                  {/* Key Performance Indicators (for Loren) */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Your Key Performance Indicators</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <KPICard title="YTD Revenue" value={formatCurrency(kpis.ytd_revenue.value)} source={kpis.ytd_revenue.source} />
+                      <KPICard title="Active Clients" value={kpis.active_clients.value} source={kpis.active_clients.source} />
+                      <KPICard title="Leads This Month" value={kpis.leads_this_month.value} source={kpis.leads_this_month.source} />
+                      <KPICard title="Conversion Rate (Mo)" value={formatPercentage(kpis.conversion_rate_month.value)} source={kpis.conversion_rate_month.source} />
+                    </div>
+                  </section>
+
                   {/* Objectives Section */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Your Active Objectives</h2>
@@ -806,33 +800,6 @@
                       ))}
                     </div>
                   </section>
-
-                  {/* Team Overview Section */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                      <Icon name="hero-users" className="w-5 h-5 mr-2 text-gray-700" />
-                      Team Overview
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                            <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">{kpis.active_clients.value}</span>
-                            Active Agents
-                        </div>
-                        <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                            <span className="text-3xl font-bold text-[var(--color-info-700)] mr-2">{kpis.leads_this_month.value}</span>
-                            New Agents This Month
-                        </div>
-                    </div>
-                    <div className="mt-4">
-                        <h3 className="text-lg font-medium text-gray-800 mb-3">Recent Agent Activity</h3>
-                        <div className="space-y-2">
-                            {teamMembers.slice(0, 4).map(member => (
-                                <TeamMemberCard key={member.id} member={member} />
-                            ))}
-                        </div>
-                    </div>
-                  </section>
-
 
                   {/* Upcoming Tasks */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
@@ -850,7 +817,7 @@
                     </ul>
                   </section>
 
-                  {/* Recent Growth Wins (Moved from right column) */}
+                  {/* Recent Growth Wins */}
                   {todaysGrowthWinsData.length > 0 && (
                     <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
                       <div className="px-6 py-4 border-b border-gray-200">
