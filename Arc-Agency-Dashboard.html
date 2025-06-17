@@ -495,13 +495,12 @@ function App() {
       {/* Header */}
       <header className="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200">
         <div className="flex items-center">
-          <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/120x32/white/ed8622/white?text=Ndever+Logo'; }} />
+          {/* Fixed: Updated image src for GitHub Pages deployment */}
+          <img src="/ndever-ian/Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/120x32/white/ed8622/white?text=Ndever+Logo'; }} />
           <h1 className="text-xl font-semibold text-gray-800">Arc Realty Dashboard</h1>
         </div>
         <div className="flex items-center space-x-4">
-          {/* Changed user name to Mechelle */}
           <span className="text-gray-600">Hi, Mechelle!</span>
-          {/* Changed avatar placeholder to M */}
           <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">M</div>
         </div>
       </header>
@@ -753,3 +752,5 @@ function App() {
 }
 
 export default App;
+
+        
