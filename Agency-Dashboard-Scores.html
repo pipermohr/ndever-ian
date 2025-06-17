@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ndever Agency Dashboard</title>
-    <!-- Favicon -->
+    <!-- Favicon (optional, assuming a favicon.png exists in the same directory for GitHub Pages) -->
     <link rel="icon" type="image/png" href="./favicon.png">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- React and ReactDOM CDNs (for in-browser JSX transpilation via Babel) -->
+    <!-- React and ReactDOM CDNs -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for in-browser JSX transpilation. Not for production! -->
+    <!-- Babel for in-browser JSX transpilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
       body {
@@ -53,7 +53,7 @@
         box-shadow: 0 0 0 3px var(--color-primary-500); /* Using new theme variable */
       }
 
-      /* Theme CSS Variables */
+      /* Ndever Branding CSS Variables */
       :root {
         --color-casablanca-50: #fef8ee;
         --color-casablanca-100: #fdf0d7;
@@ -234,6 +234,7 @@
         function App() {
           const [objectives, setObjectives] = React.useState([]);
           const [automations, setAutomations] = React.useState([]);
+          // Initialize kpis with default structure to prevent "undefined" errors
           const [kpis, setKpis] = React.useState({
             ytd_revenue: { value: 0, source: '' },
             active_clients: { value: 0, source: '' },
@@ -242,14 +243,16 @@
           });
           const [coachMessages, setCoachMessages] = React.useState([]);
           const [upcomingTasks, setUpcomingTasks] = React.useState([]);
-          const [reviews, setReviews] = React.useState([]);
-          // New state for scores
+          const [reviews, setReviews] = React.useState([]); // New state for reviews
+
+          // New state for scores and history
           const [objectiveScore, setObjectiveScore] = React.useState(0);
           const [ndeverScore, setNdeverScore] = React.useState(0);
-          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0); // Points earned today for Ndever Score
+          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0);
+          const [objectiveScoreHistory, setObjectiveScoreHistory] = React.useState([]); // History for line chart
 
 
-          // --- Helper Functions for Elixir-like dynamic content ---
+          // --- Helper Functions ---
           const greeting_by_time = () => {
             const hour = new Date().getHours();
             if (hour < 12) return "Good morning";
@@ -257,18 +260,15 @@
             return "Good evening";
           };
 
-          // Removed old motivational messages as the new score cards handle this
-          // const get_motivational_message = (stats, todays_tasks) => { ... };
-          // const get_focus_message = (todays_tasks_count) => { ... };
-          // const get_streak_display = (completed_today_count) => { ... };
-          // const get_momentum_message = (completed_today_count) => { ... };
-
-          // Consolidated objective completion to use its inherent progress for card display
-          const calculate_objective_completion = (objective) => {
-            return objective.progress;
+          const formatCurrency = (value) => {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
           };
 
-          // NEW: Calculate the overall Objective Score
+          const formatPercentage = (value) => {
+            return new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value);
+          };
+
+          // Calculate the overall Objective Score
           const calculateOverallObjectiveScore = (objs) => {
               if (!objs || objs.length === 0) return 0;
               let totalWeightedProgress = 0;
@@ -280,13 +280,21 @@
               return totalWeight === 0 ? 0 : Math.round(totalWeightedProgress / totalWeight);
           };
 
-          const formatCurrency = (value) => {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+          // Determine the Objective Score Trend
+          const getObjectiveScoreTrend = (history) => {
+              if (history.length < 2) return "Stable"; // Need at least two points to determine a trend
+              const latestScore = history[history.length - 1];
+              const previousScore = history[history.length - 2];
+
+              if (latestScore > previousScore) {
+                  return "Upward";
+              } else if (latestScore < previousScore) {
+                  return "Downward";
+              } else {
+                  return "Stable";
+              }
           };
 
-          const formatPercentage = (value) => {
-            return new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value);
-          };
 
           React.useEffect(() => {
             // Simulate fetching initial dashboard data
@@ -296,7 +304,7 @@
                   id: 'obj1',
                   name: 'Annual GCI Target 2025',
                   status: 'on_track', // on_track, at_risk, behind, completed
-                  progress: 65, // This is the value that will be used for display
+                  progress: 95, // Increased progress for a higher score
                   weight: 5, // Added weight for Objective Score calculation
                   metrics_definition: {
                     gci_target: { type: 'currency', label: 'GCI Target' },
@@ -319,8 +327,8 @@
                 {
                   id: 'obj2',
                   name: 'Increase Client Referrals',
-                  status: 'at_risk',
-                  progress: 40,
+                  status: 'on_track', // Changed to on_track for a higher score
+                  progress: 88, // Increased progress for a higher score
                   weight: 3, // Added weight for Objective Score calculation
                   metrics_definition: {
                     referrals_target: { type: 'number', label: 'Referrals Target' },
@@ -340,8 +348,8 @@
                 {
                   id: 'obj3',
                   name: 'Improve Client Retention Rate',
-                  status: 'behind',
-                  progress: 20,
+                  status: 'on_track', // Changed to on_track for a higher score
+                  progress: 82, // Increased progress for a higher score
                   weight: 4, // Added weight
                   metrics_definition: {
                     retention_rate: { type: 'percentage', label: 'Retention Rate' },
@@ -430,15 +438,19 @@
                 { id: 'website', name: 'Website Reviews', rating: 4.7, count: 56, link: 'https://yourwebsite.com/reviews' },
               ]);
 
-              // Calculate and set the new scores
+              // Calculate and set the new scores using the modified objectives
               const calculatedObjectiveScore = calculateOverallObjectiveScore(mockObjectives);
               setObjectiveScore(calculatedObjectiveScore);
-              setNdeverScore(750); // Mock Ndever Score
-              setTodaysGrowthPoints(50); // Mock points earned today
+              setNdeverScore(980); // Higher Ndever score for strong achievement
+              setTodaysGrowthPoints(80); // More points today for growth wins
+
+              // Mock objective score history for the chart (strong upward trend)
+              setObjectiveScoreHistory([75, 78, 81, 84, 87, 90, calculatedObjectiveScore]); // Last 7 days, ending with current score
             };
 
             fetchDashboardData();
           }, []); // Empty dependency array ensures this runs once on mount
+
 
           // --- React Components for Dashboard Elements ---
 
@@ -455,39 +467,120 @@
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a.75.75 0 01.75.75v16.5a.75.75 0 01-1.5 0V3.75A.75.75 0 0112 3zm.75 14.25l4.303 2.656a.75.75 0 001.233-.696l-1.02-4.839 3.636-3.486a.75.75 0 00-.435-1.32l-4.82-.587-2.288-4.478a.75.75 0 00-1.353.001L8.71 8.874l-4.82.587a.75.75 0 00-.435 1.32l3.636 3.486-1.02 4.839a.75.75 0 001.233.696L12 17.25z" />
                 </svg>
               ),
-              "hero-check-circle": (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              "hero-arrow-trending-up": ( // For positive trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.303 4.303 7.084-7.084m0 0H18.75M21.75 5.25V7.5" />
+                  </svg>
+              ),
+              "hero-arrow-trending-down": ( // For negative trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.303-4.303 7.084 7.084m0 0H18.75M21.75 18.75V16.5" />
+                  </svg>
+              ),
+              "hero-arrows-left-right": ( // For stable trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 12h9m-9 3.75H12M18.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
               ),
               "hero-fire": ( // For Today's Growth Wins
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 22.5 12 13.5H3.75z" />
                 </svg>
               ),
-              "hero-check": (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>
-              ),
               "hero-star": ( // New star icon for reviews
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
                   <path fillRule="evenodd" d="M10.868 2.884c.321-.772 1.415-.772 1.736 0l1.82 4.394a1.625 1.625 0 011.213.882l4.394 1.82c.772.321.772 1.415 0 1.736l-4.394 1.82a1.625 1.625 0 01-1.213.882l-1.82 4.394c-.321.772-1.415.772-1.736 0l-1.82-4.394a1.625 1.625 0 01-1.213-.882l-4.394-1.82c-.772-.321-.772-1.415 0-1.736l4.394-1.82a1.625 1.625 0 011.213-.882l1.82-4.394z" clipRule="evenodd" />
                 </svg>
-              )
+              ),
+               "hero-check": ( // Used for growth wins checkmark
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+              ),
+              "hero-users": ( // Added for Team Overview
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.125l-7.5-7.5 7.5-7.5" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.25 15l-3-3 3-3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9l3 3-3 3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 110-18 9 9 0 010 18z" />
+                 </svg>
+               )
             };
             return icons[name] || null;
           };
+
+          // ObjectiveScoreLineChart Component
+          const ObjectiveScoreLineChart = ({ data, trend }) => {
+            if (!data || data.length < 2) {
+              return (
+                <div className="text-center text-gray-500 text-sm mt-4">
+                  Not enough data for trend.
+                </div>
+              );
+            }
+
+            const width = 200; // Fixed width for the chart
+            const height = 60; // Fixed height
+            const margin = { top: 5, right: 5, bottom: 5, left: 5 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+
+            const minScore = 0; // Assuming scores are 0-100
+            const maxScore = 100;
+            const xInterval = chartWidth / (data.length - 1); // Distance between points on X axis
+
+            const points = data.map((d, i) => {
+              const x = i * xInterval;
+              const y = chartHeight - ((d - minScore) / (maxScore - minScore)) * chartHeight;
+              return `${x},${y}`;
+            }).join(' ');
+
+            let trendIcon = null;
+            let trendColor = "text-gray-500";
+            if (trend === "Upward") {
+                trendIcon = <Icon name="hero-arrow-trending-up" className="w-5 h-5" />;
+                trendColor = "text-green-500";
+            } else if (trend === "Downward") {
+                trendIcon = <Icon name="hero-arrow-trending-down" className="w-5 h-5" />;
+                trendColor = "text-red-500";
+            } else {
+                trendIcon = <Icon name="hero-arrows-left-right" className="w-5 h-5" />;
+            }
+
+            return (
+              <div className="relative mt-4">
+                <svg width={width} height={height}>
+                  <polyline
+                    fill="none"
+                    stroke="var(--color-info-600)"
+                    strokeWidth="2"
+                    points={points}
+                  />
+                   {/* Optional: Add a circle for the latest point */}
+                   <circle cx={xInterval * (data.length - 1)} cy={chartHeight - ((data[data.length - 1] - minScore) / (maxScore - minScore)) * chartHeight} r="3" fill="var(--color-info-600)" />
+                </svg>
+                <div className={`absolute bottom-0 right-0 flex items-center text-xs font-semibold ${trendColor}`}>
+                  {trendIcon}
+                  <span className="ml-1">{trend} Trend</span>
+                </div>
+              </div>
+            );
+          };
+
 
           const MetricDisplay = ({ definition, value, target }) => {
             let displayValue = value;
             if (definition.type === 'currency') displayValue = formatCurrency(value);
             if (definition.type === 'percentage') displayValue = formatPercentage(value);
+            if (definition.type === 'days') displayValue = `${value} days`; // Added for consistency with mock data
+            if (definition.type === 'number') displayValue = value.toLocaleString(); // Added for consistency with mock data
 
             let targetDisplay = target;
             if (target !== undefined) {
                 if (definition.type === 'currency') targetDisplay = formatCurrency(target);
                 if (definition.type === 'percentage') targetDisplay = formatPercentage(target);
+                if (definition.type === 'days') targetDisplay = `${target} days`; // Added for consistency with mock data
+                if (definition.type === 'number') targetDisplay = target.toLocaleString(); // Added for consistency with mock data
             }
 
             return (
@@ -579,10 +672,30 @@
 
           // Re-purposing todaysAchievements for a general "growth wins" tracker
           const todaysGrowthWinsData = [
-              { title: "Completed 'Set Up Referral Automation' Playbook Task", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
-              { title: "Sent 15 Automated Client Check-in Emails", playbook: { title: "Past Client Nurturing" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-              { title: "Updated 5 Lead Records in CRM", playbook: { title: "Lead Management Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
+              { id: 'win1', title: "Completed 'Set Up Referral Automation' Playbook Task", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
+              { id: 'win2', title: "Sent 15 Automated Client Check-in Emails", playbook: { title: "Past Client Nurturing" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
+              { id: 'win3', title: "Updated 5 Lead Records in CRM", playbook: { title: "Lead Management Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
           ];
+
+          // Added team members for Agency Dashboard based on previous versions
+          const teamMembers = [
+            { id: 'agent1', name: 'Sarah Chen', role: 'Agent', status: 'Active', performance: '5 deals this QTR' },
+            { id: 'agent2', name: 'Mike Johnson', role: 'Agent', status: 'Active', performance: 'Consistent performer' },
+            { id: 'agent3', name: 'David Lee', role: 'Agent', status: 'Active', performance: 'Top performer this month' },
+            { id: 'agent4', name: 'Emily White', role: 'Agent', status: 'Active', performance: 'Developing Q3 pipeline' },
+          ];
+
+          const TeamMemberCard = ({ member }) => (
+            <div className="bg-white p-3 rounded-lg shadow-sm flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-[var(--color-secondary-200)] flex items-center justify-center text-[var(--color-secondary-800)] font-bold flex-shrink-0">
+                {member.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-800">{member.name}</p>
+                <p className="text-xs text-gray-500">{member.role} - {member.performance}</p>
+              </div>
+            </div>
+          );
 
 
           return (
@@ -632,6 +745,8 @@
                       <p className="text-sm text-[var(--color-info-700)] font-medium">
                         Your real-time growth momentum across objectives.
                       </p>
+                       {/* Line chart for Objective Score history */}
+                      <ObjectiveScoreLineChart data={objectiveScoreHistory} trend={getObjectiveScoreTrend(objectiveScoreHistory)} />
                     </div>
                   </div>
 
@@ -692,6 +807,33 @@
                     </div>
                   </section>
 
+                  {/* Team Overview Section */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                      <Icon name="hero-users" className="w-5 h-5 mr-2 text-gray-700" />
+                      Team Overview
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
+                            <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">{kpis.active_clients.value}</span>
+                            Active Agents
+                        </div>
+                        <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
+                            <span className="text-3xl font-bold text-[var(--color-info-700)] mr-2">{kpis.leads_this_month.value}</span>
+                            New Agents This Month
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        <h3 className="text-lg font-medium text-gray-800 mb-3">Recent Agent Activity</h3>
+                        <div className="space-y-2">
+                            {teamMembers.slice(0, 4).map(member => (
+                                <TeamMemberCard key={member.id} member={member} />
+                            ))}
+                        </div>
+                    </div>
+                  </section>
+
+
                   {/* Upcoming Tasks */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Upcoming Tasks</h2>
@@ -707,6 +849,50 @@
                       ))}
                     </ul>
                   </section>
+
+                  {/* Recent Growth Wins (Moved from right column) */}
+                  {todaysGrowthWinsData.length > 0 && (
+                    <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
+                      <div className="px-6 py-4 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-medium text-gray-900">
+                            Recent Growth Wins
+                          </h3>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
+                            {todaysGrowthWinsData.length} completed
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <div className="space-y-3">
+                          {todaysGrowthWinsData.map((win, index) => (
+                            <div key={index} className="flex items-start space-x-3">
+                              <div className="w-8 h-8 bg-[var(--color-success-100)] rounded-full flex items-center justify-center flex-shrink-0">
+                                <Icon name="hero-check" className="w-4 h-4 text-[var(--color-success-600)]" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm text-gray-900">
+                                  {win.title}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {win.playbook.title} • Completed{" "}
+                                  {new Date(win.completed_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {todaysGrowthWinsData.length >= 3 && (
+                          <div className="mt-4 p-3 bg-[var(--color-success-50)] border border-[var(--color-success-200)] rounded-lg">
+                            <p className="text-sm text-[var(--color-success-800)] font-medium">
+                              <Icon name="hero-fire" className="w-4 h-4 inline mr-1" />
+                              Outstanding progress in recent initiatives!
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right Column: Ndever Coach, Automation Summary, Client Feedback */}
@@ -744,11 +930,11 @@
                   <section className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
                       Workflow Automations
-                      <span className="ml-2 px-2 py-1 bg-[var(--color-primary-100)] text-[var(--color-primary-700)] text-sm font-medium rounded-full">Active: {automations.length}</span>
+                      <span className="ml-2 px-2 py-1 bg-[var(--color-secondary-100)] text-[var(--color-secondary-700)] text-sm font-medium rounded-full">Active: {automations.length}</span>
                     </h2>
                     <div className="space-y-3">
                       <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                        <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">
+                        <span className="text-3xl font-bold text-[var(--color-secondary-700)] mr-2">
                             {automations.reduce((sum, auto) => sum + auto.executions_today, 0)}
                         </span>Automations Executed Today
                       </div>
