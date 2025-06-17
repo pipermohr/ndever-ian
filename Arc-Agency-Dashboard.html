@@ -4,17 +4,17 @@ import React, { useState, useEffect } from 'react';
 function App() {
   const [objectives, setObjectives] = useState([]);
   const [automations, setAutomations] = useState([]);
-  // Fixed: Initialize kpis with a structure that prevents undefined errors on first render
   const [kpis, setKpis] = useState({
     ytd_revenue: { value: 0, source: '' },
     active_agents: { value: 0, source: '' },
     new_agents_this_quarter: { value: 0, source: '' },
     avg_agent_productivity: { value: '', source: '' },
   });
-  const [coachMessages, setCoachMessages] = useState([]);
+  // Renamed coachMessages to copilotMessages and setCoachMessages to setCopilotMessages
+  const [copilotMessages, setCopilotMessages] = useState([]);
   const [upcomingTasks, setUpcomingTasks] = useState([]);
   const [reviews, setReviews] = useState([]);
-  const [teamMembers, setTeamMembers] = useState([]); // New state for team members
+  const [teamMembers, setTeamMembers] = useState([]);
 
   // Growth & Operational Scores
   const [objectiveScore, setObjectiveScore] = useState(0);
@@ -45,7 +45,7 @@ function App() {
       let totalWeightedProgress = 0;
       let totalWeight = 0;
       objs.forEach(obj => {
-          totalWeightedProgress += (obj.progress * (obj.weight || 1)); // Default weight to 1 if not defined
+          totalWeightedProgress += (obj.progress * (obj.weight || 1));
           totalWeight += (obj.weight || 1);
       });
       return totalWeight === 0 ? 0 : Math.round(totalWeightedProgress / totalWeight);
@@ -75,7 +75,7 @@ function App() {
           id: 'agency_obj1',
           name: 'Achieve $5M Gross Commission Income (GCI)',
           status: 'on_track',
-          progress: 72, // Current progress
+          progress: 72,
           weight: 5,
           metrics_definition: {
             gci_target: { type: 'currency', label: 'GCI Target' },
@@ -95,7 +95,7 @@ function App() {
         {
           id: 'hr_obj1',
           name: 'Onboard 10 New Real Estate Agents per Quarter',
-          status: 'on_track', // Operational objective
+          status: 'on_track',
           progress: 80,
           weight: 4,
           metrics_definition: {
@@ -106,7 +106,7 @@ function App() {
           current_values: {
             onboarding_target: 10,
             current_onboarded: 8,
-            avg_onboarding_time: 25, // days
+            avg_onboarding_time: 25,
           },
           target_values: {
             onboarding_target: 10,
@@ -127,7 +127,7 @@ function App() {
           current_values: {
             transactions_per_agent_target: 3.0,
             current_transactions_per_agent: 2.2,
-            agent_training_completion: 0.75, // 75%
+            agent_training_completion: 0.75,
           },
           target_values: {
             transactions_per_agent_target: 3.0,
@@ -177,8 +177,9 @@ function App() {
         },
       ]);
 
-      setCoachMessages([
-        { sender: 'coach', text: "Good morning, Loren! Your GCI objective is on track. We've successfully onboarded 8 new agents this quarter! Your average agent productivity is at 2.2 transactions per quarter. Shall we focus on boosting agent training completion?" },
+      // Updated coach messages to refer to "Mechelle"
+      setCopilotMessages([
+        { sender: 'coach', text: "Good morning, Mechelle! Your GCI objective is on track. We've successfully onboarded 8 new agents this quarter! Your average agent productivity is at 2.2 transactions per quarter. Shall we focus on boosting agent training completion?" },
         { sender: 'user', text: "Morning! Yes, let's prioritize agent productivity. What's the best playbook for experienced agents to increase their transactions?" },
         { sender: 'coach', text: "Understood. I've highlighted the 'Advanced Agent Marketing Playbook' and the 'Client Conversion Mastery Playbook'. I've also scheduled automated follow-ups for agents who haven't completed their Q2 compliance training." },
       ]);
@@ -206,11 +207,10 @@ function App() {
       // Calculate and set the new scores
       const calculatedObjectiveScore = calculateOverallObjectiveScore(mockObjectives);
       setObjectiveScore(calculatedObjectiveScore);
-      setNdeverScore(1550); // Higher Ndever score for larger agency
-      setTodaysGrowthPoints(90); // More points today for growth wins
+      setNdeverScore(1550);
+      setTodaysGrowthPoints(90);
 
-      // Mock objective score history for the chart (upward trend)
-      setObjectiveScoreHistory([70, 72, 75, 77, 79, 81, calculatedObjectiveScore]); // Last 7 days, ending with current score
+      setObjectiveScoreHistory([70, 72, 75, 77, 79, 81, calculatedObjectiveScore]);
     };
 
     fetchDashboardData();
@@ -220,49 +220,48 @@ function App() {
   // --- React Components for Dashboard Elements ---
 
   const Icon = ({ name, className }) => {
-    // Placeholder for Heroicons or other SVG icons
     const icons = {
-      "hero-scale": ( // For Objective Score
+      "hero-scale": (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.125 12.75l-1.108 1.107A.75.75 0 018.842 14v-.825a2.25 2.25 0 00-2.25-2.25H4.125m11.25 0h-.825a2.25 2.25 0 00-2.25 2.25v.825c0 .211-.081.416-.226.561l-1.108 1.107c-.42.42-.647 1-.647 1.636v.433a2.25 2.25 0 002.25 2.25h.825m0-15l1.108-1.107A.75.75 0 0115.158 10V10.825a2.25 2.25 0 002.25 2.25h1.625M9.75 3.75v.825a2.25 2.25 0 002.25 2.25h.825m0-4.5L12 3.75l-1.108 1.107A.75.75 0 0010.842 5V5.825a2.25 2.25 0 00-2.25 2.25H4.125" />
         </svg>
       ),
-      "hero-sparkles": ( // For Ndever Score / Gamification
+      "hero-sparkles": (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a.75.75 0 01.75.75v16.5a.75.75 0 01-1.5 0V3.75A.75.75 0 0112 3zm.75 14.25l4.303 2.656a.75.75 0 001.233-.696l-1.02-4.839 3.636-3.486a.75.75 0 00-.435-1.32l-4.82-.587-2.288-4.478a.75.75 0 00-1.353.001L8.71 8.874l-4.82.587a.75.75 0 00-.435 1.32l3.636 3.486-1.02 4.839a.75.75 0 001.233.696L12 17.25z" />
         </svg>
       ),
-      "hero-arrow-trending-up": ( // For positive trend
+      "hero-arrow-trending-up": (
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.303 4.303 7.084-7.084m0 0H18.75M21.75 5.25V7.5" />
           </svg>
       ),
-      "hero-arrow-trending-down": ( // For negative trend
+      "hero-arrow-trending-down": (
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.303-4.303 7.084 7.084m0 0H18.75M21.75 18.75V16.5" />
           </svg>
       ),
-      "hero-arrows-left-right": ( // For stable trend
+      "hero-arrows-left-right": (
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 12h9m-9 3.75H12M18.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
           </svg>
       ),
-      "hero-fire": ( // For Today's Growth Wins
+      "hero-fire": (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 22.5 12 13.5H3.75z" />
         </svg>
       ),
-      "hero-star": ( // New star icon for reviews
+      "hero-star": (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
           <path fillRule="evenodd" d="M10.868 2.884c.321-.772 1.415-.772 1.736 0l1.82 4.394a1.625 1.625 0 011.213.882l4.394 1.82c.772.321.772 1.415 0 1.736l-4.394 1.82a1.625 1.625 0 01-1.213.882l-1.82 4.394c-.321.772-1.415.772-1.736 0l-1.82-4.394a1.625 1.625 0 01-1.213-.882l-4.394-1.82c-.772-.321-.772-1.415 0-1.736l4.394-1.82a1.625 1.625 0 011.213-.882l1.82-4.394z" clipRule="evenodd" />
         </svg>
       ),
-       "hero-check": ( // Used for growth wins checkmark
+       "hero-check": (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
         </svg>
       ),
-       "hero-users": ( // For Team Overview
+       "hero-users": (
          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.125l-7.5-7.5 7.5-7.5" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.25 15l-3-3 3-3" />
@@ -284,15 +283,15 @@ function App() {
       );
     }
 
-    const width = 200; // Fixed width for the chart
-    const height = 60; // Fixed height
+    const width = 200;
+    const height = 60;
     const margin = { top: 5, right: 5, bottom: 5, left: 5 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
-    const minScore = 0; // Assuming scores are 0-100
+    const minScore = 0;
     const maxScore = 100;
-    const xInterval = chartWidth / (data.length - 1); // Distance between points on X axis
+    const xInterval = chartWidth / (data.length - 1);
 
     const points = data.map((d, i) => {
       const x = i * xInterval;
@@ -321,7 +320,6 @@ function App() {
             strokeWidth="2"
             points={points}
           />
-           {/* Optional: Add a circle for the latest point */}
            <circle cx={xInterval * (data.length - 1)} cy={chartHeight - ((data[data.length - 1] - minScore) / (maxScore - minScore)) * chartHeight} r="3" fill="var(--color-info-600)" />
         </svg>
         <div className={`absolute bottom-0 right-0 flex items-center text-xs font-semibold ${trendColor}`}>
@@ -337,8 +335,8 @@ function App() {
     let displayValue = value;
     if (definition.type === 'currency') displayValue = formatCurrency(value);
     if (definition.type === 'percentage') displayValue = formatPercentage(value);
-    if (definition.type === 'days') displayValue = `${value} days`; // For HR metrics
-    if (definition.type === 'number') displayValue = value.toLocaleString(); // For general numbers
+    if (definition.type === 'days') displayValue = `${value} days`;
+    if (definition.type === 'number') displayValue = value.toLocaleString();
 
     let targetDisplay = target;
     if (target !== undefined) {
@@ -435,14 +433,12 @@ function App() {
     );
   };
 
-  // Re-purposing todaysAchievements for a general "growth wins" tracker
   const todaysGrowthWinsData = [
       { id: 'win1', title: "New Agent Emily finished onboarding early", playbook: { title: "Agent Onboarding" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
       { id: 'win2', title: "Agent David closed a high-value property deal", playbook: { title: "Deal Closure Playbook" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
       { id: 'win3', title: "Marketing team launched Q3 lead gen campaign", playbook: { title: "Marketing Strategy" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
   ];
 
-  // Team Member Card for the new "Team Overview" section
   const TeamMemberCard = ({ member }) => (
     <div className="bg-white p-3 rounded-lg shadow-sm flex items-center space-x-3">
       <div className="w-10 h-10 rounded-full bg-[var(--color-secondary-200)] flex items-center justify-center text-[var(--color-secondary-800)] font-bold flex-shrink-0">
@@ -458,17 +454,55 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+      {/* Ndever Branding CSS Variables */}
+      <style>
+        {`
+          :root {
+            --color-primary-50: #eff6ff;
+            --color-primary-100: #dbeafe;
+            --color-primary-200: #bfdbfe;
+            --color-primary-500: #3b82f6;
+            --color-primary-600: #2563eb;
+            --color-primary-700: #1d4ed8;
+            --color-primary-900: #1e3a8a;
+
+            --color-info-50: #f0f9ff;
+            --color-info-100: #e0f2fe;
+            --color-info-500: #0ea5e9;
+            --color-info-600: #0284c7;
+            --color-info-700: #0369a1;
+            --color-info-900: #0c4a6e;
+
+            --color-success-50: #f0fdf4;
+            --color-success-100: #dcfce7;
+            --color-success-600: #22c55e;
+            --color-success-800: #16a34a;
+
+            --color-warning-100: #fff7ed;
+            --color-warning-800: #c2410c;
+
+            --color-danger-100: #fee2e2;
+            --color-danger-800: #b91c1c;
+
+            --color-secondary-100: #f3e8ff;
+            --color-secondary-200: #e9d5ff;
+            --color-secondary-700: #7e22ce;
+            --color-secondary-800: #6b21a8;
+          }
+        `}
+      </style>
+
       {/* Header */}
       <header className="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200">
         <div className="flex items-center">
-          {/* Ndever Logo Image */}
           <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/120x32/white/ed8622/white?text=Ndever+Logo'; }} />
           <h1 className="text-xl font-semibold text-gray-800">Arc Realty Dashboard</h1>
         </div>
         <div className="flex items-center space-x-4">
-          <span className="text-gray-600">Hi, Loren!</span>
-          {/* User Avatar Placeholder */}
-          <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">L</div>
+          {/* Changed user name to Mechelle */}
+          <span className="text-gray-600">Hi, Mechelle!</span>
+          {/* Changed avatar placeholder to M */}
+          <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">M</div>
         </div>
       </header>
 
@@ -573,12 +607,10 @@ function App() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                    {/* Fixed: Access the 'value' property directly from kpis.active_agents */}
                     <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">{kpis.active_agents.value}</span>
                     Active Agents
                 </div>
                 <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                    {/* Fixed: Access the 'value' property directly from kpis.new_agents_this_quarter */}
                     <span className="text-3xl font-bold text-[var(--color-info-700)] mr-2">{kpis.new_agents_this_quarter.value}</span>
                     New Agents This QTR
                 </div>
@@ -586,7 +618,7 @@ function App() {
             <div className="mt-4">
                 <h3 className="text-lg font-medium text-gray-800 mb-3">Recent Agent Activity</h3>
                 <div className="space-y-2">
-                    {teamMembers.slice(0, 4).map(member => ( // Show first few team members
+                    {teamMembers.slice(0, 4).map(member => (
                         <TeamMemberCard key={member.id} member={member} />
                     ))}
                 </div>
@@ -658,11 +690,11 @@ function App() {
 
         {/* Right Column: Ndever Coach, Automation Summary, Client Feedback */}
         <div className="space-y-6">
-          {/* Ndever Coach Chat */}
+          {/* Ndever Co-Pilot Chat */}
           <section className="bg-white p-6 rounded-lg shadow-md h-96 flex flex-col">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever Co-Pilot</h2>
             <div className="flex-1 overflow-y-auto border border-gray-200 p-3 rounded-lg bg-gray-50 mb-3 text-sm">
-              {coachMessages.map((msg, index) => (
+              {copilotMessages.map((msg, index) => (
                 <div key={index} className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                   <span className={`inline-block p-2 rounded-lg ${
                     msg.sender === 'user' ? 'bg-[var(--color-primary-500)] text-white' : 'bg-gray-200 text-gray-800'
