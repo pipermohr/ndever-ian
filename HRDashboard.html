@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ndever Agency Dashboard</title>
-    <!-- Favicon (optional, assuming a favicon.png exists in the same directory for GitHub Pages) -->
+    <title>Ndever HR Dashboard</title>
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="./favicon.png">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- React and ReactDOM CDNs -->
+    <!-- React and ReactDOM CDNs (for in-browser JSX transpilation via Babel) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for in-browser JSX transpilation -->
+    <!-- Babel for in-browser JSX transpilation. Not for production! -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
       body {
@@ -41,26 +41,19 @@
         border-color: var(--color-primary-600); /* Using new theme variable */
       }
 
-      .form-checkbox:checked::before {
-        content: '\2713'; /* Checkmark unicode character */
-        color: white;
-        font-size: 0.875rem; /* text-sm */
-        line-height: 1;
-      }
-
       .form-checkbox:focus {
         outline: none;
         box-shadow: 0 0 0 3px var(--color-primary-500); /* Using new theme variable */
       }
 
-      /* Ndever Branding CSS Variables */
+      /* Theme CSS Variables (same as previous mockup for consistency) */
       :root {
         --color-casablanca-50: #fef8ee;
         --color-casablanca-100: #fdf0d7;
         --color-casablanca-200: #faddae;
         --color-casablanca-300: #f4b860;
         --color-casablanca-400: #f1a146;
-        --color-casablanca-500: #ed8622; /* Ndever Orange */
+        --color-casablanca-500: #ed8622;
         --color-casablanca-600: #de6d18;
         --color-casablanca-700: #b95315;
         --color-casablanca-800: #934219;
@@ -79,7 +72,6 @@
         --color-primary-900: var(--color-casablanca-900);
         --color-primary-950: var(--color-casablanca-950);
 
-        /* Teal for secondary, info, etc. to represent "cool" or initial stages */
         --color-teal-50: #f0fdfa;
         --color-teal-100: #ccfbf1;
         --color-teal-200: #99f6e4;
@@ -104,7 +96,6 @@
         --color-secondary-900: var(--color-teal-900);
         --color-secondary-950: var(--color-teal-950);
 
-        /* Success/Green remains for "on-track" or positive status */
         --color-green-50: #f0fdf4;
         --color-green-100: #dcfce7;
         --color-green-200: #bbf7d0;
@@ -129,7 +120,6 @@
         --color-success-900: var(--color-green-900);
         --color-success-950: var(--color-green-950);
 
-        /* Red for danger/behind */
         --color-red-50: #fef2f2;
         --color-red-100: #fee2e2;
         --color-red-200: #fecaca;
@@ -154,7 +144,6 @@
         --color-danger-900: var(--color-red-900);
         --color-danger-950: var(--color-red-950);
 
-        /* Yellow for warning/at-risk */
         --color-yellow-50: #fefce8;
         --color-yellow-100: #fef9c3;
         --color-yellow-200: #fef08a;
@@ -179,7 +168,6 @@
         --color-warning-900: var(--color-yellow-900);
         --color-warning-950: var(--color-yellow-950);
 
-        /* Sky blue for info/secondary elements */
         --color-sky-50: #f0f9ff;
         --color-sky-100: #e0f2fe;
         --color-sky-200: #bae6fd;
@@ -204,7 +192,6 @@
         --color-info-900: var(--color-sky-900);
         --color-info-950: var(--color-sky-950);
 
-        /* Gray for text/backgrounds */
         --color-slate-50: #f8fafc;
         --color-slate-100: #f1f5f9;
         --color-slate-200: #e2e8f0;
@@ -289,6 +276,7 @@
 
             objs.forEach(obj => {
                 const priorityValue = getPriorityValue(obj.priority);
+                // Incorporate both weight and priority into the calculation
                 totalWeightedProgress += (obj.progress * (obj.weight || 1) * priorityValue);
                 totalWeight += ((obj.weight || 1) * priorityValue);
             });
@@ -296,8 +284,10 @@
         };
 
         // --- React Components for Dashboard Elements ---
+
         // Define Icon component first as others use it
         const Icon = ({ name, className }) => {
+            // Placeholder for Heroicons or other SVG icons
             const icons = {
               "hero-scale": ( // For Objective Score
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
@@ -309,41 +299,72 @@
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a.75.75 0 01.75.75v16.5a.75.75 0 01-1.5 0V3.75A.75.75 0 0112 3zm.75 14.25l4.303 2.656a.75.75 0 001.233-.696l-1.02-4.839 3.636-3.486a.75.75 0 00-.435-1.32l-4.82-.587-2.288-4.478a.75.75 0 00-1.353.001L8.71 8.874l-4.82.587a.75.75 0 00-.435 1.32l3.636 3.486-1.02 4.839a.75.75 0 001.233.696L12 17.25z" />
                 </svg>
               ),
-              "hero-fire": ( // For Today's Growth Wins
+              "hero-arrow-trending-up": ( // For positive trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.303 4.303 7.084-7.084m0 0H18.75M21.75 5.25V7.5" />
+                  </svg>
+              ),
+              "hero-arrow-trending-down": ( // For negative trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.303-4.303 7.084 7.084m0 0H18.75M21.75 18.75V16.5" />
+                  </svg>
+              ),
+              "hero-arrows-left-right": ( // For stable trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 12h9m-9 3.75H12M18.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+              ),
+              "hero-check-circle": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+              "hero-rocket-launch": ( // Adapted for Onboarding Focus (now within Overview card)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042V19.5m0-13.458L15.375 9.375M12 6.042L8.625 9.375M12 6.042V3.75m0 2.292c0 .107 0 .216-.017.323l-.865 4.323m-4.633.003L7.125 12.75l1.875-1.875M12 10.5h.008v.008H12zM12 12.75h.008v.008H12zM12 15h.008v.008H12zM12 17.25h.008v.008H12zM12 19.5h.008v.008H12z" />
+                </svg>
+              ),
+              "hero-fire": ( // Adapted for Performance Pulse (now for Growth Wins)
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 22.5 12 13.5H3.75z" />
                 </svg>
               ),
-              "hero-star": ( // New star icon for reviews
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
-                  <path fillRule="evenodd" d="M10.868 2.884c.321-.772 1.415-.772 1.736 0l1.82 4.394a1.625 1.625 0 011.213.882l4.394 1.82c.772.321.772 1.415 0 1.736l-4.394 1.82a1.625 1.625 0 01-1.213.882l-1.82 4.394c-.321.772-1.415.772-1.736 0l-1.82-4.394a1.625 1.625 0 01-1.213-.882l-4.394-1.82c-.772-.321-.772-1.415 0-1.736l4.394-1.82a1.625 1.625 0 011.213-.882l1.82-4.394z" clipRule="evenodd" />
+              "hero-trophy": ( // Reused for Key HR Objective (now within Growth Wins)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25M14.25 18a4.5 4.5 0 004.5-4.5V7.5a4.5 4.5 0 00-4.5-4.5h-1.5a.75.75 0 00-.75.75v10.5a.75.75 0 00.75.75h1.5zm-9-5.25L7.5 7.5 5.25 9.75M9.75 18A4.5 4.5 0 005.25 13.5V7.5a4.5 4.5 0 004.5-4.5h1.5a.75.75 0 00.75-.75v10.5a.75.75 0 00-.75.75h-1.5z" />
                 </svg>
               ),
-               "hero-check": ( // Used for growth wins checkmark
+              "hero-check": (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               ),
-              "hero-arrow-path": ( // For maintenance objectives
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.181m0 0l-3.181-3.181A1.5 1.5 0 005.15 12.75H1.5m11.183 2.928a3.75 3.75 0 00-4.781-4.781m0 0H6.75m11.183 2.928a3.75 3.75 0 01-4.781 4.781m0 0H17.25m-4.634-11.233l1.92-2.166A1.5 1.5 0 0118 7.25h3.75h-.001v-.001m-1.92 2.166A1.5 1.5 0 0015.75 12.75H1.5" />
+              "hero-star": ( // Reused for general rating if needed, though not for this HR specific mockup
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
+                  <path fillRule="evenodd" d="M10.868 2.884c.321-.772 1.415-.772 1.736 0l1.82 4.394a1.625 1.625 0 011.213.882l4.394 1.82c.772.321.772 1.415 0 1.736l-4.394 1.82a1.625 1.625 0 01-1.213.882l-1.82 4.394c-.321.772-1.415.772-1.736 0l-1.82-4.394a1.625 1.625 0 01-1.213-.882l-4.394-1.82c-.772-.321-.772-1.415 0-1.736l4.394-1.82a1.625 1.625 0 011.213-.882l1.82-4.394z" clipRule="evenodd" />
                 </svg>
               ),
-              "hero-rocket": ( // For growth objectives
+              "hero-users": ( // New icon for Organizational Overview
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.31a.75.75 0 01-.176.793l-1.42 1.42a.75.75 0 01-1.06 0L9.423 13.92a.75.75 0 010-1.06l1.42-1.42a.75.75 0 01.793-.176m.503 1.05v2.806m-2.806.503H9.418M8.25 18.75a1.5 1.5 0 00-1.5 1.5v.75m1.5-1.5H7.5m-.75 0h-1.5M12 4.5l-2.072 2.072a.75.75 0 00-.22.53v.794l-1.071 1.071M10.5 8.25L9 9.75m-3.75 0L1.5 14.25m5.25-9.75h-.75m-1.5 0h-.75M12 9a.75.75 0 01-.75-.75V6.75m0-1.5a.75.75 0 00-.75-.75H5.25M17.25 4.5h-.75m-1.5 0h-.75m2.25 2.25h.75m1.5 0h.75m-2.25-2.25L12 9M18 1.5l-2.072 2.072a.75.75 0 00-.22.53V6.75l-1.071 1.071M22.5 7.5h-.75m-1.5 0h-.75m-2.25 2.25h.75m1.5 0h.75M22.5 12L18 16.5m-3.75 0H12m0-2.25h-2.25" />
+                  <path strokeLinecap="round" strokeLinecap="round" d="M15 19.125l-7.5-7.5 7.5-7.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.25 15l-3-3 3-3" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9l3 3-3 3" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 110-18 9 9 0 010 18z" />
                 </svg>
               ),
+               "hero-chart-bar": ( // New icon for Analytics
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 14.25V13.5m0-6V7.5m0 6H6m6-6h-1.5m1.5 0V6m3 0v3.75m0-3.75H18m0 0h1.5m-1.5 0V9a2.25 2.25 0 01-2.25 2.25H12a2.25 2.25 0 01-2.25-2.25V7.5m-3.75 6.75H6m0 0v1.5a.75.75 0 00.75.75h4.5a.75.75 0 00.75-.75v-1.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 110-18 9 9 0 010 18z" />
+                </svg>
+              )
             };
             return icons[name] || null;
           };
 
-        // ObjectiveProgressRing Component (replaces simple progress bar in ObjectiveCard)
-        // Adjusted strokeWidth for thinner rings and ensured text fits.
-        const ObjectiveProgressRing = ({ progress, status, priority, type, size = 20 }) => {
-            const strokeWidth = 4; // Made thinner for all rings
-            // Calculate radius based on `size` (which is effectively viewBox width/height divided by 2) and strokeWidth.
-            // This ensures the circle fits within the SVG and accounts for the stroke.
+        // ObjectiveProgressRing Component
+        const ObjectiveProgressRing = ({ progress, size = 20 }) => {
+            const strokeWidth = 4;
             const radius = (size * 2 / 2) - (strokeWidth / 2);
             const circumference = 2 * Math.PI * radius;
             const offset = circumference - (progress / 100) * circumference;
@@ -352,10 +373,7 @@
             const bgColor = 'var(--color-gray-200)';
             const textColor = 'var(--color-gray-800)';
 
-            // Dynamically adjust font size for the percentage to accommodate 100%
-            // Using more precise font sizes to ensure fit and readability.
             const textSizeClass = size <= 24 ? 'text-[9px]' : (size <= 28 ? 'text-[10px]' : 'text-xs');
-
 
             return (
               <div className={`relative w-${size} h-${size} flex-shrink-0`}>
@@ -383,8 +401,8 @@
                     style={{ transition: 'stroke-dashoffset 0.35s' }}
                   />
                   <text
-                    x="50%" // Centered horizontally
-                    y="50%" // Centered vertically
+                    x="50%"
+                    y="50%"
                     textAnchor="middle"
                     dominantBaseline="middle"
                     className={`${textSizeClass} font-bold`}
@@ -397,11 +415,21 @@
             );
         };
 
-        // New ObjectiveScoreWidget Component
-        const ObjectiveScoreWidget = ({ objectives, ndeverScore, todaysGrowthPoints }) => {
+        // NEW: ObjectiveScoreWidget for HR Dashboard (similar to Agency Dashboard)
+        const ObjectiveScoreWidget = ({ objectives, ndeverScore, todaysGrowthPoints, objectiveScoreHistory }) => {
             const overallObjectiveScore = calculateOverallObjectiveScore(objectives);
+            const objectiveScoreTrend = getObjectiveScoreTrend(objectiveScoreHistory);
 
-            // Sort objectives by priority (highest first) then by progress (descending)
+            // Determine overall score color for the main ring
+            const overallScoreColor = overallObjectiveScore > 85 ? 'var(--color-success-600)' :
+                                      overallObjectiveScore > 60 ? 'var(--color-primary-600)' :
+                                      'var(--color-danger-600)';
+
+            const radiusOverall = 50;
+            const circumferenceOverall = 2 * Math.PI * radiusOverall;
+            const offsetOverall = circumferenceOverall - (overallObjectiveScore / 100) * circumferenceOverall;
+
+            // Sort objectives by priority (highest first) then by progress (descending) for the "Top Objectives" section
             const sortedObjectives = [...objectives].sort((a, b) => {
                 const getPriorityValue = (p) => {
                     switch (p) {
@@ -415,17 +443,20 @@
                 const priorityDiff = getPriorityValue(b.priority) - getPriorityValue(a.priority);
                 if (priorityDiff !== 0) return priorityDiff;
                 return b.progress - a.progress;
-            }).slice(0, 3); // Take top 3
+            }).slice(0, 3); // Take top 3 objectives
 
-            // Determine overall score color
-            const overallScoreColor = overallObjectiveScore > 85 ? 'var(--color-success-600)' :
-                                      overallObjectiveScore > 60 ? 'var(--color-primary-600)' :
-                                      'var(--color-danger-600)'; // Ndever orange, red
+            let trendIcon = null;
+            let trendColorClass = "text-gray-500";
+            if (objectiveScoreTrend === "Upward") {
+                trendIcon = <Icon name="hero-arrow-trending-up" className="w-5 h-5" />;
+                trendColorClass = "text-green-500";
+            } else if (objectiveScoreTrend === "Downward") {
+                trendIcon = <Icon name="hero-arrow-trending-down" className="w-5 h-5" />;
+                trendColorClass = "text-red-500";
+            } else {
+                trendIcon = <Icon name="hero-arrows-left-right" className="w-5 h-5" />;
+            }
 
-
-            const radiusOverall = 50; // Larger for overall score
-            const circumferenceOverall = 2 * Math.PI * radiusOverall;
-            const offsetOverall = circumferenceOverall - (overallObjectiveScore / 100) * circumferenceOverall;
 
             return (
               <div className="bg-gradient-to-br from-[var(--color-info-50)] to-[var(--color-info-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden flex flex-col items-center justify-between col-span-1 lg:col-span-3">
@@ -478,17 +509,21 @@
                           Overall Score
                         </text>
                       </svg>
+                      {/* Trend Indicator */}
+                      <div className={`absolute -bottom-2 -left-2 flex items-center text-xs font-semibold ${trendColorClass}`}>
+                        {trendIcon}
+                        <span className="ml-1">{objectiveScoreTrend} Trend</span>
+                      </div>
                     </div>
 
                     {/* Top Objectives Section */}
                     <div className="flex flex-col items-center flex-grow">
-                      <h3 className="text-sm font-semibold text-[var(--color-info-700)] uppercase tracking-wide mb-2">Top Objectives</h3>
-                      {/* Adjusted grid for better spacing and individual card styling */}
+                      <h3 className="text-sm font-semibold text-[var(--color-info-700)] uppercase tracking-wide mb-2">Top HR Objectives</h3>
                       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {sortedObjectives.map(obj => (
-                            <div key={obj.id} className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm h-40 justify-between"> {/* Adjusted height to make it taller and more square */}
-                                <ObjectiveProgressRing progress={obj.progress} size={24} /> {/* Changed size of the ring to 24 for smaller diameter */}
-                                <div className="flex flex-col items-center mt-2 px-2 pb-2 text-center"> {/* Added horizontal padding and text-center, added pb-2 for bottom padding */}
+                            <div key={obj.id} className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm h-40 justify-between">
+                                <ObjectiveProgressRing progress={obj.progress} size={24} />
+                                <div className="flex flex-col items-center mt-2 px-2 pb-2 text-center">
                                     <p className="text-xs font-medium text-gray-700 leading-tight">
                                         {obj.name.length > 25 ? `${obj.name.slice(0, 25)}...` : obj.name}
                                     </p>
@@ -517,26 +552,36 @@
                 </div>
               </div>
             );
-          };
+        };
 
+        // NEW: Determine the Objective Score Trend
+        const getObjectiveScoreTrend = (history) => {
+            if (history.length < 2) return "Stable"; // Need at least two points to determine a trend
+            const latestScore = history[history.length - 1];
+            const previousScore = history[history.length - 2];
 
-          // Define all other components here, before App's return statement
+            if (latestScore > previousScore) {
+                return "Upward";
+            } else if (latestScore < previousScore) {
+                return "Downward";
+            } else {
+                return "Stable";
+            }
+        };
 
-          const MetricDisplay = ({ definition, value, target }) => {
+        const MetricDisplay = ({ definition, value, target }) => {
             let displayValue = value;
-            if (definition.type === 'currency') displayValue = formatCurrency(value);
+            if (definition.type === 'currency') displayValue = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
             if (definition.type === 'percentage') displayValue = formatPercentage(value);
             if (definition.type === 'days') displayValue = `${value} days`;
-            if (definition.type === 'number') displayValue = value.toLocaleString();
-            if (definition.type === 'scale') displayValue = value.toFixed(1); // For CSAT score
+            if (definition.type === 'score' || definition.type === 'scale') displayValue = value.toFixed(1); // Handle 'scale' and 'score' for numbers
 
             let targetDisplay = target;
             if (target !== undefined) {
-                if (definition.type === 'currency') targetDisplay = formatCurrency(target);
+                if (definition.type === 'currency') targetDisplay = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(target);
                 if (definition.type === 'percentage') targetDisplay = formatPercentage(target);
                 if (definition.type === 'days') targetDisplay = `${target} days`;
-                if (definition.type === 'number') targetDisplay = target.toLocaleString();
-                if (definition.type === 'scale') targetDisplay = target.toFixed(1);
+                if (definition.type === 'score' || definition.type === 'scale') targetDisplay = target.toFixed(1);
             }
 
             return (
@@ -545,10 +590,26 @@
                 {target !== undefined && <span className="text-gray-500">Target: {targetDisplay}</span>}
               </div>
             );
-          };
+        };
 
-          const ObjectiveCard = ({ objective }) => {
+        const ObjectiveCard = ({ objective }) => {
             const statusColorClass = getStatusColorClass(objective.status);
+
+            const getPriorityClass = (priority) => {
+                switch (priority) {
+                    case 'critical': return 'bg-red-100 text-red-800';
+                    case 'high': return 'bg-orange-100 text-orange-800';
+                    case 'medium': return 'bg-yellow-100 text-yellow-800';
+                    case 'low': return 'bg-gray-100 text-gray-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            };
+
+            const getObjectiveTypeIcon = (type) => {
+                if (type === 'growth') return <Icon name="hero-rocket" className="w-4 h-4 mr-1 text-[var(--color-success-600)]" />;
+                if (type === 'maintenance') return <Icon name="hero-arrow-path" className="w-4 h-4 mr-1 text-[var(--color-info-600)]" />;
+                return null;
+            };
 
             return (
               <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
@@ -558,12 +619,9 @@
                     {objective.status.replace('_', ' ').charAt(0).toUpperCase() + objective.status.replace('_', ' ').slice(1)}
                   </span>
                 </div>
-                {/* Replaced old progress bar with new ObjectiveProgressRing */}
                 <ObjectiveProgressRing
                     progress={objective.progress}
-                    status={objective.status}
-                    priority={objective.priority}
-                    type={objective.type}
+                    size={40} // Increased size for visibility
                 />
                 <div className="space-y-1 mt-3">
                   {Object.keys(objective.metrics_definition).map((key) => (
@@ -575,6 +633,16 @@
                     />
                   ))}
                 </div>
+                {/* Display Growth or Maintenance type and Priority */}
+                <p className="text-xs text-gray-500 mt-2 flex items-center">
+                  {getObjectiveTypeIcon(objective.type)}
+                  Type: <span className="font-medium text-gray-700 ml-1">{objective.type.charAt(0).toUpperCase() + objective.type.slice(1)}</span>
+                  {objective.priority && (
+                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityClass(objective.priority)}`}>
+                          {objective.priority.charAt(0).toUpperCase() + objective.priority.slice(1)} Priority
+                      </span>
+                  )}
+                </p>
               </div>
             );
           };
@@ -599,257 +667,262 @@
             );
           };
 
-          const KPICard = ({ title, value, source }) => {
-            return (
-              <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
-                <span className="text-sm text-gray-500">{title}</span>
-                <span className="text-2xl font-bold text-[var(--color-primary-700)]">{value}</span>
-                {source && <span className="text-xs text-gray-500 mt-1">Source: {source}</span>}
-              </div>
-            );
-          };
+          // Removed KPICard as it's not used in this HR Dashboard version (using AnalyticsMetricCard instead)
 
-          const ReviewSourceCard = ({ review }) => {
-            return (
-              <a href={review.link} target="_blank" rel="noopener noreferrer" className="block bg-white p-4 rounded-lg shadow-sm flex items-center space-x-3 hover:shadow-md transition-shadow">
-                <Icon name="hero-star" className="w-6 h-6 text-yellow-500 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-800">{review.name}</p>
-                  <div className="flex flex-col text-xs text-gray-600">
-                    <span className="font-bold">{review.rating} Stars</span>
-                    <span className="text-gray-500">({review.count} reviews)</span>
-                  </div>
-                </div>
-              </a>
-            );
-          };
+          // New components for HR Dashboard
+          const OrganizationalOverviewCard = ({ employee }) => (
+            <div className="bg-white p-3 rounded-lg shadow-sm flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-[var(--color-secondary-200)] flex items-center justify-center text-[var(--color-secondary-800)] font-bold flex-shrink-0">
+                {employee.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-800">{employee.name}</p>
+                <p className="text-xs text-gray-500">{employee.department} - Score: {employee.performance_score.toFixed(1)}</p>
+              </div>
+            </div>
+          );
+
+          const AnalyticsMetricCard = ({ title, value, unit = '' }) => (
+            <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+              <p className="text-lg font-bold text-[var(--color-info-700)]">{value}{unit}</p>
+              <p className="text-sm text-gray-500">{title}</p>
+            </div>
+          );
 
 
         // Start of the React App component code from the Canvas
         function App() {
           const [objectives, setObjectives] = React.useState([]);
           const [automations, setAutomations] = React.useState([]);
-          // Initialize kpis with default structure to prevent "undefined" errors
-          const [kpis, setKpis] = React.useState({
-            ytd_revenue: { value: 0, source: '' },
-            active_clients: { value: 0, source: '' },
-            leads_this_month: { value: 0, source: '' },
-            conversion_rate_month: { value: 0, source: '' },
-          });
-          const [copilotMessages, setCopilotMessages] = React.useState([]); // Renamed coachMessages to copilotMessages
+          const [coachMessages, setCoachMessages] = React.useState([]);
           const [upcomingTasks, setUpcomingTasks] = React.useState([]);
-          const [reviews, setReviews] = React.useState([]); // New state for reviews
+          const [hrMetrics, setHrMetrics] = React.useState({
+            total_employees: 0,
+            new_hires_month: 0,
+            avg_onboarding_completion: 0,
+            avg_performance_score: 0
+          });
+          const [employeeList, setEmployeeList] = React.useState([]); // For Organizational Overview
+          const [analyticsData, setAnalyticsData] = React.useState({}); // For Performance & Onboarding Analytics
 
-          // Removed objectiveScore and objectiveScoreHistory from useState, as they are now derived or part of the widget's internal state
+          // New state for scores
+          const [objectiveScore, setObjectiveScore] = React.useState(0);
           const [ndeverScore, setNdeverScore] = React.useState(0);
-          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0);
+          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0); // Points earned today for Ndever Score
+          const [objectiveScoreHistory, setObjectiveScoreHistory] = React.useState([]); // History for line chart
 
-          // Moved todaysGrowthWinsData definition here, so it's defined before use
-          const todaysGrowthWinsData = [
-              { id: 'win1', title: "Completed 'Automated Client Nurturing' Setup", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
-              { id: 'win2', title: "Closed a new high-value client deal", playbook: { title: "Deal Closure Mastery" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-              { id: 'win3', title: "Generated 3 new leads from marketing efforts", playbook: { title: "Lead Generation Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
-          ];
 
+          // --- Helper Functions for dynamic content ---
+          const greeting_by_time = () => {
+            const hour = new Date().getHours();
+            if (hour < 12) return "Good morning";
+            if (hour < 18) return "Good afternoon";
+            return "Good evening";
+          };
+
+          // Removed old motivational message as score cards provide primary motivation
+          // const get_hr_motivational_message = (stats) => { ... };
+          const get_onboarding_focus_message = (count) => {
+            if (count === 0) return "No new hires currently in active onboarding. Great job!";
+            return `Focus on supporting these ${count} new hires through their journey.`;
+          };
+
+          const get_performance_pulse_message = (score) => {
+            if (score >= 4.5) return "Excellent overall team performance and engagement.";
+            if (score >= 3.5) return "Solid team performance. Identify areas for continued growth.";
+            return "Review performance metrics for improvement opportunities.";
+          };
+
+          const calculate_objective_completion = (objective) => {
+            // Directly return the 'progress' value from the objective object
+            return objective.progress;
+          };
 
           React.useEffect(() => {
-            // Simulate fetching initial dashboard data
-            const fetchDashboardData = () => {
+            // Simulate fetching initial HR dashboard data
+            const fetchHRDashboardData = () => {
               const mockObjectives = [
                 {
-                  id: 'obj1',
-                  name: 'Achieve $250K Annual GCI',
+                  id: 'hr_obj1',
+                  name: 'Improve New Hire Time-to-Productivity',
                   status: 'on_track',
-                  progress: 95, // Current progress
-                  weight: 5,   // Higher weight as it's a primary GCI target
-                  priority: 'critical', // New: priority level
-                  type: 'growth',       // New: objective type
+                  progress: 75,
+                  weight: 5,
+                  priority: 'critical', // Added priority
+                  type: 'growth', // Added type
                   metrics_definition: {
-                    gci_target: { type: 'currency', label: 'GCI Target' },
-                    current_gci: { type: 'currency', label: 'Current GCI' },
-                    leads_generated: { type: 'number', label: 'Leads Generated' },
-                    conversion_rate: { type: 'percentage', label: 'Conversion Rate' },
+                    time_to_productivity: { type: 'days', label: 'Avg. Time to Prod.' },
+                    onboarding_completion_rate: { type: 'percentage', label: 'Onboarding Comp. Rate' },
                   },
                   current_values: {
-                    gci_target: 250000,
-                    current_gci: 162500,
-                    leads_generated: 150,
-                    conversion_rate: 0.08, // 8%
+                    time_to_productivity: 45, // days
+                    onboarding_completion_rate: 0.85, // 85%
                   },
                   target_values: {
-                    gci_target: 250000,
-                    leads_generated: 200,
-                    conversion_rate: 0.10, // 10%
+                    time_to_productivity: 30, // days
+                    onboarding_completion_rate: 0.95, // 95%
                   },
                 },
                 {
-                  id: 'obj2',
-                  name: 'Increase Client Referrals by 15%',
-                  status: 'on_track',
-                  progress: 88,
-                  weight: 3,
-                  priority: 'high',
-                  type: 'growth',
-                  metrics_definition: {
-                    referrals_target: { type: 'number', label: 'Referrals Target' },
-                    current_referrals: { type: 'number', label: 'Current Referrals' },
-                    client_satisfaction_score: { type: 'scale', label: 'CSAT Score' },
-                  },
-                  current_values: {
-                    referrals_target: 50,
-                    current_referrals: 20,
-                    client_satisfaction_score: 4.2,
-                  },
-                  target_values: {
-                    referrals_target: 50,
-                    client_satisfaction_score: 4.5,
-                  },
-                },
-                {
-                  id: 'obj3',
-                  name: 'Maintain 90%+ Client Retention Rate',
-                  status: 'on_track',
-                  progress: 82,
+                  id: 'hr_obj2',
+                  name: 'Boost Employee Retention Q3',
+                  status: 'at_risk',
+                  progress: 50,
                   weight: 4,
-                  priority: 'high',
-                  type: 'maintenance',
+                  priority: 'high', // Added priority
+                  type: 'growth', // Added type
                   metrics_definition: {
                     retention_rate: { type: 'percentage', label: 'Retention Rate' },
-                    churn_rate: { type: 'percentage', label: 'Churn Rate' },
+                    exit_interview_satisfaction: { type: 'score', label: 'Exit Interview CSAT' },
                   },
                   current_values: {
-                    retention_rate: 0.85,
-                    churn_rate: 0.15,
+                    retention_rate: 0.88, // 88%
+                    exit_interview_satisfaction: 3.8, // on a 5 point scale
                   },
                   target_values: {
-                    retention_rate: 0.90,
-                    churn_rate: 0.10,
+                    retention_rate: 0.92, // 92%
+                    exit_interview_satisfaction: 4.2,
                   },
                 },
                 {
-                    id: 'obj4',
-                    name: 'Expand Social Media Presence',
-                    status: 'at_risk',
-                    progress: 60,
-                    weight: 2,
-                    priority: 'medium',
-                    type: 'growth',
-                    metrics_definition: {
-                        followers_target: { type: 'number', label: 'Followers Target' },
-                        current_followers: { type: 'number', label: 'Current Followers' },
-                        engagement_rate: { type: 'percentage', label: 'Engagement Rate' }
-                    },
-                    current_values: {
-                        followers_target: 2000,
-                        current_followers: 1200,
-                        engagement_rate: 0.03
-                    },
-                    target_values: {
-                        followers_target: 2000,
-                        engagement_rate: 0.05
-                    }
+                  id: 'hr_obj3',
+                  name: 'Standardize Performance Review Process',
+                  status: 'on_track',
+                  progress: 90,
+                  weight: 3,
+                  priority: 'medium', // Added priority
+                  type: 'maintenance', // Added type
+                  metrics_definition: {
+                    review_completion_rate: { type: 'percentage', label: 'Review Comp. Rate' },
+                    feedback_quality_score: { type: 'score', label: 'Feedback Quality' },
+                  },
+                  current_values: {
+                    review_completion_rate: 0.90,
+                    feedback_quality_score: 4.0,
+                  },
+                  target_values: {
+                    review_completion_rate: 0.95,
+                    feedback_quality_score: 4.5,
+                  },
                 },
                 {
-                    id: 'obj5',
-                    name: 'Complete Q2 Compliance Training',
-                    status: 'behind',
-                    progress: 40,
-                    weight: 1,
-                    priority: 'low',
-                    type: 'maintenance',
-                    metrics_definition: {
-                        completion_target: { type: 'number', label: 'Completion Target' },
-                        current_completion: { type: 'number', label: 'Current Completion' }
-                    },
-                    current_values: {
-                        completion_target: 100,
-                        current_completion: 40
-                    },
-                    target_values: {
-                        completion_target: 100
-                    }
-                }
+                  id: 'hr_obj4',
+                  name: 'Enhance Diversity & Inclusion Training',
+                  status: 'behind',
+                  progress: 40,
+                  weight: 2,
+                  priority: 'low', // Added priority
+                  type: 'maintenance', // Added type
+                  metrics_definition: {
+                    training_participation: { type: 'percentage', label: 'Participation Rate' },
+                    awareness_score: { type: 'score', label: 'Awareness Score' },
+                  },
+                  current_values: {
+                    training_participation: 0.60,
+                    awareness_score: 3.2,
+                  },
+                  target_values: {
+                    training_participation: 0.80,
+                    awareness_score: 4.0,
+                  },
+                },
               ];
-              setObjectives(mockObjectives);
+              setObjectives(mockObjectives); // Set objectives using the mock data
 
-              setKpis({
-                ytd_revenue: { value: 175000, source: 'Quickbooks' },
-                active_clients: { value: 120, source: 'CRM (e.g., Follow Up Boss)' },
-                leads_this_month: { value: 25, source: 'CRM (e.g., Follow Up Boss)' },
-                conversion_rate_month: { value: 0.07, source: 'Derived from CRM' },
+              setHrMetrics({
+                total_employees: 125,
+                new_hires_month: 3,
+                avg_onboarding_completion: 80, // %
+                avg_performance_score: 4.1 // out of 5
               });
 
               setAutomations([
                 {
-                  id: 'auto1',
-                  name: 'Past Client Nurturing Sequence',
-                  status: 'Active',
-                  executions_today: 15,
-                  executions_this_week: 75,
-                  type: 'email_sequence',
-                  last_executed: '2025-06-09T14:30:00Z',
-                  integration_source: 'Mailchimp & CRM'
-                },
-                {
-                  id: 'auto2',
-                  name: 'Birthday Flower Send',
-                  status: 'Active',
-                  executions_today: 2,
-                  executions_this_week: 8,
-                  type: 'gift_delivery',
-                  last_executed: '2025-06-09T10:00:00Z',
-                  integration_source: 'Flower Delivery Service & CRM'
-                },
-                {
-                  id: 'auto3',
-                  name: 'New Prospect Onboarding',
+                  id: 'hr_auto1',
+                  name: 'New Hire Onboarding Workflow',
                   status: 'Active',
                   executions_today: 3,
                   executions_this_week: 12,
-                  type: 'crm_update_sms',
-                  last_executed: '2025-06-09T09:15:00Z',
-                  integration_source: 'CRM & Twilio (SMS)'
+                  type: 'hric_integration',
+                  last_executed: '2025-06-14T09:00:00Z',
+                  integration_source: 'HRIS & DocuSign'
                 },
-                 {
-                  id: 'auto4',
-                  name: 'Referral Follow-up Check-in',
+                {
+                  id: 'hr_auto2',
+                  name: 'Quarterly Performance Review Cycle',
                   status: 'Active',
-                  executions_today: 5,
-                  executions_this_week: 20,
-                  type: 'email_notification',
-                  last_executed: '2025-06-09T11:00:00Z',
-                  integration_source: 'CRM & Internal Ndever'
+                  executions_today: 0,
+                  executions_this_week: 50,
+                  type: 'email_notifications',
+                  last_executed: '2025-06-10T11:00:00Z',
+                  integration_source: 'HRIS & Internal Ndever'
+                },
+                {
+                  id: 'hr_auto3',
+                  name: 'Employee Leave Request Processing',
+                  status: 'Active',
+                  executions_today: 1,
+                  executions_this_week: 4,
+                  type: 'approval_flow',
+                  last_executed: '2025-06-14T14:00:00Z',
+                  integration_source: 'HRIS & Slack'
                 },
               ]);
 
-              // Renamed coach to copilot in messages
-              setCopilotMessages([
-                { sender: 'copilot', text: "Good morning, Loren! Your 'Increase Client Referrals' objective is currently at 40%, and your 'Referral Partner Check-ins' automation ran 5 times today. Your 'Client Satisfaction Score' is excellent at 4.2. Shall we activate the advanced 'Past Client Nurturing' workflow to maximize repeat and referral business?" },
-                { sender: 'user', text: "Morning! Yes, let's talk about client nurturing. I want to make sure I'm not dropping any referrals and staying top-of-mind without feeling overwhelmed." },
-                { sender: 'copilot', text: "Understood. The 'Past Client Nurturing' workflow will automate personalized emails and prompt you for birthday/anniversary touches. I've also highlighted tasks in your 'Client Retention Playbook' that focus on direct outreach to your key referral partners. How does that sound?" },
-                { sender: 'user' , text: "Thanks. Can you also help me with level-up my prospecting?" },
-                { sender: 'copilot', text: "Absolutely. I've highlighted tasks in your \"Prospecting Playbook\" that directly impact lead volume. Also, consider activating the \"Automated Lead Nurturing\" workflow for recent website visitors." },
+              setCoachMessages([
+                { sender: 'coach', text: "Good morning, HR Manager! Your 'Improve New Hire Time-to-Productivity' objective is at 75%. Consider reviewing the 'New Hire Engagement' playbook for best practices." },
+                { sender: 'user', text: "Morning! What's the latest on the Q3 retention rate? I'm concerned about recent departures." },
+                { sender: 'coach', text: "Retention is at 88%. I've flagged tasks in the 'Employee Retention Playbook' focused on manager check-ins and career pathing. Would you like to review the 'Employee Satisfaction Survey' automation results?" },
+                { sender: 'user' , text: "Yes, please. And can you suggest some actions to improve our average performance score?" },
+                { sender: 'coach', text: "Certainly. I've highlighted the 'Performance Management Training' playbook for managers, and initiated an 'Automated Feedback Request' workflow for employees nearing their review dates." },
               ]);
 
               setUpcomingTasks([
-                { id: 'task1', name: 'Review Ndever Copilot QuickBooks analysis of Q2 budget (Playbook: Financial Health)', dueDate: 'Today' }, // Updated reference
-                { id: 'task2', name: 'Call client Barbara for referral (Playbook: Client Retention)', dueDate: 'Thu, Jun 12' },
-                { id: 'task3', name: 'Send contract to new buyer via CRM template (Playbook: Deal Closure)', dueDate: 'Tomorrow' },
+                { id: 'hr_task1', name: 'Schedule Q3 New Hire Orientation Session', dueDate: 'Next Week', playbook: { title: 'Onboarding Journey' } },
+                { id: 'hr_task2', name: 'Review updated Performance Review Template', dueDate: 'Fri, Jun 21', playbook: { title: 'Performance Management' } },
+                { id: 'hr_task3', name: 'Conduct 30-day check-in with new hire Jane', dueDate: 'Today', playbook: { title: 'New Hire Success' } },
               ]);
 
-              // Mock data for reviews
-              setReviews([
-                { id: 'google', name: 'Google Reviews', rating: 4.8, count: 185, link: 'https://google.com/your-business' },
-                { id: 'zillow', name: 'Zillow Premier Agent', rating: 4.9, count: 92, link: 'https://zillow.com/your-profile' },
-                { id: 'website', name: 'Website Reviews', rating: 4.7, count: 56, link: 'https://yourwebsite.com/reviews' },
+              // Mock data for recent HR growth wins
+              const todaysGrowthWinsData = [
+                  { id: 'win1', title: "New hire John Doe completed 90-day review", playbook: { title: "New Hire Success" }, completed_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) }, // 2 days ago
+                  { id: 'win2', title: "Team lead Sarah initiated Q2 performance reviews for 5 direct reports", playbook: { title: "Performance Management" }, completed_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) }, // 1 day ago
+                  { id: 'win3', title: "Completed onboarding checklist for new sales associate Emily", playbook: { title: "Onboarding Journey" }, completed_at: new Date(Date.now() - 6 * 60 * 60 * 1000) } // 6 hours ago
+              ];
+
+              setEmployeeList([
+                {id: 'emp1', name: 'Alice Smith', department: 'Sales', status: 'Active', performance_score: 4.5},
+                {id: 'emp2', name: 'Bob Johnson', department: 'Marketing', status: 'Active', performance_score: 3.9},
+                {id: 'emp3', name: 'Charlie Brown', department: 'HR', status: 'Active', performance_score: 4.2},
+                {id: 'emp4', name: 'Dana Scully', department: 'Product', status: 'Active', performance_score: 4.7},
               ]);
 
-              setNdeverScore(980); // Higher Ndever score for strong achievement
-              setTodaysGrowthPoints(80); // More points today for growth wins
+              setAnalyticsData({
+                onboarding_completion_trend: [80, 82, 85, 80, 90], // last 5 months
+                performance_score_distribution: { 'Exceeds': 0.20, 'Meets': 0.65, 'Needs Improvement': 0.15 },
+                attrition_rate: 0.08, // 8%
+                employee_satisfaction: 4.3 // out of 5
+              });
+
+              // Calculate and set the new scores using the modified objectives
+              const calculatedObjectiveScore = calculateOverallObjectiveScore(mockObjectives);
+              setObjectiveScore(calculatedObjectiveScore);
+              setNdeverScore(1250); // Mock Ndever Score for HR Dashboard
+              setTodaysGrowthPoints(75); // Mock points earned today for HR Dashboard
+
+              // Mock objective score history for the chart
+              setObjectiveScoreHistory([70, 72, 71, 74, 76, 75, calculatedObjectiveScore]); // Last 7 days, ending with current score
             };
 
-            fetchDashboardData();
-          }, []); // Empty dependency array ensures this runs once on mount
+            fetchHRDashboardData();
+          }, []);
+
+          // Mock data for achievements (to be dynamically pulled in a real app)
+          const todaysGrowthWinsData = [
+              { id: 'win1', title: "New hire John Doe completed 90-day review", playbook: { title: "New Hire Success" }, completed_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) }, // 2 days ago
+              { id: 'win2', title: "Team lead Sarah initiated Q2 performance reviews for 5 direct reports", playbook: { title: "Performance Management" }, completed_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) }, // 1 day ago
+              { id: 'win3', title: "Completed onboarding checklist for new sales associate Emily", playbook: { title: "Onboarding Journey" }, completed_at: new Date(Date.now() - 6 * 60 * 60 * 1000) } // 6 hours ago
+          ];
 
 
           return (
@@ -859,80 +932,45 @@
                 <div className="flex items-center">
                   {/* Ndever Logo Image */}
                   <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/120x32/white/ed8622/white?text=Ndever+Logo'; }} />
-                  <h1 className="text-xl font-semibold text-gray-800">Agency Dashboard</h1>
+                  <h1 className="text-xl font-semibold text-gray-800">HR Dashboard</h1>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="text-gray-600">Hi, Loren!</span>
+                  <span className="text-gray-600">Hi, [HR Manager Name]!</span> {/* Dynamic user name for HR context */}
                   {/* User Avatar Placeholder */}
-                  <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">L</div>
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">HR</div>
                 </div>
               </header>
 
               <main className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Growth Overview Scores (Objective Score Widget, Ndever Score, Today's Growth Wins) */}
-                {/* This section now spans the entire width at the top */}
-                <ObjectiveScoreWidget
-                    objectives={objectives}
-                    ndeverScore={ndeverScore}
-                    todaysGrowthPoints={todaysGrowthPoints}
-                />
-
-                {/* Header Section (Greeting & Motivational Message) - Now below the ObjectiveScoreWidget */}
+                {/* Header Section */}
                 <div className="lg:col-span-3 mb-8">
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    {greeting_by_time()}, Loren!
+                    {greeting_by_time()}, HR Team!
                   </h1>
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
                     Your Ndever growth journey in progress.
                   </p>
                 </div>
 
+                {/* Growth Overview Scores (Objective Score, Ndever Score, Today's Growth Wins) */}
+                <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  {/* Objective Score Card */}
+                    <ObjectiveScoreWidget
+                        objectives={objectives}
+                        ndeverScore={ndeverScore}
+                        todaysGrowthPoints={todaysGrowthPoints}
+                        objectiveScoreHistory={objectiveScoreHistory}
+                    />
+                </div>
 
                 <div className="lg:col-span-2 space-y-6">
-                  {/* Key Performance Indicators (for Loren) */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Your Key Performance Indicators</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <KPICard title="YTD Revenue" value={formatCurrency(kpis.ytd_revenue.value)} source={kpis.ytd_revenue.source} />
-                      <KPICard title="Active Clients" value={kpis.active_clients.value} source={kpis.active_clients.source} />
-                      <KPICard title="Leads This Month" value={kpis.leads_this_month.value} source={kpis.leads_this_month.source} />
-                      <KPICard title="Conversion Rate (Mo)" value={formatPercentage(kpis.conversion_rate_month.value)} source={kpis.conversion_rate_month.source} />
-                    </div>
-                  </section>
-
-                  {/* Objectives Section */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Your Active Objectives</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {objectives.map(obj => (
-                        <ObjectiveCard key={obj.id} objective={obj} />
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Upcoming Tasks */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Upcoming Tasks</h2>
-                    <ul className="space-y-3">
-                      {upcomingTasks.map(task => (
-                        <li key={task.id} className="flex items-center bg-gray-50 p-3 rounded-lg shadow-sm">
-                          <input type="checkbox" className="form-checkbox h-5 w-5 text-[var(--color-primary-600)] rounded mr-3" />
-                          <div className="flex-1">
-                            <p className="text-base font-medium text-gray-800">{task.name}</p>
-                            <p className="text-sm text-gray-500">{task.dueDate}</p>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-
-                  {/* Recent Growth Wins */}
+                  {/* Recent Onboarding Milestones / Employee Achievements */}
                   {todaysGrowthWinsData.length > 0 && (
                     <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
                       <div className="px-6 py-4 border-b border-gray-200">
                         <div className="flex items-center justify-between">
                           <h3 className="text-lg font-medium text-gray-900">
-                            Recent Growth Wins
+                            Recent HR Growth Wins
                           </h3>
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
                             {todaysGrowthWinsData.length} completed
@@ -962,22 +1000,82 @@
                           <div className="mt-4 p-3 bg-[var(--color-success-50)] border border-[var(--color-success-200)] rounded-lg">
                             <p className="text-sm text-[var(--color-success-800)] font-medium">
                               <Icon name="hero-fire" className="w-4 h-4 inline mr-1" />
-                              Outstanding progress in recent initiatives!
+                              Outstanding progress in recent HR initiatives!
                             </p>
                           </div>
                         )}
                       </div>
                     </div>
                   )}
+
+                  {/* HR Objectives Section */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">HR Strategic Objectives</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {objectives.map(obj => (
+                        <ObjectiveCard key={obj.id} objective={obj} />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Upcoming HR Tasks */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Upcoming HR Activities</h2>
+                    <ul className="space-y-3">
+                      {upcomingTasks.map(task => (
+                        <li key={task.id} className="flex items-center bg-gray-50 p-3 rounded-lg shadow-sm">
+                          <input type="checkbox" className="form-checkbox h-5 w-5 text-[var(--color-primary-600)] rounded mr-3" />
+                          <div className="flex-1">
+                            <p className="text-base font-medium text-gray-800">{task.name}</p>
+                            {/* Safely access playbook.title */}
+                            {task.playbook?.title && <p className="text-sm text-gray-500">Playbook: {task.playbook.title}</p>}
+                            <p className="text-sm text-gray-500">{task.dueDate}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+
+                  {/* Organizational Overview - MOVED HERE */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <Icon name="hero-users" className="w-5 h-5 mr-2 text-[var(--color-gray-700)]" />
+                        Organizational Overview
+                    </h2>
+                    <div className="grid grid-cols-1 gap-4">
+                        <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
+                            <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">{hrMetrics.total_employees}</span>
+                            Total Employees
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-gray-50 p-3 rounded-lg text-center">
+                                <p className="text-xl font-bold text-[var(--color-success-700)]">{hrMetrics.new_hires_month}</p>
+                                <p className="text-sm text-gray-600">New Hires (Month)</p>
+                            </div>
+                            <div className="bg-gray-50 p-3 rounded-lg text-center">
+                                <p className="text-xl font-bold text-[var(--color-info-700)]">{hrMetrics.avg_onboarding_completion}%</p>
+                                <p className="text-sm text-gray-600">Avg. Onboarding Comp.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        <h3 className="text-lg font-medium text-gray-800 mb-3">Recent Team Members</h3>
+                        <div className="space-y-2">
+                            {employeeList.slice(0, 3).map(employee => ( // Show first 3 employees
+                                <OrganizationalOverviewCard key={employee.id} employee={employee} />
+                            ))}
+                        </div>
+                    </div>
+                  </section> {/* End of Organizational Overview section */}
                 </div>
 
-                {/* Right Column: Ndever Copilot, Automation Summary, Client Feedback */}
+                {/* Right Column: Ndever HR Coach, HR Automation Summary, Analytics */}
                 <div className="space-y-6">
-                  {/* Ndever Copilot Chat */}
+                  {/* Ndever HR Coach Chat */}
                   <section className="bg-white p-6 rounded-lg shadow-md h-96 flex flex-col">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever Copilot</h2>
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever HR Coach</h2>
                     <div className="flex-1 overflow-y-auto border border-gray-200 p-3 rounded-lg bg-gray-50 mb-3 text-sm">
-                      {copilotMessages.map((msg, index) => (
+                      {coachMessages.map((msg, index) => (
                         <div key={index} className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                           <span className={`inline-block p-2 rounded-lg ${
                             msg.sender === 'user' ? 'bg-[var(--color-primary-500)] text-white' : 'bg-gray-200 text-gray-800'
@@ -986,12 +1084,12 @@
                           </span>
                         </div>
                       ))}
-                      <div className="text-gray-400 text-xs text-center mt-2">Ndever Copilot is typing...</div>
+                      <div className="text-gray-400 text-xs text-center mt-2">Ndever Coach is typing...</div>
                     </div>
                     <div className="flex">
                       <input
                         type="text"
-                        placeholder="Message Ndever Copilot..."
+                        placeholder="Message Ndever HR Coach..."
                         className="flex-1 border border-gray-300 p-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)]"
                       />
                       <button className="bg-[var(--color-primary-600)] text-white p-2 rounded-r-lg hover:bg-[var(--color-primary-700)] transition-colors">
@@ -1002,15 +1100,17 @@
                     </div>
                   </section>
 
-                  {/* Workflow Automation Summary */}
+                  {/* HR Workflow Automation Summary */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                      Workflow Automations
-                      <span className="ml-2 px-2 py-1 bg-[var(--color-primary-100)] text-[var(--color-primary-700)] text-sm font-medium rounded-full">Active: {automations.length}</span>
+                      HR Workflow Automations
+                      <span className="ml-2 px-2 py-1 bg-[var(--color-secondary-100)] text-[var(--color-secondary-700)] text-sm font-medium rounded-full">Active: {automations.length}</span>
                     </h2>
                     <div className="space-y-3">
                       <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                        <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">20</span>Automations Executed Today
+                        <span className="text-3xl font-bold text-[var(--color-secondary-700)] mr-2">
+                          {automations.reduce((sum, auto) => sum + auto.executions_today, 0)}
+                        </span>Automations Executed Today
                       </div>
                       {automations.map(auto => (
                         <AutomationCard key={auto.id} automation={auto} />
@@ -1018,15 +1118,33 @@
                     </div>
                   </section>
 
-                  {/* Client Feedback & Reputation Section - MOVED HERE */}
+                  {/* Performance & Onboarding Analytics */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Client Feedback & Reputation</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {reviews.map(review => (
-                        <ReviewSourceCard key={review.id} review={review} />
-                      ))}
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <Icon name="hero-chart-bar" className="w-5 h-5 mr-2 text-[var(--color-gray-700)]" />
+                        Performance & Onboarding Analytics
+                    </h2>
+                    <div className="grid grid-cols-2 gap-4">
+                        <AnalyticsMetricCard title="Avg. Employee Score" value={analyticsData.employee_satisfaction ? analyticsData.employee_satisfaction.toFixed(1) : 'N/A'} />
+                        <AnalyticsMetricCard title="Attrition Rate" value={analyticsData.attrition_rate ? formatPercentage(analyticsData.attrition_rate) : 'N/A'} />
+                    </div>
+                    <div className="mt-4">
+                        <h3 className="text-lg font-medium text-gray-800 mb-3">Onboarding Completion Trend (Past 5 Months)</h3>
+                        <div className="flex items-end justify-around h-24 bg-gray-50 rounded-lg p-2">
+                            {analyticsData.onboarding_completion_trend && analyticsData.onboarding_completion_trend.map((value, index) => (
+                                <div key={index} className="flex flex-col items-center justify-end h-full">
+                                    <div
+                                        className="w-4 rounded-t-sm bg-[var(--color-info-500)]"
+                                        style={{ height: `${value}%` }}
+                                        title={`${value}%`}
+                                    ></div>
+                                    <span className="text-xs text-gray-500 mt-1">{5 - index}m ago</span>
+                                    </div>
+                            ))}
+                        </div>
                     </div>
                   </section>
+
                 </div>
               </main>
             </div>
