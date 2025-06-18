@@ -235,95 +235,69 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // Start of the React App component code from the Canvas
-        function App() {
-          const [objectives, setObjectives] = React.useState([]);
-          const [automations, setAutomations] = React.useState([]);
-          const [kpis, setKpis] = React.useState({
-            ytd_revenue: { value: 0, source: '' },
-            active_clients: { value: 0, source: '' },
-            leads_this_month: { value: 0, source: '' },
-            conversion_rate_month: { value: 0, source: '' },
-          });
-          const [coachMessages, setCoachMessages] = React.useState([]);
-          const [upcomingTasks, setUpcomingTasks] = React.useState([]);
-          const [reviews, setReviews] = React.useState([]);
-
-          // Removed objectiveScore and objectiveScoreHistory from useState, as they are now derived or part of the widget's internal state
-          const [ndeverScore, setNdeverScore] = React.useState(0);
-          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0);
-
-          // Moved todaysGrowthWinsData definition here, so it's defined before use
-          const todaysGrowthWinsData = [
-              { id: 'win1', title: "Completed 'Automated Client Nurturing' Setup", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
-              { id: 'win2', title: "Closed a new high-value client deal", playbook: { title: "Deal Closure Mastery" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-              { id: 'win3', title: "Generated 3 new leads from marketing efforts", playbook: { title: "Lead Generation Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
-          ];
-
-
-          // --- Helper Functions ---
-          const greeting_by_time = () => {
+        // --- Helper Functions ---
+        const greeting_by_time = () => {
             const hour = new Date().getHours();
             if (hour < 12) return "Good morning";
             if (hour < 18) return "Good afternoon";
             return "Good evening";
-          };
+        };
 
-          const formatCurrency = (value) => {
+        const formatCurrency = (value) => {
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
-          };
+        };
 
-          const formatPercentage = (value) => {
+        const formatPercentage = (value) => {
             return new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value);
-          };
+        };
 
-          // Function to get color based on status
-          const getStatusColorClass = (status) => {
-              switch (status) {
-                  case 'on_track': return 'text-[var(--color-success-600)]';
-                  case 'at_risk': return 'text-[var(--color-warning-600)]';
-                  case 'behind': return 'text-[var(--color-danger-600)]';
-                  case 'completed': return 'text-[var(--color-info-600)]';
-                  default: return 'text-gray-500';
-              }
-          };
+        // Function to get color based on status
+        const getStatusColorClass = (status) => {
+            switch (status) {
+                case 'on_track': return 'text-[var(--color-success-600)]';
+                case 'at_risk': return 'text-[var(--color-warning-600)]';
+                case 'behind': return 'text-[var(--color-danger-600)]';
+                case 'completed': return 'text-[var(--color-info-600)]';
+                default: return 'text-gray-500';
+            }
+        };
 
-          // Function to map progress to a gradient color for the ring fill
-          const getProgressColor = (progress) => {
+        // Function to map progress to a gradient color for the ring fill
+        const getProgressColor = (progress) => {
             if (progress <= 25) return 'var(--color-secondary-500)'; // Teal
             if (progress <= 50) return 'var(--color-info-500)';     // Sky blue
             if (progress <= 75) return 'var(--color-primary-400)';  // Lighter Ndever Orange
             return 'var(--color-primary-600)';                      // Stronger Ndever Orange
-          };
+        };
 
-          // Calculate the overall Objective Score (weighted by both weight and priority)
-          const calculateOverallObjectiveScore = (objs) => {
-              if (!objs || objs.length === 0) return 0;
-              let totalWeightedProgress = 0;
-              let totalWeight = 0;
+        // Calculate the overall Objective Score (weighted by both weight and priority)
+        const calculateOverallObjectiveScore = (objs) => {
+            if (!objs || objs.length === 0) return 0;
+            let totalWeightedProgress = 0;
+            let totalWeight = 0;
 
-              // Map priority string to a numerical value for calculation
-              const getPriorityValue = (priority) => {
-                  switch (priority) {
-                      case 'low': return 1;
-                      case 'medium': return 2;
-                      case 'high': return 3;
-                      case 'critical': return 4;
-                      default: return 1; // Default to medium if not specified
-                  }
-              };
+            // Map priority string to a numerical value for calculation
+            const getPriorityValue = (priority) => {
+                switch (priority) {
+                    case 'low': return 1;
+                    case 'medium': return 2;
+                    case 'high': return 3;
+                    case 'critical': return 4;
+                    default: return 1; // Default to medium if not specified
+                }
+            };
 
-              objs.forEach(obj => {
-                  const priorityValue = getPriorityValue(obj.priority);
-                  totalWeightedProgress += (obj.progress * (obj.weight || 1) * priorityValue);
-                  totalWeight += ((obj.weight || 1) * priorityValue);
-              });
-              return totalWeight === 0 ? 0 : Math.round(totalWeightedProgress / totalWeight);
-          };
+            objs.forEach(obj => {
+                const priorityValue = getPriorityValue(obj.priority);
+                totalWeightedProgress += (obj.progress * (obj.weight || 1) * priorityValue);
+                totalWeight += ((obj.weight || 1) * priorityValue);
+            });
+            return totalWeight === 0 ? 0 : Math.round(totalWeightedProgress / totalWeight);
+        };
 
-          // --- React Components for Dashboard Elements ---
-          // Define Icon component first as others use it
-          const Icon = ({ name, className }) => {
+        // --- React Components for Dashboard Elements ---
+        // Define Icon component first as others use it
+        const Icon = ({ name, className }) => {
             const icons = {
               "hero-scale": ( // For Objective Score
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
@@ -364,74 +338,67 @@
             return icons[name] || null;
           };
 
-          // ObjectiveProgressRing Component (replaces simple progress bar in ObjectiveCard)
-          const ObjectiveProgressRing = ({ progress, status, priority, type }) => {
-            const radius = 30;
+        // ObjectiveProgressRing Component (replaces simple progress bar in ObjectiveCard)
+        // Adjusted strokeWidth for thinner rings and ensured text fits.
+        const ObjectiveProgressRing = ({ progress, status, priority, type, size = 20 }) => {
+            const strokeWidth = 4; // Made thinner for all rings
+            // Calculate radius based on `size` (which is effectively viewBox width/height divided by 2) and strokeWidth.
+            // This ensures the circle fits within the SVG and accounts for the stroke.
+            const radius = (size * 2 / 2) - (strokeWidth / 2);
             const circumference = 2 * Math.PI * radius;
             const offset = circumference - (progress / 100) * circumference;
 
             const progressColor = getProgressColor(progress);
             const bgColor = 'var(--color-gray-200)';
             const textColor = 'var(--color-gray-800)';
-            const priorityColor = getStatusColorClass(status); // Use status color for priority text
 
-            let priorityText = priority ? `${priority.charAt(0).toUpperCase() + priority.slice(1)} Priority` : '';
-            let typeIcon = type === 'growth' ? <Icon name="hero-rocket" className="w-4 h-4 inline mr-1 text-[var(--color-secondary-600)]" /> :
-                           type === 'maintenance' ? <Icon name="hero-arrow-path" className="w-4 h-4 inline mr-1 text-[var(--color-info-600)]" /> : null;
+            // Dynamically adjust font size for the percentage to accommodate 100%
+            // Using more precise font sizes to ensure fit and readability.
+            const textSizeClass = size <= 24 ? 'text-[9px]' : (size <= 28 ? 'text-[10px]' : 'text-xs');
 
 
             return (
-              <div className="flex items-center justify-center space-x-4 my-2">
-                <div className="relative w-20 h-20">
-                  <svg className="w-full h-full" viewBox="0 0 80 80">
-                    <circle
-                      className="text-gray-200"
-                      strokeWidth="8"
-                      stroke={bgColor}
-                      fill="transparent"
-                      r={radius}
-                      cx="40"
-                      cy="40"
-                    />
-                    <circle
-                      className="progress-ring-circle"
-                      strokeWidth="8"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={offset}
-                      strokeLinecap="round"
-                      stroke={progressColor}
-                      fill="transparent"
-                      r={radius}
-                      cx="40"
-                      cy="40"
-                      style={{ transition: 'stroke-dashoffset 0.35s' }}
-                    />
-                    <text
-                      x="40"
-                      y="40"
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      className="text-sm font-bold"
-                      fill={textColor}
-                    >
-                      {progress}%
-                    </text>
-                  </svg>
-                </div>
-                <div className="flex flex-col items-start">
-                    <span className={`text-sm font-semibold ${priorityColor}`}>{priorityText}</span>
-                    {type && (
-                        <span className="text-xs text-gray-600 flex items-center mt-1">
-                            {typeIcon} {type.charAt(0).toUpperCase() + type.slice(1)} Objective
-                        </span>
-                    )}
-                </div>
+              <div className={`relative w-${size} h-${size} flex-shrink-0`}>
+                <svg className="w-full h-full" viewBox={`0 0 ${size * 2} ${size * 2}`}>
+                  <circle
+                    className="text-gray-200"
+                    strokeWidth={strokeWidth}
+                    stroke={bgColor}
+                    fill="transparent"
+                    r={radius}
+                    cx={size}
+                    cy={size}
+                  />
+                  <circle
+                    className="progress-ring-circle"
+                    strokeWidth={strokeWidth}
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
+                    strokeLinecap="round"
+                    stroke={progressColor}
+                    fill="transparent"
+                    r={radius}
+                    cx={size}
+                    cy={size}
+                    style={{ transition: 'stroke-dashoffset 0.35s' }}
+                  />
+                  <text
+                    x="50%" // Centered horizontally
+                    y="50%" // Centered vertically
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className={`${textSizeClass} font-bold`}
+                    fill={textColor}
+                  >
+                    {progress}%
+                  </text>
+                </svg>
               </div>
             );
-          };
+        };
 
-          // New ObjectiveScoreWidget Component
-          const ObjectiveScoreWidget = ({ objectives, ndeverScore, todaysGrowthPoints }) => {
+        // New ObjectiveScoreWidget Component
+        const ObjectiveScoreWidget = ({ objectives, ndeverScore, todaysGrowthPoints }) => {
             const overallObjectiveScore = calculateOverallObjectiveScore(objectives);
 
             // Sort objectives by priority (highest first) then by progress (descending)
@@ -470,7 +437,7 @@
                       <svg className="w-full h-full" viewBox="0 0 120 120">
                         <circle
                           className="text-gray-200"
-                          strokeWidth="10"
+                          strokeWidth="8"
                           stroke="var(--color-gray-200)"
                           fill="transparent"
                           r={radiusOverall}
@@ -479,7 +446,7 @@
                         />
                         <circle
                           className="progress-ring-circle"
-                          strokeWidth="10"
+                          strokeWidth="8"
                           strokeDasharray={circumferenceOverall}
                           strokeDashoffset={offsetOverall}
                           strokeLinecap="round"
@@ -516,62 +483,34 @@
                     {/* Top Objectives Section */}
                     <div className="flex flex-col items-center flex-grow">
                       <h3 className="text-sm font-semibold text-[var(--color-info-700)] uppercase tracking-wide mb-2">Top Objectives</h3>
-                      <div className="w-full grid grid-cols-3 gap-2">
+                      {/* Adjusted grid for better spacing and individual card styling */}
+                      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {sortedObjectives.map(obj => (
-                            <div key={obj.id} className="flex flex-col items-center p-2 bg-white rounded-lg shadow-sm">
-                                <div className="relative w-10 h-10">
-                                    <svg className="w-full h-full" viewBox="0 0 40 40">
-                                        <circle
-                                            strokeWidth="4"
-                                            stroke="var(--color-gray-200)"
-                                            fill="transparent"
-                                            r="16"
-                                            cx="20"
-                                            cy="20"
-                                        />
-                                        <circle
-                                            strokeWidth="4"
-                                            strokeDasharray={2 * Math.PI * 16}
-                                            strokeDashoffset={2 * Math.PI * 16 - (obj.progress / 100) * (2 * Math.PI * 16)}
-                                            strokeLinecap="round"
-                                            stroke={getProgressColor(obj.progress)}
-                                            fill="transparent"
-                                            r="16"
-                                            cx="20"
-                                            cy="20"
-                                            style={{ transition: 'stroke-dashoffset 0.35s' }}
-                                        />
-                                        <text
-                                            x="20"
-                                            y="20"
-                                            textAnchor="middle"
-                                            dominantBaseline="middle"
-                                            className="text-[10px] font-bold"
-                                            fill="var(--color-gray-800)"
-                                        >
-                                            {obj.progress}%
-                                        </text>
-                                    </svg>
+                            <div key={obj.id} className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm h-40 justify-between"> {/* Adjusted height to make it taller and more square */}
+                                <ObjectiveProgressRing progress={obj.progress} size={24} /> {/* Changed size of the ring to 24 for smaller diameter */}
+                                <div className="flex flex-col items-center mt-2 px-2 pb-2 text-center"> {/* Added horizontal padding and text-center, added pb-2 for bottom padding */}
+                                    <p className="text-xs font-medium text-gray-700 leading-tight">
+                                        {obj.name.length > 25 ? `${obj.name.slice(0, 25)}...` : obj.name}
+                                    </p>
+                                    <span className={`text-[8px] font-semibold ${getStatusColorClass(obj.status)}`}>
+                                        {obj.status.replace('_', ' ').charAt(0).toUpperCase() + obj.status.replace('_', ' ').slice(1)}
+                                    </span>
                                 </div>
-                                <p className="text-[10px] text-center font-medium text-gray-700 mt-1 leading-tight">{obj.name.split(' ').slice(0,3).join(' ')}...</p> {/* Shorten name */}
-                                 <span className={`text-[9px] font-semibold ${getStatusColorClass(obj.status)}`}>
-                                    {obj.status.replace('_', ' ').charAt(0).toUpperCase() + obj.status.replace('_', ' ').slice(1)}
-                                </span>
                             </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Ndever Score & Growth Wins */}
-                    <div className="flex md:flex-col justify-around w-full md:w-auto mt-6 md:mt-0 text-center text-sm md:border-l border-gray-200 md:pl-8">
-                        <div className="flex flex-col items-center flex-1 pr-2 md:pb-4">
-                            <Icon name="hero-sparkles" className="w-6 h-6 text-[var(--color-primary-600)] mb-1" />
-                            <span className="text-xl font-bold text-[var(--color-primary-900)]">{ndeverScore}</span>
+                    {/* Ndever Score & Growth Wins - Now in curved boxes */}
+                    <div className="flex md:flex-col justify-around w-full md:w-auto mt-6 md:mt-0 text-center text-sm md:border-l border-gray-200 md:pl-8 space-y-4 md:space-y-6">
+                        <div className="flex flex-col items-center flex-1 p-4 bg-white rounded-xl shadow-md">
+                            <Icon name="hero-sparkles" className="w-8 h-8 text-[var(--color-primary-600)] mb-2" />
+                            <span className="text-2xl font-bold text-[var(--color-primary-900)]">{ndeverScore}</span>
                             <span className="text-xs text-[var(--color-primary-700)]">Ndever Score</span>
                         </div>
-                        <div className="flex flex-col items-center flex-1 pl-2 md:pt-4 md:border-t border-gray-200">
-                            <Icon name="hero-fire" className="w-6 h-6 text-[var(--color-success-600)] mb-1" />
-                            <span className="text-xl font-bold text-[var(--color-success-900)]">+{todaysGrowthPoints}</span>
+                        <div className="flex flex-col items-center flex-1 p-4 bg-white rounded-xl shadow-md">
+                            <Icon name="hero-fire" className="w-8 h-8 text-[var(--color-success-600)] mb-2" />
+                            <span className="text-2xl font-bold text-[var(--color-success-900)]">+{todaysGrowthPoints}</span>
                             <span className="text-xs text-[var(--color-success-700)]">Growth Wins Today</span>
                         </div>
                     </div>
@@ -579,6 +518,7 @@
               </div>
             );
           };
+
 
           // Define all other components here, before App's return statement
 
@@ -683,6 +623,33 @@
               </a>
             );
           };
+
+
+        // Start of the React App component code from the Canvas
+        function App() {
+          const [objectives, setObjectives] = React.useState([]);
+          const [automations, setAutomations] = React.useState([]);
+          // Initialize kpis with default structure to prevent "undefined" errors
+          const [kpis, setKpis] = React.useState({
+            ytd_revenue: { value: 0, source: '' },
+            active_clients: { value: 0, source: '' },
+            leads_this_month: { value: 0, source: '' },
+            conversion_rate_month: { value: 0, source: '' },
+          });
+          const [copilotMessages, setCopilotMessages] = React.useState([]); // Renamed coachMessages to copilotMessages
+          const [upcomingTasks, setUpcomingTasks] = React.useState([]);
+          const [reviews, setReviews] = React.useState([]); // New state for reviews
+
+          // Removed objectiveScore and objectiveScoreHistory from useState, as they are now derived or part of the widget's internal state
+          const [ndeverScore, setNdeverScore] = React.useState(0);
+          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0);
+
+          // Moved todaysGrowthWinsData definition here, so it's defined before use
+          const todaysGrowthWinsData = [
+              { id: 'win1', title: "Completed 'Automated Client Nurturing' Setup", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
+              { id: 'win2', title: "Closed a new high-value client deal", playbook: { title: "Deal Closure Mastery" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
+              { id: 'win3', title: "Generated 3 new leads from marketing efforts", playbook: { title: "Lead Generation Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
+          ];
 
 
           React.useEffect(() => {
@@ -855,16 +822,17 @@
                 },
               ]);
 
-              setCoachMessages([
-                { sender: 'coach', text: "Good morning, Loren! Your 'Increase Client Referrals' objective is currently at 40%, and your 'Referral Partner Check-ins' automation ran 5 times today. Your 'Client Satisfaction Score' is excellent at 4.2. Shall we activate the advanced 'Past Client Nurturing' workflow to maximize repeat and referral business?" },
+              // Renamed coach to copilot in messages
+              setCopilotMessages([
+                { sender: 'copilot', text: "Good morning, Loren! Your 'Increase Client Referrals' objective is currently at 40%, and your 'Referral Partner Check-ins' automation ran 5 times today. Your 'Client Satisfaction Score' is excellent at 4.2. Shall we activate the advanced 'Past Client Nurturing' workflow to maximize repeat and referral business?" },
                 { sender: 'user', text: "Morning! Yes, let's talk about client nurturing. I want to make sure I'm not dropping any referrals and staying top-of-mind without feeling overwhelmed." },
-                { sender: 'coach', text: "Understood. The 'Past Client Nurturing' workflow will automate personalized emails and prompt you for birthday/anniversary touches. I've also highlighted tasks in your 'Client Retention Playbook' that focus on direct outreach to your key referral partners. How does that sound?" },
+                { sender: 'copilot', text: "Understood. The 'Past Client Nurturing' workflow will automate personalized emails and prompt you for birthday/anniversary touches. I've also highlighted tasks in your 'Client Retention Playbook' that focus on direct outreach to your key referral partners. How does that sound?" },
                 { sender: 'user' , text: "Thanks. Can you also help me with level-up my prospecting?" },
-                { sender: 'coach', text: "Absolutely. I've highlighted tasks in your \"Prospecting Playbook\" that directly impact lead volume. Also, consider activating the \"Automated Lead Nurturing\" workflow for recent website visitors." },
+                { sender: 'copilot', text: "Absolutely. I've highlighted tasks in your \"Prospecting Playbook\" that directly impact lead volume. Also, consider activating the \"Automated Lead Nurturing\" workflow for recent website visitors." },
               ]);
 
               setUpcomingTasks([
-                { id: 'task1', name: 'Review Ndever Coach QuickBooks analysis of Q2 budget (Playbook: Financial Health)', dueDate: 'Today' },
+                { id: 'task1', name: 'Review Ndever Copilot QuickBooks analysis of Q2 budget (Playbook: Financial Health)', dueDate: 'Today' }, // Updated reference
                 { id: 'task2', name: 'Call client Barbara for referral (Playbook: Client Retention)', dueDate: 'Thu, Jun 12' },
                 { id: 'task3', name: 'Send contract to new buyer via CRM template (Playbook: Deal Closure)', dueDate: 'Tomorrow' },
               ]);
@@ -1003,13 +971,13 @@
                   )}
                 </div>
 
-                {/* Right Column: Ndever Coach, Automation Summary, Client Feedback */}
+                {/* Right Column: Ndever Copilot, Automation Summary, Client Feedback */}
                 <div className="space-y-6">
-                  {/* Ndever Coach Chat */}
+                  {/* Ndever Copilot Chat */}
                   <section className="bg-white p-6 rounded-lg shadow-md h-96 flex flex-col">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever Coach</h2>
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever Copilot</h2>
                     <div className="flex-1 overflow-y-auto border border-gray-200 p-3 rounded-lg bg-gray-50 mb-3 text-sm">
-                      {coachMessages.map((msg, index) => (
+                      {copilotMessages.map((msg, index) => (
                         <div key={index} className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                           <span className={`inline-block p-2 rounded-lg ${
                             msg.sender === 'user' ? 'bg-[var(--color-primary-500)] text-white' : 'bg-gray-200 text-gray-800'
@@ -1018,12 +986,12 @@
                           </span>
                         </div>
                       ))}
-                      <div className="text-gray-400 text-xs text-center mt-2">Ndever Coach is typing...</div>
+                      <div className="text-gray-400 text-xs text-center mt-2">Ndever Copilot is typing...</div>
                     </div>
                     <div className="flex">
                       <input
                         type="text"
-                        placeholder="Message Ndever Coach..."
+                        placeholder="Message Ndever Copilot..."
                         className="flex-1 border border-gray-300 p-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)]"
                       />
                       <button className="bg-[var(--color-primary-600)] text-white p-2 rounded-r-lg hover:bg-[var(--color-primary-700)] transition-colors">
