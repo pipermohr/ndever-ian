@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ndever Agency Dashboard</title>
-    <!-- Favicon (optional, assuming a favicon.png exists in the same directory for GitHub Pages) -->
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="./favicon.png">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- React and ReactDOM CDNs -->
+    <!-- React and ReactDOM CDNs (for in-browser JSX transpilation via Babel) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for in-browser JSX transpilation -->
+    <!-- Babel for in-browser JSX transpilation. Not for production! -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
       body {
@@ -53,14 +53,14 @@
         box-shadow: 0 0 0 3px var(--color-primary-500); /* Using new theme variable */
       }
 
-      /* Ndever Branding CSS Variables */
+      /* Theme CSS Variables */
       :root {
         --color-casablanca-50: #fef8ee;
         --color-casablanca-100: #fdf0d7;
         --color-casablanca-200: #faddae;
         --color-casablanca-300: #f4b860;
         --color-casablanca-400: #f1a146;
-        --color-casablanca-500: #ed8622; /* Ndever Orange */
+        --color-casablanca-500: #ed8622;
         --color-casablanca-600: #de6d18;
         --color-casablanca-700: #b95315;
         --color-casablanca-800: #934219;
@@ -79,7 +79,7 @@
         --color-primary-900: var(--color-casablanca-900);
         --color-primary-950: var(--color-casablanca-950);
 
-        /* Teal for secondary, info, etc. to represent "cool" or initial stages */
+        /* Assuming standard Tailwind colors for these missing base definitions */
         --color-teal-50: #f0fdfa;
         --color-teal-100: #ccfbf1;
         --color-teal-200: #99f6e4;
@@ -104,7 +104,6 @@
         --color-secondary-900: var(--color-teal-900);
         --color-secondary-950: var(--color-teal-950);
 
-        /* Success/Green remains for "on-track" or positive status */
         --color-green-50: #f0fdf4;
         --color-green-100: #dcfce7;
         --color-green-200: #bbf7d0;
@@ -129,7 +128,6 @@
         --color-success-900: var(--color-green-900);
         --color-success-950: var(--color-green-950);
 
-        /* Red for danger/behind */
         --color-red-50: #fef2f2;
         --color-red-100: #fee2e2;
         --color-red-200: #fecaca;
@@ -154,7 +152,6 @@
         --color-danger-900: var(--color-red-900);
         --color-danger-950: var(--color-red-950);
 
-        /* Yellow for warning/at-risk */
         --color-yellow-50: #fefce8;
         --color-yellow-100: #fef9c3;
         --color-yellow-200: #fef08a;
@@ -179,7 +176,6 @@
         --color-warning-900: var(--color-yellow-900);
         --color-warning-950: var(--color-yellow-950);
 
-        /* Sky blue for info/secondary elements */
         --color-sky-50: #f0f9ff;
         --color-sky-100: #e0f2fe;
         --color-sky-200: #bae6fd;
@@ -204,7 +200,6 @@
         --color-info-900: var(--color-sky-900);
         --color-info-950: var(--color-sky-950);
 
-        /* Gray for text/backgrounds */
         --color-slate-50: #f8fafc;
         --color-slate-100: #f1f5f9;
         --color-slate-200: #e2e8f0;
@@ -289,6 +284,7 @@
 
             objs.forEach(obj => {
                 const priorityValue = getPriorityValue(obj.priority);
+                // Incorporate both weight and priority into the calculation
                 totalWeightedProgress += (obj.progress * (obj.weight || 1) * priorityValue);
                 totalWeight += ((obj.weight || 1) * priorityValue);
             });
@@ -296,8 +292,9 @@
         };
 
         // --- React Components for Dashboard Elements ---
-        // Define Icon component first as others use it
+
         const Icon = ({ name, className }) => {
+            // Placeholder for Heroicons or other SVG icons
             const icons = {
               "hero-scale": ( // For Objective Score
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
@@ -309,9 +306,44 @@
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a.75.75 0 01.75.75v16.5a.75.75 0 01-1.5 0V3.75A.75.75 0 0112 3zm.75 14.25l4.303 2.656a.75.75 0 001.233-.696l-1.02-4.839 3.636-3.486a.75.75 0 00-.435-1.32l-4.82-.587-2.288-4.478a.75.75 0 00-1.353.001L8.71 8.874l-4.82.587a.75.75 0 00-.435 1.32l3.636 3.486-1.02 4.839a.75.75 0 001.233.696L12 17.25z" />
                 </svg>
               ),
-              "hero-fire": ( // For Today's Growth Wins
+              "hero-arrow-trending-up": ( // For positive trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.303 4.303 7.084-7.084m0 0H18.75M21.75 5.25V7.5" />
+                  </svg>
+              ),
+              "hero-arrow-trending-down": ( // For negative trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.303-4.303 7.084 7.084m0 0H18.75M21.75 18.75V16.5" />
+                  </svg>
+              ),
+              "hero-arrows-left-right": ( // For stable trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 12h9m-9 3.75H12M18.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+              ),
+              "hero-check-circle": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+              "hero-rocket-launch": ( // Adapted for Onboarding Focus (now within Overview card)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042V19.5m0-13.458L15.375 9.375M12 6.042L8.625 9.375M12 6.042V3.75m0 2.292c0 .107 0 .216-.017.323l-.865 4.323m-4.633.003L7.125 12.75l1.875-1.875M12 10.5h.008v.008H12zM12 12.75h.008v.008H12zM12 15h.008v.008H12zM12 17.25h.008v.008H12zM12 19.5h.008v.008H12z" />
+                </svg>
+              ),
+              "hero-fire": ( // Adapted for Performance Pulse (now for Growth Wins)
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 22.5 12 13.5H3.75z" />
+                </svg>
+              ),
+              "hero-trophy": ( // Reused for Key HR Objective (now within Growth Wins)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25M14.25 18a4.5 4.5 0 004.5-4.5V7.5a4.5 4.5 0 00-4.5-4.5h-1.5a.75.75 0 00-.75.75v10.5a.75.75 0 00.75.75h1.5zm-9-5.25L7.5 7.5 5.25 9.75M9.75 18A4.5 4.5 0 005.25 13.5V7.5a4.5 4.5 0 004.5-4.5h1.5a.75.75 0 00.75-.75v10.5a.75.75 0 00-.75.75h-1.5z" />
+                </svg>
+              ),
+              "hero-check": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               ),
               "hero-star": ( // New star icon for reviews
@@ -319,14 +351,35 @@
                   <path fillRule="evenodd" d="M10.868 2.884c.321-.772 1.415-.772 1.736 0l1.82 4.394a1.625 1.625 0 011.213.882l4.394 1.82c.772.321.772 1.415 0 1.736l-4.394 1.82a1.625 1.625 0 01-1.213.882l-1.82 4.394c-.321.772-1.415.772-1.736 0l-1.82-4.394a1.625 1.625 0 01-1.213-.882l-4.394-1.82c-.772-.321-.772-1.415 0-1.736l4.394-1.82a1.625 1.625 0 011.213-.882l1.82-4.394z" clipRule="evenodd" />
                 </svg>
               ),
-               "hero-check": ( // Used for growth wins checkmark
+              "hero-users": ( // For Active Clients/Leads
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.75V10.5m-1.05 6.445L15 15.375M18 21a3 3 0 110-6 3 3 0 010 6zM6 18.75V10.5M6 21a3 3 0 110-6 3 3 0 010 6zM12 18.75V7.5m-1.05 6.445L9 12.375M12 21a3 3 0 110-6 3 3 0 010 6z" />
                 </svg>
               ),
-              "hero-arrow-path": ( // For maintenance objectives
+              "hero-building-office": ( // For Listing Volume
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.181m0 0l-3.181-3.181A1.5 1.5 0 005.15 12.75H1.5m11.183 2.928a3.75 3.75 0 00-4.781-4.781m0 0H6.75m11.183 2.928a3.75 3.75 0 01-4.781 4.781m0 0H17.25m-4.634-11.233l1.92-2.166A1.5 1.5 0 0118 7.25h3.75h-.001v-.001m-1.92 2.166A1.5 1.5 0 0015.75 12.75H1.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.5m-4.125 0H3m4.875 0h.625c.621 0 1.125-.504 1.125-1.125V8.25m0 0H3m3.125 12H12m-2.625 0h2.625m-2.625 0h1.5m1.5 0h.75m0 0h1.5m-1.5 0h.75m0 0h1.5m-1.5 0H21M9 16.5v-4.5m0 0H3m4.875 0h.625c.621 0 1.125-.504 1.125-1.125V4.5m0 0H3m3.125 12H12M9 7.5V4.5m0 0H3" />
+                </svg>
+              ),
+              "hero-wallet": ( // For GCI
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a3.75 3.75 0 100-7.5h16.5a3.75 3.75 0 100 7.5H2.25z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12.75V11.25m0-1.5v-3m0 4.5H9.75M12 11.25h2.25m-2.25 0v2.25m0-4.5h-.75m.75 0h.75" />
+                </svg>
+              ),
+              "hero-document-text": ( // For Lead Conversion Rate
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625A3.375 3.375 0 0016.125 8.25H13.5m0-1.5L21 4.5m-9.75 3.75L21 4.5M10.5 7.5L21 4.5M19.5 14.25v2.625A3.375 3.375 0 0116.125 20.25H6.375a3.375 3.375 0 01-3.375-3.375V10.375m9.75-3.75l-1.5-1.5M19.5 14.25L12 21" />
+                </svg>
+              ),
+              "hero-calendar-days": ( // For Avg Sales Cycle (Days)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5a2.25 2.25 0 012.25 2.25v7.5m-16.5 0h1.875a.75.75 0 00.75-.75v-1.5a.75.75 0 00-.75-.75H4.125a.75.75 0 00-.75.75v1.5c0 .414.336.75.75.75zm1.5-3.75H4.125V12h1.5v1.5zM12 21v-7.5" />
+                </svg>
+              ),
+              "hero-user-group": ( // For Agent Count
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.75V10.5m-1.05 6.445L15 15.375M18 21a3 3 0 110-6 3 3 0 010 6zM6 18.75V10.5M6 21a3 3 0 110-6 3 3 0 010 6zM12 18.75V7.5m-1.05 6.445L9 12.375M12 21a3 3 0 110-6 3 3 0 010 6z" />
                 </svg>
               ),
               "hero-rocket": ( // For growth objectives
@@ -334,16 +387,18 @@
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.31a.75.75 0 01-.176.793l-1.42 1.42a.75.75 0 01-1.06 0L9.423 13.92a.75.75 0 010-1.06l1.42-1.42a.75.75 0 01.793-.176m.503 1.05v2.806m-2.806.503H9.418M8.25 18.75a1.5 1.5 0 00-1.5 1.5v.75m1.5-1.5H7.5m-.75 0h-1.5M12 4.5l-2.072 2.072a.75.75 0 00-.22.53v.794l-1.071 1.071M10.5 8.25L9 9.75m-3.75 0L1.5 14.25m5.25-9.75h-.75m-1.5 0h-.75M12 9a.75.75 0 01-.75-.75V6.75m0-1.5a.75.75 0 00-.75-.75H5.25M17.25 4.5h-.75m-1.5 0h-.75m2.25 2.25h.75m1.5 0h.75m-2.25-2.25L12 9M18 1.5l-2.072 2.072a.75.75 0 00-.22.53V6.75l-1.071 1.071M22.5 7.5h-.75m-1.5 0h-.75m-2.25 2.25h.75m1.5 0h.75M22.5 12L18 16.5m-3.75 0H12m0-2.25h-2.25" />
                 </svg>
               ),
+              "hero-arrow-path": ( // For maintenance objectives
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.181m0 0l-3.181-3.181A1.5 1.5 0 005.15 12.75H1.5m11.183 2.928a3.75 3.75 0 00-4.781-4.781m0 0H6.75m11.183 2.928a3.75 3.75 0 01-4.781 4.781m0 0H17.25m-4.634-11.233l1.92-2.166A1.5 1.5 0 0118 7.25h3.75h-.001v-.001m-1.92 2.166A1.5 1.5 0 0015.75 12.75H1.5" />
+                </svg>
+              ),
             };
             return icons[name] || null;
           };
 
-        // ObjectiveProgressRing Component (replaces simple progress bar in ObjectiveCard)
-        // Adjusted strokeWidth for thinner rings and ensured text fits.
-        const ObjectiveProgressRing = ({ progress, status, priority, type, size = 20 }) => {
-            const strokeWidth = 4; // Made thinner for all rings
-            // Calculate radius based on `size` (which is effectively viewBox width/height divided by 2) and strokeWidth.
-            // This ensures the circle fits within the SVG and accounts for the stroke.
+        // ObjectiveProgressRing Component (reused from HR dashboard for consistency)
+        const ObjectiveProgressRing = ({ progress, size = 20 }) => {
+            const strokeWidth = 4;
             const radius = (size * 2 / 2) - (strokeWidth / 2);
             const circumference = 2 * Math.PI * radius;
             const offset = circumference - (progress / 100) * circumference;
@@ -352,10 +407,7 @@
             const bgColor = 'var(--color-gray-200)';
             const textColor = 'var(--color-gray-800)';
 
-            // Dynamically adjust font size for the percentage to accommodate 100%
-            // Using more precise font sizes to ensure fit and readability.
             const textSizeClass = size <= 24 ? 'text-[9px]' : (size <= 28 ? 'text-[10px]' : 'text-xs');
-
 
             return (
               <div className={`relative w-${size} h-${size} flex-shrink-0`}>
@@ -383,8 +435,8 @@
                     style={{ transition: 'stroke-dashoffset 0.35s' }}
                   />
                   <text
-                    x="50%" // Centered horizontally
-                    y="50%" // Centered vertically
+                    x="50%"
+                    y="50%"
                     textAnchor="middle"
                     dominantBaseline="middle"
                     className={`${textSizeClass} font-bold`}
@@ -397,11 +449,21 @@
             );
         };
 
-        // New ObjectiveScoreWidget Component
-        const ObjectiveScoreWidget = ({ objectives, ndeverScore, todaysGrowthPoints }) => {
+        // ObjectiveScoreWidget Component (reused from HR dashboard for consistency)
+        const ObjectiveScoreWidget = ({ objectives, ndeverScore, todaysGrowthPoints, objectiveScoreHistory }) => {
             const overallObjectiveScore = calculateOverallObjectiveScore(objectives);
+            const objectiveScoreTrend = getObjectiveScoreTrend(objectiveScoreHistory);
 
-            // Sort objectives by priority (highest first) then by progress (descending)
+            // Determine overall score color for the main ring
+            const overallScoreColor = overallObjectiveScore > 85 ? 'var(--color-success-600)' :
+                                      overallObjectiveScore > 60 ? 'var(--color-primary-600)' :
+                                      'var(--color-danger-600)';
+
+            const radiusOverall = 50;
+            const circumferenceOverall = 2 * Math.PI * radiusOverall;
+            const offsetOverall = circumferenceOverall - (overallObjectiveScore / 100) * circumferenceOverall;
+
+            // Sort objectives by priority (highest first) then by progress (descending) for the "Top Objectives" section
             const sortedObjectives = [...objectives].sort((a, b) => {
                 const getPriorityValue = (p) => {
                     switch (p) {
@@ -415,17 +477,20 @@
                 const priorityDiff = getPriorityValue(b.priority) - getPriorityValue(a.priority);
                 if (priorityDiff !== 0) return priorityDiff;
                 return b.progress - a.progress;
-            }).slice(0, 3); // Take top 3
+            }).slice(0, 3); // Take top 3 objectives
 
-            // Determine overall score color
-            const overallScoreColor = overallObjectiveScore > 85 ? 'var(--color-success-600)' :
-                                      overallObjectiveScore > 60 ? 'var(--color-primary-600)' :
-                                      'var(--color-danger-600)'; // Ndever orange, red
+            let trendIcon = null;
+            let trendColorClass = "text-gray-500";
+            if (objectiveScoreTrend === "Upward") {
+                trendIcon = <Icon name="hero-arrow-trending-up" className="w-5 h-5" />;
+                trendColorClass = "text-green-500";
+            } else if (objectiveScoreTrend === "Downward") {
+                trendIcon = <Icon name="hero-arrow-trending-down" className="w-5 h-5" />;
+                trendColorClass = "text-red-500";
+            } else {
+                trendIcon = <Icon name="hero-arrows-left-right" className="w-5 h-5" />;
+            }
 
-
-            const radiusOverall = 50; // Larger for overall score
-            const circumferenceOverall = 2 * Math.PI * radiusOverall;
-            const offsetOverall = circumferenceOverall - (overallObjectiveScore / 100) * circumferenceOverall;
 
             return (
               <div className="bg-gradient-to-br from-[var(--color-info-50)] to-[var(--color-info-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden flex flex-col items-center justify-between col-span-1 lg:col-span-3">
@@ -478,17 +543,21 @@
                           Overall Score
                         </text>
                       </svg>
+                      {/* Trend Indicator */}
+                      <div className={`absolute -bottom-2 -left-2 flex items-center text-xs font-semibold ${trendColorClass}`}>
+                        {trendIcon}
+                        <span className="ml-1">{objectiveScoreTrend} Trend</span>
+                      </div>
                     </div>
 
                     {/* Top Objectives Section */}
                     <div className="flex flex-col items-center flex-grow">
                       <h3 className="text-sm font-semibold text-[var(--color-info-700)] uppercase tracking-wide mb-2">Top Objectives</h3>
-                      {/* Adjusted grid for better spacing and individual card styling */}
                       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {sortedObjectives.map(obj => (
-                            <div key={obj.id} className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm h-40 justify-between"> {/* Adjusted height to make it taller and more square */}
-                                <ObjectiveProgressRing progress={obj.progress} size={24} /> {/* Changed size of the ring to 24 for smaller diameter */}
-                                <div className="flex flex-col items-center mt-2 px-2 pb-2 text-center"> {/* Added horizontal padding and text-center, added pb-2 for bottom padding */}
+                            <div key={obj.id} className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm h-40 justify-between">
+                                <ObjectiveProgressRing progress={obj.progress} size={24} />
+                                <div className="flex flex-col items-center mt-2 px-2 pb-2 text-center">
                                     <p className="text-xs font-medium text-gray-700 leading-tight">
                                         {obj.name.length > 25 ? `${obj.name.slice(0, 25)}...` : obj.name}
                                     </p>
@@ -517,26 +586,38 @@
                 </div>
               </div>
             );
-          };
+        };
 
+        // Determine the Objective Score Trend (reused from HR dashboard)
+        const getObjectiveScoreTrend = (history) => {
+            if (history.length < 2) return "Stable"; // Need at least two points to determine a trend
+            const latestScore = history[history.length - 1];
+            const previousScore = history[history.length - 2];
 
-          // Define all other components here, before App's return statement
+            if (latestScore > previousScore) {
+                return "Upward";
+            } else if (latestScore < previousScore) {
+                return "Downward";
+            } else {
+                return "Stable";
+            }
+        };
 
           const MetricDisplay = ({ definition, value, target }) => {
             let displayValue = value;
             if (definition.type === 'currency') displayValue = formatCurrency(value);
             if (definition.type === 'percentage') displayValue = formatPercentage(value);
-            if (definition.type === 'days') displayValue = `${value} days`;
-            if (definition.type === 'number') displayValue = value.toLocaleString();
-            if (definition.type === 'scale') displayValue = value.toFixed(1); // For CSAT score
+            if (definition.type === 'number') displayValue = value.toLocaleString(); // Added for number formatting
+            if (definition.type === 'days') displayValue = `${value} days`; // Added for 'days' type
+            if (definition.type === 'score' || definition.type === 'scale') displayValue = value.toFixed(1); // Handle 'scale' and 'score' for numbers
 
             let targetDisplay = target;
             if (target !== undefined) {
                 if (definition.type === 'currency') targetDisplay = formatCurrency(target);
                 if (definition.type === 'percentage') targetDisplay = formatPercentage(target);
-                if (definition.type === 'days') targetDisplay = `${target} days`;
-                if (definition.type === 'number') targetDisplay = target.toLocaleString();
-                if (definition.type === 'scale') targetDisplay = target.toFixed(1);
+                if (definition.type === 'number') targetDisplay = target.toLocaleString(); // Added for number formatting
+                if (definition.type === 'days') targetDisplay = `${target} days`; // Added for 'days' type
+                if (definition.type === 'score' || definition.type === 'scale') targetDisplay = target.toFixed(1);
             }
 
             return (
@@ -550,6 +631,22 @@
           const ObjectiveCard = ({ objective }) => {
             const statusColorClass = getStatusColorClass(objective.status);
 
+            const getPriorityClass = (priority) => {
+                switch (priority) {
+                    case 'critical': return 'bg-red-100 text-red-800';
+                    case 'high': return 'bg-orange-100 text-orange-800';
+                    case 'medium': return 'bg-yellow-100 text-yellow-800';
+                    case 'low': return 'bg-gray-100 text-gray-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            };
+
+            const getObjectiveTypeIcon = (type) => {
+                if (type === 'growth') return <Icon name="hero-rocket" className="w-4 h-4 mr-1 text-[var(--color-success-600)]" />;
+                if (type === 'maintenance') return <Icon name="hero-arrow-path" className="w-4 h-4 mr-1 text-[var(--color-info-600)]" />;
+                return null;
+            };
+
             return (
               <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
                 <div className="flex justify-between items-center mb-2">
@@ -558,12 +655,10 @@
                     {objective.status.replace('_', ' ').charAt(0).toUpperCase() + objective.status.replace('_', ' ').slice(1)}
                   </span>
                 </div>
-                {/* Replaced old progress bar with new ObjectiveProgressRing */}
+                {/* Use ObjectiveProgressRing */}
                 <ObjectiveProgressRing
                     progress={objective.progress}
-                    status={objective.status}
-                    priority={objective.priority}
-                    type={objective.type}
+                    size={40} // Increased size for visibility
                 />
                 <div className="space-y-1 mt-3">
                   {Object.keys(objective.metrics_definition).map((key) => (
@@ -575,6 +670,16 @@
                     />
                   ))}
                 </div>
+                {/* Display Growth or Maintenance type and Priority */}
+                <p className="text-xs text-gray-500 mt-2 flex items-center">
+                  {getObjectiveTypeIcon(objective.type)}
+                  Type: <span className="font-medium text-gray-700 ml-1">{objective.type.charAt(0).toUpperCase() + objective.type.slice(1)}</span>
+                  {objective.priority && (
+                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityClass(objective.priority)}`}>
+                          {objective.priority.charAt(0).toUpperCase() + objective.priority.slice(1)} Priority
+                      </span>
+                  )}
+                </p>
               </div>
             );
           };
@@ -599,9 +704,10 @@
             );
           };
 
-          const KPICard = ({ title, value, source }) => {
+          const KPICard = ({ title, value, source, iconName }) => { // Added iconName prop
             return (
               <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
+                {iconName && <Icon name={iconName} className="w-6 h-6 text-gray-500 mb-2" />} {/* Render icon if provided */}
                 <span className="text-sm text-gray-500">{title}</span>
                 <span className="text-2xl font-bold text-[var(--color-primary-700)]">{value}</span>
                 {source && <span className="text-xs text-gray-500 mt-1">Source: {source}</span>}
@@ -609,14 +715,15 @@
             );
           };
 
+          // New ReviewSourceCard component
           const ReviewSourceCard = ({ review }) => {
             return (
               <a href={review.link} target="_blank" rel="noopener noreferrer" className="block bg-white p-4 rounded-lg shadow-sm flex items-center space-x-3 hover:shadow-md transition-shadow">
                 <Icon name="hero-star" className="w-6 h-6 text-yellow-500 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-800">{review.name}</p>
-                  <div className="flex flex-col text-xs text-gray-600">
-                    <span className="font-bold">{review.rating} Stars</span>
+                  <div className="flex flex-col text-xs text-gray-600"> {/* Changed to flex-col for stacking */}
+                    <span className="font-bold">{review.rating} Stars</span> {/* Added "Stars" for clarity */}
                     <span className="text-gray-500">({review.count} reviews)</span>
                   </div>
                 </div>
@@ -624,6 +731,12 @@
             );
           };
 
+          // Mock data for achievements (to be dynamically pulled in a real app)
+          const todaysAchievements = [
+              { title: "Completed 'Set Up Referral Automation' Playbook Task", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) }, // 30 mins ago
+              { title: "Sent 15 Automated Client Check-in Emails", playbook: { title: "Past Client Nurturing" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) }, // 2 hours ago
+              { title: "Updated 5 Lead Records in CRM", playbook: { title: "Lead Management Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) } // 5 hours ago
+          ];
 
         // Start of the React App component code from the Canvas
         function App() {
@@ -635,148 +748,152 @@
             active_clients: { value: 0, source: '' },
             leads_this_month: { value: 0, source: '' },
             conversion_rate_month: { value: 0, source: '' },
+            ytd_gci: { value: 0, source: '' }, // Added from Arc Realty
+            active_listings: { value: 0, source: '' }, // Added from Arc Realty
+            buyer_leads_month: { value: 0, source: '' }, // Added from Arc Realty
+            seller_leads_month: { value: 0, source: '' }, // Added from Arc Realty
+            avg_comm_rate: { value: 0, source: '' }, // Added from Arc Realty
+            avg_sales_cycle: { value: 0, source: '' }, // Added from Arc Realty
+            agent_count: { value: 0, source: '' }, // Added from Arc Realty
           });
-          const [copilotMessages, setCopilotMessages] = React.useState([]); // Renamed coachMessages to copilotMessages
+          const [coachMessages, setCoachMessages] = React.useState([]);
           const [upcomingTasks, setUpcomingTasks] = React.useState([]);
           const [reviews, setReviews] = React.useState([]); // New state for reviews
 
-          // Removed objectiveScore and objectiveScoreHistory from useState, as they are now derived or part of the widget's internal state
+          // New states for scores
           const [ndeverScore, setNdeverScore] = React.useState(0);
           const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0);
-
-          // Moved todaysGrowthWinsData definition here, so it's defined before use
-          const todaysGrowthWinsData = [
-              { id: 'win1', title: "Completed 'Automated Client Nurturing' Setup", playbook: { title: "Client Nurturing Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
-              { id: 'win2', title: "Closed a new high-value client deal", playbook: { title: "Deal Closure Mastery" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-              { id: 'win3', title: "Generated 3 new leads from marketing efforts", playbook: { title: "Lead Generation Playbook" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
-          ];
+          const [objectiveScoreHistory, setObjectiveScoreHistory] = React.useState([]); // History for line chart
 
 
           React.useEffect(() => {
             // Simulate fetching initial dashboard data
-            const fetchDashboardData = () => {
-              const mockObjectives = [
+            const mockObjectives = [
                 {
                   id: 'obj1',
-                  name: 'Achieve $250K Annual GCI',
+                  name: 'Achieve $5M Sales Volume Q3', // Renamed for consistency with Arc Realty
                   status: 'on_track',
-                  progress: 95, // Current progress
-                  weight: 5,   // Higher weight as it's a primary GCI target
-                  priority: 'critical', // New: priority level
-                  type: 'growth',       // New: objective type
+                  progress: 70,
+                  weight: 5,   // Higher weight as it's a primary target
+                  priority: 'critical', // Added priority
+                  type: 'growth', // Added type
                   metrics_definition: {
-                    gci_target: { type: 'currency', label: 'GCI Target' },
-                    current_gci: { type: 'currency', label: 'Current GCI' },
-                    leads_generated: { type: 'number', label: 'Leads Generated' },
-                    conversion_rate: { type: 'percentage', label: 'Conversion Rate' },
+                    sales_volume_target: { type: 'currency', label: 'Volume Target' },
+                    current_sales_volume: { type: 'currency', label: 'Current Volume' },
+                    active_listings: { type: 'number', label: 'Active Listings' },
+                    buyer_conversion: { type: 'percentage', label: 'Buyer Conv. Rate' },
                   },
                   current_values: {
-                    gci_target: 250000,
-                    current_gci: 162500,
-                    leads_generated: 150,
-                    conversion_rate: 0.08, // 8%
+                    sales_volume_target: 5000000,
+                    current_sales_volume: 3500000,
+                    active_listings: 15,
+                    buyer_conversion: 0.10, // 10%
                   },
                   target_values: {
-                    gci_target: 250000,
-                    leads_generated: 200,
-                    conversion_rate: 0.10, // 10%
+                    sales_volume_target: 5000000,
+                    active_listings: 20,
+                    buyer_conversion: 0.12, // 12%
                   },
                 },
                 {
                   id: 'obj2',
-                  name: 'Increase Client Referrals by 15%',
-                  status: 'on_track',
-                  progress: 88,
-                  weight: 3,
-                  priority: 'high',
-                  type: 'growth',
+                  name: 'Increase Agent Productivity by 10%', // Renamed for consistency
+                  status: 'at_risk',
+                  progress: 55,
+                  weight: 4,
+                  priority: 'high', // Added priority
+                  type: 'growth', // Added type
                   metrics_definition: {
-                    referrals_target: { type: 'number', label: 'Referrals Target' },
-                    current_referrals: { type: 'number', label: 'Current Referrals' },
-                    client_satisfaction_score: { type: 'scale', label: 'CSAT Score' },
+                    avg_transactions_per_agent: { type: 'number', label: 'Avg. Trans/Agent' },
+                    agent_gci_growth: { type: 'percentage', label: 'Agent GCI Growth' },
+                    training_completion: { type: 'percentage', label: 'Training Completion' },
                   },
                   current_values: {
-                    referrals_target: 50,
-                    current_referrals: 20,
-                    client_satisfaction_score: 4.2,
+                    avg_transactions_per_agent: 1.8,
+                    agent_gci_growth: 0.05,
+                    training_completion: 0.70,
                   },
                   target_values: {
-                    referrals_target: 50,
-                    client_satisfaction_score: 4.5,
+                    avg_transactions_per_agent: 2.0,
+                    agent_gci_growth: 0.10,
+                    training_completion: 0.90,
                   },
                 },
                 {
                   id: 'obj3',
-                  name: 'Maintain 90%+ Client Retention Rate',
+                  name: 'Enhance Client Satisfaction Score to 4.9', // Renamed for consistency
                   status: 'on_track',
-                  progress: 82,
-                  weight: 4,
-                  priority: 'high',
-                  type: 'maintenance',
+                  progress: 90,
+                  weight: 3,
+                  priority: 'medium', // Added priority
+                  type: 'maintenance', // Added type
                   metrics_definition: {
-                    retention_rate: { type: 'percentage', label: 'Retention Rate' },
-                    churn_rate: { type: 'percentage', label: 'Churn Rate' },
+                    csat_score: { type: 'scale', label: 'CSAT Score (5.0)' },
+                    referral_rate: { type: 'percentage', label: 'Referral Rate' },
                   },
                   current_values: {
-                    retention_rate: 0.85,
-                    churn_rate: 0.15,
+                    csat_score: 4.8,
+                    referral_rate: 0.35,
                   },
                   target_values: {
-                    retention_rate: 0.90,
-                    churn_rate: 0.10,
+                    csat_score: 4.9,
+                    referral_rate: 0.40,
                   },
                 },
                 {
                     id: 'obj4',
-                    name: 'Expand Social Media Presence',
-                    status: 'at_risk',
-                    progress: 60,
+                    name: 'Expand Digital Marketing Reach',
+                    status: 'on_track',
+                    progress: 80,
                     weight: 2,
                     priority: 'medium',
                     type: 'growth',
                     metrics_definition: {
-                        followers_target: { type: 'number', label: 'Followers Target' },
-                        current_followers: { type: 'number', label: 'Current Followers' },
-                        engagement_rate: { type: 'percentage', label: 'Engagement Rate' }
+                        website_traffic: { type: 'number', label: 'Website Traffic' },
+                        social_media_engagement: { type: 'percentage', label: 'Social Engagement' }
                     },
                     current_values: {
-                        followers_target: 2000,
-                        current_followers: 1200,
-                        engagement_rate: 0.03
+                        website_traffic: 5000,
+                        social_media_engagement: 0.04
                     },
                     target_values: {
-                        followers_target: 2000,
-                        engagement_rate: 0.05
+                        website_traffic: 6000,
+                        social_media_engagement: 0.05
                     }
                 },
                 {
                     id: 'obj5',
-                    name: 'Complete Q2 Compliance Training',
-                    status: 'behind',
-                    progress: 40,
+                    name: 'Streamline Transaction Coordination',
+                    status: 'completed',
+                    progress: 100,
                     weight: 1,
                     priority: 'low',
                     type: 'maintenance',
                     metrics_definition: {
-                        completion_target: { type: 'number', label: 'Completion Target' },
-                        current_completion: { type: 'number', label: 'Current Completion' }
+                        avg_doc_processing_time: { type: 'days', label: 'Avg. Doc Process Time' },
+                        compliance_rate: { type: 'percentage', label: 'Compliance Rate' }
                     },
                     current_values: {
-                        completion_target: 100,
-                        current_completion: 40
+                        avg_doc_processing_time: 1,
+                        compliance_rate: 1.0
                     },
                     target_values: {
-                        completion_target: 100
+                        avg_doc_processing_time: 1,
+                        compliance_rate: 1.0
                     }
                 }
               ];
               setObjectives(mockObjectives);
 
+
               setKpis({
-                ytd_revenue: { value: 175000, source: 'Quickbooks' },
-                active_clients: { value: 120, source: 'CRM (e.g., Follow Up Boss)' },
-                leads_this_month: { value: 25, source: 'CRM (e.g., Follow Up Boss)' },
-                conversion_rate_month: { value: 0.07, source: 'Derived from CRM' },
+                ytd_gci: { value: 450000, source: 'Brokerage Software' },
+                active_listings: { value: 22, source: 'MLS Data' },
+                buyer_leads_month: { value: 75, source: 'CRM (e.g., Follow Up Boss)' },
+                seller_leads_month: { value: 30, source: 'CRM (e.g., Follow Up Boss)' },
+                avg_comm_rate: { value: 0.025, source: 'Transaction Data' }, // 2.5%
+                avg_sales_cycle: { value: 65, source: 'CRM' }, // days
+                agent_count: { value: 12, source: 'HRIS' },
               });
 
               setAutomations([
@@ -822,17 +939,16 @@
                 },
               ]);
 
-              // Renamed coach to copilot in messages
-              setCopilotMessages([
-                { sender: 'copilot', text: "Good morning, Loren! Your 'Increase Client Referrals' objective is currently at 40%, and your 'Referral Partner Check-ins' automation ran 5 times today. Your 'Client Satisfaction Score' is excellent at 4.2. Shall we activate the advanced 'Past Client Nurturing' workflow to maximize repeat and referral business?" },
+              setCoachMessages([
+                { sender: 'coach', text: "Good morning, Loren! Your 'Increase Client Referrals' objective is currently at 40%, and your 'Referral Partner Check-ins' automation ran 5 times today. Your 'Client Satisfaction Score' is excellent at 4.2. Shall we activate the advanced 'Past Client Nurturing' workflow to maximize repeat and referral business?" },
                 { sender: 'user', text: "Morning! Yes, let's talk about client nurturing. I want to make sure I'm not dropping any referrals and staying top-of-mind without feeling overwhelmed." },
-                { sender: 'copilot', text: "Understood. The 'Past Client Nurturing' workflow will automate personalized emails and prompt you for birthday/anniversary touches. I've also highlighted tasks in your 'Client Retention Playbook' that focus on direct outreach to your key referral partners. How does that sound?" },
+                { sender: 'coach', text: "Understood. The 'Past Client Nurturing' workflow will automate personalized emails and prompt you for birthday/anniversary touches. I've also highlighted tasks in your 'Client Retention Playbook' that focus on direct outreach to your key referral partners. How does that sound?" },
                 { sender: 'user' , text: "Thanks. Can you also help me with level-up my prospecting?" },
-                { sender: 'copilot', text: "Absolutely. I've highlighted tasks in your \"Prospecting Playbook\" that directly impact lead volume. Also, consider activating the \"Automated Lead Nurturing\" workflow for recent website visitors." },
+                { sender: 'coach', text: "Absolutely. I've highlighted tasks in your \"Prospecting Playbook\" that directly impact lead volume. Also, consider activating the \"Automated Lead Nurturing\" workflow for recent website visitors." },
               ]);
 
               setUpcomingTasks([
-                { id: 'task1', name: 'Review Ndever Copilot QuickBooks analysis of Q2 budget (Playbook: Financial Health)', dueDate: 'Today' }, // Updated reference
+                { id: 'task1', name: 'Review Ndever Coach QuickBooks analysis of Q2 budget (Playbook: Financial Health)', dueDate: 'Today' },
                 { id: 'task2', name: 'Call client Barbara for referral (Playbook: Client Retention)', dueDate: 'Thu, Jun 12' },
                 { id: 'task3', name: 'Send contract to new buyer via CRM template (Playbook: Deal Closure)', dueDate: 'Tomorrow' },
               ]);
@@ -844,12 +960,11 @@
                 { id: 'website', name: 'Website Reviews', rating: 4.7, count: 56, link: 'https://yourwebsite.com/reviews' },
               ]);
 
-              setNdeverScore(980); // Higher Ndever score for strong achievement
-              setTodaysGrowthPoints(80); // More points today for growth wins
-            };
-
-            fetchDashboardData();
-          }, []); // Empty dependency array ensures this runs once on mount
+              const calculatedObjectiveScore = calculateOverallObjectiveScore(mockObjectives);
+              setNdeverScore(1050); // Mock Ndever Score for Agency Dashboard
+              setTodaysGrowthPoints(90); // Mock points earned today
+              setObjectiveScoreHistory([60, 62, 65, 68, 70, 65, calculatedObjectiveScore]); // Last 7 days, ending with current score
+          }, []); // Removed `fetchDashboardData()` call outside, content moved inside useEffect
 
 
           return (
@@ -858,6 +973,7 @@
               <header className="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200">
                 <div className="flex items-center">
                   {/* Ndever Logo Image */}
+                  {/* Corrected onError to be a function */}
                   <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/120x32/white/ed8622/white?text=Ndever+Logo'; }} />
                   <h1 className="text-xl font-semibold text-gray-800">Agency Dashboard</h1>
                 </div>
@@ -869,15 +985,7 @@
               </header>
 
               <main className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Growth Overview Scores (Objective Score Widget, Ndever Score, Today's Growth Wins) */}
-                {/* This section now spans the entire width at the top */}
-                <ObjectiveScoreWidget
-                    objectives={objectives}
-                    ndeverScore={ndeverScore}
-                    todaysGrowthPoints={todaysGrowthPoints}
-                />
-
-                {/* Header Section (Greeting & Motivational Message) - Now below the ObjectiveScoreWidget */}
+                {/* Header Section */}
                 <div className="lg:col-span-3 mb-8">
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     {greeting_by_time()}, Loren!
@@ -887,18 +995,72 @@
                   </p>
                 </div>
 
+                {/* Growth Overview Scores (Objective Score Widget, Ndever Score, Today's Growth Wins) */}
+                <ObjectiveScoreWidget
+                    objectives={objectives}
+                    ndeverScore={ndeverScore}
+                    todaysGrowthPoints={todaysGrowthPoints}
+                    objectiveScoreHistory={objectiveScoreHistory}
+                />
 
                 <div className="lg:col-span-2 space-y-6">
                   {/* Key Performance Indicators (for Loren) */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Your Key Performance Indicators</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <KPICard title="YTD Revenue" value={formatCurrency(kpis.ytd_revenue.value)} source={kpis.ytd_revenue.source} />
-                      <KPICard title="Active Clients" value={kpis.active_clients.value} source={kpis.active_clients.source} />
-                      <KPICard title="Leads This Month" value={kpis.leads_this_month.value} source={kpis.leads_this_month.source} />
-                      <KPICard title="Conversion Rate (Mo)" value={formatPercentage(kpis.conversion_rate_month.value)} source={kpis.conversion_rate_month.source} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <KPICard title="YTD GCI" value={formatCurrency(kpis.ytd_gci.value)} source={kpis.ytd_gci.source} iconName="hero-wallet" />
+                      <KPICard title="Active Listings" value={kpis.active_listings.value} source={kpis.active_listings.source} iconName="hero-building-office" />
+                      <KPICard title="Buyer Leads (Mo)" value={kpis.buyer_leads_month.value} source={kpis.buyer_leads_month.source} iconName="hero-users" />
+                      <KPICard title="Seller Leads (Mo)" value={kpis.seller_leads_month.value} source={kpis.seller_leads_month.source} iconName="hero-users" />
+                      <KPICard title="Avg. Commission Rate" value={formatPercentage(kpis.avg_comm_rate.value)} source={kpis.avg_comm_rate.source} iconName="hero-document-text" />
+                      <KPICard title="Avg. Sales Cycle (Days)" value={kpis.avg_sales_cycle.value} source={kpis.avg_sales_cycle.source} iconName="hero-calendar-days" />
+                      <KPICard title="Agent Count" value={kpis.agent_count.value} source={kpis.agent_count.source} iconName="hero-user-group" />
                     </div>
                   </section>
+
+                  {/* Today's Achievements */}
+                  {todaysAchievements.length > 0 && (
+                    <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
+                      <div className="px-6 py-4 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-medium text-gray-900">
+                            Today's Achievements
+                          </h3>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
+                            {todaysAchievements.length} completed
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <div className="space-y-3">
+                          {todaysAchievements.map((achievement, index) => (
+                            <div key={index} className="flex items-start space-x-3">
+                              <div className="w-8 h-8 bg-[var(--color-success-100)] rounded-full flex items-center justify-center flex-shrink-0">
+                                <Icon name="hero-check" className="w-4 h-4 text-[var(--color-success-600)]" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm text-gray-900">
+                                  {achievement.title}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {achievement.playbook.title} • Completed{" "}
+                                  {new Date(achievement.completed_at).toLocaleTimeString()}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {todaysAchievements.length >= 3 && (
+                          <div className="mt-4 p-3 bg-[var(--color-success-50)] border border-[var(--color-success-200)] rounded-lg">
+                            <p className="text-sm text-[var(--color-success-800)] font-medium">
+                              <Icon name="hero-fire" className="w-4 h-4 inline mr-1" />
+                              Outstanding execution. You're demonstrating the consistent action that drives exceptional results.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Objectives Section */}
                   <section className="bg-white p-6 rounded-lg shadow-md">
@@ -925,59 +1087,15 @@
                       ))}
                     </ul>
                   </section>
-
-                  {/* Recent Growth Wins */}
-                  {todaysGrowthWinsData.length > 0 && (
-                    <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
-                      <div className="px-6 py-4 border-b border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-medium text-gray-900">
-                            Recent Growth Wins
-                          </h3>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
-                            {todaysGrowthWinsData.length} completed
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        <div className="space-y-3">
-                          {todaysGrowthWinsData.map((win, index) => (
-                            <div key={index} className="flex items-start space-x-3">
-                              <div className="w-8 h-8 bg-[var(--color-success-100)] rounded-full flex items-center justify-center flex-shrink-0">
-                                <Icon name="hero-check" className="w-4 h-4 text-[var(--color-success-600)]" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm text-gray-900">
-                                  {win.title}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {win.playbook.title} • Completed{" "}
-                                  {new Date(win.completed_at).toLocaleDateString()}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        {todaysGrowthWinsData.length >= 3 && (
-                          <div className="mt-4 p-3 bg-[var(--color-success-50)] border border-[var(--color-success-200)] rounded-lg">
-                            <p className="text-sm text-[var(--color-success-800)] font-medium">
-                              <Icon name="hero-fire" className="w-4 h-4 inline mr-1" />
-                              Outstanding progress in recent initiatives!
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
 
-                {/* Right Column: Ndever Copilot, Automation Summary, Client Feedback */}
+                {/* Right Column: Ndever Coach, Automation Summary, Client Feedback */}
                 <div className="space-y-6">
-                  {/* Ndever Copilot Chat */}
+                  {/* Ndever Coach Chat */}
                   <section className="bg-white p-6 rounded-lg shadow-md h-96 flex flex-col">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever Copilot</h2>
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever Coach</h2>
                     <div className="flex-1 overflow-y-auto border border-gray-200 p-3 rounded-lg bg-gray-50 mb-3 text-sm">
-                      {copilotMessages.map((msg, index) => (
+                      {coachMessages.map((msg, index) => (
                         <div key={index} className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                           <span className={`inline-block p-2 rounded-lg ${
                             msg.sender === 'user' ? 'bg-[var(--color-primary-500)] text-white' : 'bg-gray-200 text-gray-800'
@@ -986,12 +1104,12 @@
                           </span>
                         </div>
                       ))}
-                      <div className="text-gray-400 text-xs text-center mt-2">Ndever Copilot is typing...</div>
+                      <div className="text-gray-400 text-xs text-center mt-2">Ndever Coach is typing...</div>
                     </div>
                     <div className="flex">
                       <input
                         type="text"
-                        placeholder="Message Ndever Copilot..."
+                        placeholder="Message Ndever Coach..."
                         className="flex-1 border border-gray-300 p-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)]"
                       />
                       <button className="bg-[var(--color-primary-600)] text-white p-2 rounded-r-lg hover:bg-[var(--color-primary-700)] transition-colors">
@@ -1010,7 +1128,9 @@
                     </h2>
                     <div className="space-y-3">
                       <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                        <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">20</span>Automations Executed Today
+                        <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">
+                            {automations.reduce((sum, auto) => sum + auto.executions_today, 0)}
+                        </span>Automations Executed Today
                       </div>
                       {automations.map(auto => (
                         <AutomationCard key={auto.id} automation={auto} />
