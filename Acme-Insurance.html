@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acme Insurance Agency Dashboard</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./favicon.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- React and ReactDOM CDNs (for in-browser JSX transpilation via Babel) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel for in-browser JSX transpilation. Not for production! -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      /* Custom styles for the form checkbox */
+      .form-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        border: 1px solid var(--color-gray-300); /* gray-300 */
+        border-radius: 0.25rem; /* rounded */
+        width: 1.25rem; /* h-5 */
+        height: 1.25rem; /* w-5 */
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
+        position: relative;
+      }
+
+      .form-checkbox:checked {
+        background-color: var(--color-primary-600); /* Using new theme variable */
+        border-color: var(--color-primary-600); /* Using new theme variable */
+      }
+
+      .form-checkbox:checked::before {
+        content: '\2713'; /* Checkmark unicode character */
+        color: white;
+        font-size: 0.875rem; /* text-sm */
+        line-height: 1;
+      }
+
+      .form-checkbox:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px var(--color-primary-500); /* Using new theme variable */
+      }
+
+      /* Theme CSS Variables */
+      :root {
+        --color-casablanca-50: #fef8ee;
+        --color-casablanca-100: #fdf0d7;
+        --color-casablanca-200: #faddae;
+        --color-casablanca-300: #f4b860;
+        --color-casablanca-400: #f1a146;
+        --color-casablanca-500: #ed8622;
+        --color-casablanca-600: #de6d18;
+        --color-casablanca-700: #b95315;
+        --color-casablanca-800: #934219;
+        --color-casablanca-900: #763818;
+        --color-casablanca-950: #401b0a;
+
+        --color-primary-50: var(--color-casablanca-50);
+        --color-primary-100: var(--color-casablanca-100);
+        --color-primary-200: var(--color-casablanca-200);
+        --color-primary-300: var(--color-casablanca-300);
+        --color-primary-400: var(--color-casablanca-400);
+        --color-primary-500: var(--color-casablanca-500);
+        --color-primary-600: var(--color-casablanca-600);
+        --color-primary-700: var(--color-casablanca-700);
+        --color-primary-800: var(--color-casablanca-800);
+        --color-primary-900: var(--color-casablanca-900);
+        --color-primary-950: var(--color-casablanca-950);
+
+        /* Assuming standard Tailwind colors for these missing base definitions */
+        --color-teal-50: #f0fdfa;
+        --color-teal-100: #ccfbf1;
+        --color-teal-200: #99f6e4;
+        --color-teal-300: #5eead4;
+        --color-teal-400: #2dd4bf;
+        --color-teal-500: #14b8a6;
+        --color-teal-600: #0d9488;
+        --color-teal-700: #0f766e;
+        --color-teal-800: #115e59;
+        --color-teal-900: #134e4a;
+        --color-teal-950: #042f2e;
+
+        --color-secondary-50: var(--color-teal-50);
+        --color-secondary-100: var(--color-teal-100);
+        --color-secondary-200: var(--color-teal-200);
+        --color-secondary-300: var(--color-teal-300);
+        --color-secondary-400: var(--color-teal-400);
+        --color-secondary-500: var(--color-teal-500);
+        --color-secondary-600: var(--color-teal-600);
+        --color-secondary-700: var(--color-teal-700);
+        --color-secondary-800: var(--color-teal-800);
+        --color-secondary-900: var(--color-teal-900);
+        --color-secondary-950: var(--color-teal-950);
+
+        --color-green-50: #f0fdf4;
+        --color-green-100: #dcfce7;
+        --color-green-200: #bbf7d0;
+        --color-green-300: #86efac;
+        --color-green-400: #4ade80;
+        --color-green-500: #22c55e;
+        --color-green-600: #16a34a;
+        --color-green-700: #15803d;
+        --color-green-800: #166534;
+        --color-green-900: #14532d;
+        --color-green-950: #0d2a1b;
+
+        --color-success-50: var(--color-green-50);
+        --color-success-100: var(--color-green-100);
+        --color-success-200: var(--color-green-200);
+        --color-success-300: var(--color-green-300);
+        --color-success-400: var(--color-green-400);
+        --color-success-500: var(--color-green-500);
+        --color-success-600: var(--color-green-600);
+        --color-success-700: var(--color-green-700);
+        --color-success-800: var(--color-green-800);
+        --color-success-900: var(--color-green-900);
+        --color-success-950: var(--color-green-950);
+
+        --color-red-50: #fef2f2;
+        --color-red-100: #fee2e2;
+        --color-red-200: #fecaca;
+        --color-red-300: #fca5a5;
+        --color-red-400: #f87171;
+        --color-red-500: #ef4444;
+        --color-red-600: #dc2626;
+        --color-red-700: #b91c1c;
+        --color-red-800: #991b1b;
+        --color-red-900: #7f1d1d;
+        --color-red-950: #450a0a;
+
+        --color-danger-50: var(--color-red-50);
+        --color-danger-100: var(--color-red-100);
+        --color-danger-200: var(--color-red-200);
+        --color-danger-300: var(--color-red-300);
+        --color-danger-400: var(--color-red-400);
+        --color-danger-500: var(--color-red-500);
+        --color-danger-600: var(--color-red-600);
+        --color-danger-700: var(--color-red-700);
+        --color-danger-800: var(--color-red-800);
+        --color-danger-900: var(--color-red-900);
+        --color-danger-950: var(--color-red-950);
+
+        --color-yellow-50: #fefce8;
+        --color-yellow-100: #fef9c3;
+        --color-yellow-200: #fef08a;
+        --color-yellow-300: #fde047;
+        --color-yellow-400: #facc15;
+        --color-yellow-500: #eab308;
+        --color-yellow-600: #ca8a04;
+        --color-yellow-700: #a16207;
+        --color-yellow-800: #854d09;
+        --color-yellow-900: #713f12;
+        --color-yellow-950: #422006;
+
+        --color-warning-50: var(--color-yellow-50);
+        --color-warning-100: var(--color-yellow-100);
+        --color-warning-200: var(--color-yellow-200);
+        --color-warning-300: var(--color-yellow-300);
+        --color-warning-400: var(--color-yellow-400);
+        --color-warning-500: var(--color-yellow-500);
+        --color-warning-600: var(--color-yellow-600);
+        --color-warning-700: var(--color-yellow-700);
+        --color-warning-800: var(--color-yellow-800);
+        --color-warning-900: var(--color-yellow-900);
+        --color-warning-950: var(--color-yellow-950);
+
+        --color-sky-50: #f0f9ff;
+        --color-sky-100: #e0f2fe;
+        --color-sky-200: #bae6fd;
+        --color-sky-300: #7dd3fc;
+        --color-sky-400: #38bdf8;
+        --color-sky-500: #0ea5e9;
+        --color-sky-600: #0284c7;
+        --color-sky-700: #0369a1;
+        --color-sky-800: #075985;
+        --color-sky-900: #082f49;
+        --color-sky-950: #082f49;
+
+        --color-info-50: var(--color-sky-50);
+        --color-info-100: var(--color-sky-100);
+        --color-info-200: var(--color-sky-200);
+        --color-info-300: var(--color-sky-300);
+        --color-info-400: var(--color-sky-400);
+        --color-info-500: var(--color-sky-500);
+        --color-info-600: var(--color-sky-600);
+        --color-info-700: var(--color-sky-700);
+        --color-info-800: var(--color-sky-800);
+        --color-info-900: var(--color-sky-900);
+        --color-info-950: var(--color-sky-950);
+
+        --color-slate-50: #f8fafc;
+        --color-slate-100: #f1f5f9;
+        --color-slate-200: #e2e8f0;
+        --color-slate-300: #cbd5e1;
+        --color-slate-400: #94a3b8;
+        --color-slate-500: #64748b;
+        --color-slate-600: #475569;
+        --color-slate-700: #334155;
+        --color-slate-800: #1e293b;
+        --color-slate-900: #0f172a;
+        --color-slate-950: #020617;
+
+        --color-gray-50: var(--color-slate-50);
+        --color-gray-100: var(--color-slate-100);
+        --color-gray-200: var(--color-slate-200);
+        --color-gray-300: var(--color-slate-300);
+        --color-gray-400: var(--color-slate-400);
+        --color-gray-500: var(--color-slate-500);
+        --color-gray-600: var(--color-slate-600);
+        --color-gray-700: var(--color-slate-700);
+        --color-gray-800: var(--color-slate-800);
+        --color-gray-900: var(--color-slate-900);
+        --color-gray-950: var(--color-slate-950);
+      }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- Helper Functions ---
+        const greeting_by_time = () => {
+            const hour = new Date().getHours();
+            if (hour < 12) return "Good morning";
+            if (hour < 18) return "Good afternoon";
+            return "Good evening";
+        };
+
+        const formatCurrency = (value) => {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+        };
+
+        const formatPercentage = (value) => {
+            return new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value);
+        };
+
+        // Function to get color based on status
+        const getStatusColorClass = (status) => {
+            switch (status) {
+                case 'on_track': return 'text-[var(--color-success-600)]';
+                case 'at_risk': return 'text-[var(--color-warning-600)]';
+                case 'behind': return 'text-[var(--color-danger-600)]';
+                case 'completed': return 'text-[var(--color-info-600)]';
+                default: return 'text-gray-500';
+            }
+        };
+
+        // Function to map progress to a gradient color for the ring fill
+        const getProgressColor = (progress) => {
+            if (progress <= 25) return 'var(--color-secondary-500)'; // Teal
+            if (progress <= 50) return 'var(--color-info-500)';     // Sky blue
+            if (progress <= 75) return 'var(--color-primary-400)';  // Lighter Ndever Orange
+            return 'var(--color-primary-600)';                      // Stronger Ndever Orange
+        };
+
+        // Calculate the overall Objective Score (weighted by both weight and priority)
+        const calculateOverallObjectiveScore = (objs) => {
+            if (!objs || objs.length === 0) return 0;
+            let totalWeightedProgress = 0;
+            let totalWeight = 0;
+
+            // Map priority string to a numerical value for calculation
+            const getPriorityValue = (priority) => {
+                switch (priority) {
+                    case 'low': return 1;
+                    case 'medium': return 2;
+                    case 'high': return 3;
+                    case 'critical': return 4;
+                    default: return 1; // Default to medium if not specified
+                }
+            };
+
+            objs.forEach(obj => {
+                const priorityValue = getPriorityValue(obj.priority);
+                // Incorporate both weight and priority into the calculation
+                totalWeightedProgress += (obj.progress * (obj.weight || 1) * priorityValue);
+                totalWeight += ((obj.weight || 1) * priorityValue);
+            });
+            return totalWeight === 0 ? 0 : Math.round(totalWeightedProgress / totalWeight);
+        };
+
+        // --- React Components for Dashboard Elements ---
+
+        const Icon = ({ name, className }) => {
+            // Placeholder for Heroicons or other SVG icons
+            const icons = {
+              "hero-scale": ( // For Objective Score
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.125 12.75l-1.108 1.107A.75.75 0 018.842 14v-.825a2.25 2.25 0 00-2.25-2.25H4.125m11.25 0h-.825a2.25 2.25 0 00-2.25 2.25v.825c0 .211-.081.416-.226.561l-1.108 1.107c-.42.42-.647 1-.647 1.636v.433a2.25 2.25 0 002.25 2.25h.825m0-15l1.108-1.107A.75.75 0 0115.158 10V10.825a2.25 2.25 0 002.25 2.25h1.625M9.75 3.75v.825a2.25 2.25 0 002.25 2.25h.825m0-4.5L12 3.75l-1.108 1.107A.75.75 0 0010.842 5V5.825a2.25 2.25 0 00-2.25 2.25H4.125" />
+                </svg>
+              ),
+              "hero-sparkles": ( // For Ndever Score / Gamification
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a.75.75 0 01.75.75v16.5a.75.75 0 01-1.5 0V3.75A.75.75 0 0112 3zm.75 14.25l4.303 2.656a.75.75 0 001.233-.696l-1.02-4.839 3.636-3.486a.75.75 0 00-.435-1.32l-4.82-.587-2.288-4.478a.75.75 0 00-1.353.001L8.71 8.874l-4.82.587a.75.75 0 00-.435 1.32l3.636 3.486-1.02 4.839a.75.75 0 001.233.696L12 17.25z" />
+                </svg>
+              ),
+              "hero-arrow-trending-up": ( // For positive trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.303 4.303 7.084-7.084m0 0H18.75M21.75 5.25V7.5" />
+                  </svg>
+              ),
+              "hero-arrow-trending-down": ( // For negative trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.303-4.303 7.084 7.084m0 0H18.75M21.75 18.75V16.5" />
+                  </svg>
+              ),
+              "hero-arrows-left-right": ( // For stable trend
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 12h9m-9 3.75H12M18.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+              ),
+              "hero-check-circle": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+              "hero-rocket-launch": ( // Adapted for Onboarding Focus (now within Overview card)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042V19.5m0-13.458L15.375 9.375M12 6.042L8.625 9.375M12 6.042V3.75m0 2.292c0 .107 0 .216-.017.323l-.865 4.323m-4.633.003L7.125 12.75l1.875-1.875M12 10.5h.008v.008H12zM12 12.75h.008v.008H12zM12 15h.008v.008H12zM12 17.25h.008v.008H12zM12 19.5h.008v.008H12z" />
+                </svg>
+              ),
+              "hero-fire": ( // Adapted for Performance Pulse (now for Growth Wins)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 22.5 12 13.5H3.75z" />
+                </svg>
+              ),
+              "hero-trophy": ( // Reused for Key HR Objective (now within Growth Wins)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25M14.25 18a4.5 4.5 0 004.5-4.5V7.5a4.5 4.5 0 00-4.5-4.5h-1.5a.75.75 0 00-.75.75v10.5a.75.75 0 00.75.75h1.5zm-9-5.25L7.5 7.5 5.25 9.75M9.75 18A4.5 4.5 0 005.25 13.5V7.5a4.5 4.5 0 004.5-4.5h1.5a.75.75 0 00.75-.75v10.5a.75.75 0 00-.75.75h-1.5z" />
+                </svg>
+              ),
+              "hero-check": (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+              ),
+              "hero-star": ( // New star icon for reviews
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
+                  <path fillRule="evenodd" d="M10.868 2.884c.321-.772 1.415-.772 1.736 0l1.82 4.394a1.625 1.625 0 011.213.882l4.394 1.82c.772.321.772 1.415 0 1.736l-4.394 1.82a1.625 1.625 0 01-1.213.882l-1.82 4.394c-.321.772-1.415.772-1.736 0l-1.82-4.394a1.625 1.625 0 01-1.213-.882l-4.394-1.82c-.772-.321-.772-1.415 0-1.736l4.394-1.82a1.625 1.625 0 011.213-.882l1.82-4.394z" clipRule="evenodd" />
+                </svg>
+              ),
+              "hero-users": ( // For Active Clients/Leads
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.75V10.5m-1.05 6.445L15 15.375M18 21a3 3 0 110-6 3 3 0 010 6zM6 18.75V10.5M6 21a3 3 0 110-6 3 3 0 010 6zM12 18.75V7.5m-1.05 6.445L9 12.375M12 21a3 3 0 110-6 3 3 0 010 6z" />
+                </svg>
+              ),
+              "hero-building-office": ( // For Listing Volume
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.5m-4.125 0H3m4.875 0h.625c.621 0 1.125-.504 1.125-1.125V8.25m0 0H3m3.125 12H12m-2.625 0h2.625m-2.625 0h1.5m1.5 0h.75m0 0h1.5m-1.5 0h.75m0 0h1.5m-1.5 0H21M9 16.5v-4.5m0 0H3m4.875 0h.625c.621 0 1.125-.504 1.125-1.125V4.5m0 0H3m3.125 12H12M9 7.5V4.5m0 0H3" />
+                </svg>
+              ),
+              "hero-wallet": ( // For GCI
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a3.75 3.75 0 100-7.5h16.5a3.75 3.75 0 100 7.5H2.25z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12.75V11.25m0-1.5v-3m0 4.5H9.75M12 11.25h2.25m-2.25 0v2.25m0-4.5h-.75m.75 0h.75" />
+                </svg>
+              ),
+              "hero-document-text": ( // For Lead Conversion Rate
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625A3.375 3.375 0 0016.125 8.25H13.5m0-1.5L21 4.5m-9.75 3.75L21 4.5M10.5 7.5L21 4.5M19.5 14.25v2.625A3.375 3.375 0 0116.125 20.25H6.375a3.375 3.375 0 01-3.375-3.375V10.375m9.75-3.75l-1.5-1.5M19.5 14.25L12 21" />
+                </svg>
+              ),
+              "hero-calendar-days": ( // For Avg Sales Cycle (Days)
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5a2.25 2.25 0 012.25 2.25v7.5m-16.5 0h1.875a.75.75 0 00.75-.75v-1.5a.75.75 0 00-.75-.75H4.125a.75.75 0 00-.75.75v1.5c0 .414.336.75.75.75zm1.5-3.75H4.125V12h1.5v1.5zM12 21v-7.5" />
+                </svg>
+              ),
+              "hero-user-group": ( // For Agent Count
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.75V10.5m-1.05 6.445L15 15.375M18 21a3 3 0 110-6 3 3 0 010 6zM6 18.75V10.5M6 21a3 3 0 110-6 3 3 0 010 6zM12 18.75V7.5m-1.05 6.445L9 12.375M12 21a3 3 0 110-6 3 3 0 010 6z" />
+                </svg>
+              ),
+              "hero-rocket": ( // For growth objectives
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.31a.75.75 0 01-.176.793l-1.42 1.42a.75.75 0 01-1.06 0L9.423 13.92a.75.75 0 010-1.06l1.42-1.42a.75.75 0 01.793-.176m.503 1.05v2.806m-2.806.503H9.418M8.25 18.75a1.5 1.5 0 00-1.5 1.5v.75m1.5-1.5H7.5m-.75 0h-1.5M12 4.5l-2.072 2.072a.75.75 0 00-.22.53v.794l-1.071 1.071M10.5 8.25L9 9.75m-3.75 0L1.5 14.25m5.25-9.75h-.75m-1.5 0h-.75M12 9a.75.75 0 01-.75-.75V6.75m0-1.5a.75.75 0 00-.75-.75H5.25M17.25 4.5h-.75m-1.5 0h-.75m2.25 2.25h.75m1.5 0h.75m-2.25-2.25L12 9M18 1.5l-2.072 2.072a.75.75 0 00-.22.53V6.75l-1.071 1.071M22.5 7.5h-.75m-1.5 0h-.75m-2.25 2.25h.75m1.5 0h.75M22.5 12L18 16.5m-3.75 0H12m0-2.25h-2.25" />
+                </svg>
+              ),
+              "hero-arrow-path": ( // For maintenance objectives
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.181m0 0l-3.181-3.181A1.5 1.5 0 005.15 12.75H1.5m11.183 2.928a3.75 3.75 0 00-4.781-4.781m0 0H6.75m11.183 2.928a3.75 3.75 0 01-4.781 4.781m0 0H17.25m-4.634-11.233l1.92-2.166A1.5 1.5 0 0118 7.25h3.75h-.001v-.001m-1.92 2.166A1.5 1.5 0 0015.75 12.75H1.5" />
+                </svg>
+              ),
+              "hero-currency-dollar": ( // For Policy Premium
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.25L12 18m3-2.25L12 18m0 0V6h.008v12H12z" />
+                </svg>
+              ),
+              "hero-shield-check": ( // For Policy Count
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+              "hero-lifebuoy": ( // For Customer Service Rating
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m0-6H6m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+              "hero-bell-alert": ( // For Claims Process Efficiency
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9.205 17.5l-2.072 1.954m0-4.075l-.462 1.345M12 18.75l-2.072 1.954m0 0H9.205l-2.072 1.954L9.813 22.5M12 12.75V11.25m0-1.5v-3m0 4.5H9.75M12 11.25h2.25m-2.25 0v2.25m0-4.5h-.75m.75 0h.75" />
+                </svg>
+              ),
+              "hero-users-solid": ( // For Team Productivity (solid variant)
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
+                  <path fillRule="evenodd" d="M7.5 4.5a3 3 0 116 0A3 3 0 017.5 4.5zM11.5 9.75a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v1.5c0 .414.336.75.75.75h2.5a.75.75 0 00.75-.75v-1.5zM3.875 6.75a.75.75 0 00-.75-.75h-1a.75.75 0 00-.75.75v6a.75.75 0 00.75.75h1.25a.75.75 0 00.75-.75v-6zM15.875 6.75a.75.75 0 00-.75-.75h-1a.75.75 0 00-.75.75v6a.75.75 0 00.75.75h1.25a.75.75 0 00.75-.75v-6z" clipRule="evenodd" />
+                </svg>
+              ),
+              "hero-briefcase": ( // For Employee Engagement
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-4.5L3 7.5m18 0l-9 4.5m9-4.5v9l-9 4.5M3 7.5l9 4.5M3 7.5v9l9 4.5m0-9v9" />
+                </svg>
+              ),
+            };
+            return icons[name] || null;
+          };
+
+        // ObjectiveProgressRing Component (reused from HR dashboard for consistency)
+        const ObjectiveProgressRing = ({ progress, size = 20 }) => {
+            const strokeWidth = 4;
+            const radius = (size * 2 / 2) - (strokeWidth / 2);
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (progress / 100) * circumference;
+
+            const progressColor = getProgressColor(progress);
+            const bgColor = 'var(--color-gray-200)';
+            const textColor = 'var(--color-gray-800)';
+
+            const textSizeClass = size <= 24 ? 'text-[9px]' : (size <= 28 ? 'text-[10px]' : 'text-xs');
+
+            return (
+              <div className={`relative w-${size} h-${size} flex-shrink-0`}>
+                <svg className="w-full h-full" viewBox={`0 0 ${size * 2} ${size * 2}`}>
+                  <circle
+                    className="text-gray-200"
+                    strokeWidth={strokeWidth}
+                    stroke={bgColor}
+                    fill="transparent"
+                    r={radius}
+                    cx={size}
+                    cy={size}
+                  />
+                  <circle
+                    className="progress-ring-circle"
+                    strokeWidth={strokeWidth}
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
+                    strokeLinecap="round"
+                    stroke={progressColor}
+                    fill="transparent"
+                    r={radius}
+                    cx={size}
+                    cy={size}
+                    style={{ transition: 'stroke-dashoffset 0.35s' }}
+                  />
+                  <text
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className={`${textSizeClass} font-bold`}
+                    fill={textColor}
+                  >
+                    {progress}%
+                  </text>
+                </svg>
+              </div>
+            );
+        };
+
+        // ObjectiveScoreWidget Component (reused from HR dashboard for consistency)
+        const ObjectiveScoreWidget = ({ objectives, ndeverScore, todaysGrowthPoints, objectiveScoreHistory }) => {
+            const overallObjectiveScore = calculateOverallObjectiveScore(objectives);
+            const objectiveScoreTrend = getObjectiveScoreTrend(objectiveScoreHistory);
+
+            // Determine overall score color for the main ring
+            const overallScoreColor = overallObjectiveScore > 85 ? 'var(--color-success-600)' :
+                                      overallObjectiveScore > 60 ? 'var(--color-primary-600)' :
+                                      'var(--color-danger-600)';
+
+            const radiusOverall = 50;
+            const circumferenceOverall = 2 * Math.PI * radiusOverall;
+            const offsetOverall = circumferenceOverall - (overallObjectiveScore / 100) * circumferenceOverall;
+
+            // Sort objectives by priority (highest first) then by progress (descending) for the "Top Objectives" section
+            const sortedObjectives = [...objectives].sort((a, b) => {
+                const getPriorityValue = (p) => {
+                    switch (p) {
+                        case 'critical': return 4;
+                        case 'high': return 3;
+                        case 'medium': return 2;
+                        case 'low': return 1;
+                        default: return 0;
+                    }
+                };
+                const priorityDiff = getPriorityValue(b.priority) - getPriorityValue(a.priority);
+                if (priorityDiff !== 0) return priorityDiff;
+                return b.progress - a.progress;
+            }).slice(0, 3); // Take top 3 objectives
+
+            let trendIcon = null;
+            let trendColorClass = "text-gray-500";
+            if (objectiveScoreTrend === "Upward") {
+                trendIcon = <Icon name="hero-arrow-trending-up" className="w-5 h-5" />;
+                trendColorClass = "text-green-500";
+            } else if (objectiveScoreTrend === "Downward") {
+                trendIcon = <Icon name="hero-arrow-trending-down" className="w-5 h-5" />;
+                trendColorClass = "text-red-500";
+            } else {
+                trendIcon = <Icon name="hero-arrows-left-right" className="w-5 h-5" />;
+            }
+
+
+            return (
+              <div className="bg-gradient-to-br from-[var(--color-info-50)] to-[var(--color-info-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden flex flex-col items-center justify-between col-span-1 lg:col-span-3">
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-info-500)]/10 rounded-full blur-2xl"></div>
+
+                <div className="w-full flex flex-col md:flex-row justify-around items-center">
+                    {/* Overall Objective Score Ring */}
+                    <div className="relative w-36 h-36 flex items-center justify-center flex-shrink-0 md:mr-8 mb-4 md:mb-0">
+                      <svg className="w-full h-full" viewBox="0 0 120 120">
+                        <circle
+                          className="text-gray-200"
+                          strokeWidth="8"
+                          stroke="var(--color-gray-200)"
+                          fill="transparent"
+                          r={radiusOverall}
+                          cx="60"
+                          cy="60"
+                        />
+                        <circle
+                          className="progress-ring-circle"
+                          strokeWidth="8"
+                          strokeDasharray={circumferenceOverall}
+                          strokeDashoffset={offsetOverall}
+                          strokeLinecap="round"
+                          stroke={overallScoreColor}
+                          fill="transparent"
+                          r={radiusOverall}
+                          cx="60"
+                          cy="60"
+                          style={{ transition: 'stroke-dashoffset 0.35s' }}
+                        />
+                        <text
+                          x="60"
+                          y="50"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className="text-3xl font-bold"
+                          fill={overallScoreColor}
+                        >
+                          {overallObjectiveScore}%
+                        </text>
+                         <text
+                          x="60"
+                          y="75"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className="text-sm font-semibold"
+                          fill="var(--color-gray-700)"
+                        >
+                          Overall Score
+                        </text>
+                      </svg>
+                      {/* Trend Indicator */}
+                      <div className={`absolute -bottom-2 -left-2 flex items-center text-xs font-semibold ${trendColorClass}`}>
+                        {trendIcon}
+                        <span className="ml-1">{objectiveScoreTrend} Trend</span>
+                      </div>
+                    </div>
+
+                    {/* Top Objectives Section */}
+                    <div className="flex flex-col items-center flex-grow">
+                      <h3 className="text-sm font-semibold text-[var(--color-info-700)] uppercase tracking-wide mb-2">Top Objectives</h3>
+                      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {sortedObjectives.map(obj => (
+                            <div key={obj.id} className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm h-40 justify-between">
+                                <ObjectiveProgressRing progress={obj.progress} size={24} />
+                                <div className="flex flex-col items-center mt-2 px-2 pb-2 text-center">
+                                    <p className="text-xs font-medium text-gray-700 leading-tight">
+                                        {obj.name.length > 25 ? `${obj.name.slice(0, 25)}...` : obj.name}
+                                    </p>
+                                    <span className={`text-[8px] font-semibold ${getStatusColorClass(obj.status)}`}>
+                                        {obj.status.replace('_', ' ').charAt(0).toUpperCase() + obj.status.replace('_', ' ').slice(1)}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Ndever Score & Growth Wins - Now in curved boxes */}
+                    <div className="flex md:flex-col justify-around w-full md:w-auto mt-6 md:mt-0 text-center text-sm md:border-l border-gray-200 md:pl-8 space-y-4 md:space-y-6">
+                        <div className="flex flex-col items-center flex-1 p-4 bg-white rounded-xl shadow-md">
+                            <Icon name="hero-sparkles" className="w-8 h-8 text-[var(--color-primary-600)] mb-2" />
+                            <span className="text-2xl font-bold text-[var(--color-primary-900)]">{ndeverScore}</span>
+                            <span className="text-xs text-[var(--color-primary-700)]">Ndever Score</span>
+                        </div>
+                        <div className="flex flex-col items-center flex-1 p-4 bg-white rounded-xl shadow-md">
+                            <Icon name="hero-fire" className="w-8 h-8 text-[var(--color-success-600)] mb-2" />
+                            <span className="text-2xl font-bold text-[var(--color-success-900)]">+{todaysGrowthPoints}</span>
+                            <span className="text-xs text-[var(--color-success-700)]">Growth Wins Today</span>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            );
+        };
+
+        // Determine the Objective Score Trend (reused from HR dashboard)
+        const getObjectiveScoreTrend = (history) => {
+            if (history.length < 2) return "Stable"; // Need at least two points to determine a trend
+            const latestScore = history[history.length - 1];
+            const previousScore = history[history.length - 2];
+
+            if (latestScore > previousScore) {
+                return "Upward";
+            } else if (latestScore < previousScore) {
+                return "Downward";
+            } else {
+                return "Stable";
+            }
+        };
+
+          const MetricDisplay = ({ definition, value, target }) => {
+            let displayValue = value;
+            if (definition.type === 'currency') displayValue = formatCurrency(value);
+            if (definition.type === 'percentage') displayValue = formatPercentage(value);
+            if (definition.type === 'number') displayValue = value.toLocaleString(); // Added for number formatting
+            if (definition.type === 'days') displayValue = `${value} days`; // Added for 'days' type
+            if (definition.type === 'score' || definition.type === 'scale') displayValue = value.toFixed(1); // Handle 'scale' and 'score' for numbers
+
+            let targetDisplay = target;
+            if (target !== undefined) {
+                if (definition.type === 'currency') targetDisplay = formatCurrency(target);
+                if (definition.type === 'percentage') targetDisplay = formatPercentage(target);
+                if (definition.type === 'number') targetDisplay = target.toLocaleString(); // Added for number formatting
+                if (definition.type === 'days') targetDisplay = `${target} days`; // Added for 'days' type
+                if (definition.type === 'score' || definition.type === 'scale') targetDisplay = target.toFixed(1);
+            }
+
+            return (
+              <div className="flex justify-between text-sm text-gray-700">
+                <span>{definition.label}: <span className="font-semibold">{displayValue}</span></span>
+                {target !== undefined && <span className="text-gray-500">Target: {targetDisplay}</span>}
+              </div>
+            );
+          };
+
+          const ObjectiveCard = ({ objective }) => {
+            const statusColorClass = getStatusColorClass(objective.status);
+
+            const getPriorityClass = (priority) => {
+                switch (priority) {
+                    case 'critical': return 'bg-red-100 text-red-800';
+                    case 'high': return 'bg-orange-100 text-orange-800';
+                    case 'medium': return 'bg-yellow-100 text-yellow-800';
+                    case 'low': return 'bg-gray-100 text-gray-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            };
+
+            const getObjectiveTypeIcon = (type) => {
+                if (type === 'growth') return <Icon name="hero-rocket" className="w-4 h-4 mr-1 text-[var(--color-success-600)]" />;
+                if (type === 'maintenance') return <Icon name="hero-arrow-path" className="w-4 h-4 mr-1 text-[var(--color-info-600)]" />;
+                return null;
+            };
+
+            return (
+              <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-lg font-semibold text-gray-800">{objective.name}</h3>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColorClass.replace('text-', 'bg-').replace('-600', '-100')} ${statusColorClass}`}>
+                    {objective.status.replace('_', ' ').charAt(0).toUpperCase() + objective.status.replace('_', ' ').slice(1)}
+                  </span>
+                </div>
+                {/* Use ObjectiveProgressRing */}
+                <ObjectiveProgressRing
+                    progress={objective.progress}
+                    size={40} // Increased size for visibility
+                />
+                <div className="space-y-1 mt-3">
+                  {Object.keys(objective.metrics_definition).map((key) => (
+                    <MetricDisplay
+                      key={key}
+                      definition={objective.metrics_definition[key]}
+                      value={objective.current_values[key]}
+                      target={objective.target_values[key]}
+                    />
+                  ))}
+                </div>
+                {/* Display Growth or Maintenance type and Priority */}
+                <p className="text-xs text-gray-500 mt-2 flex items-center">
+                  {getObjectiveTypeIcon(objective.type)}
+                  Type: <span className="font-medium text-gray-700 ml-1">{objective.type.charAt(0).toUpperCase() + objective.type.slice(1)}</span>
+                  {objective.priority && (
+                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityClass(objective.priority)}`}>
+                          {objective.priority.charAt(0).toUpperCase() + objective.priority.slice(1)} Priority
+                      </span>
+                  )}
+                </p>
+              </div>
+            );
+          };
+
+          const AutomationCard = ({ automation }) => {
+            return (
+              <div className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm text-gray-700 mb-2">
+                <div>
+                  <h4 className="font-medium text-gray-800">{automation.name}</h4>
+                  <p className="text-xs text-gray-500">Last run: {new Date(automation.last_executed).toLocaleTimeString()}</p>
+                  {automation.integration_source && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      <span className="font-medium text-gray-600">Source:</span> {automation.integration_source}
+                    </p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold">{automation.executions_today} Today</p>
+                  <p className="text-xs text-gray-600">{automation.executions_this_week} This Week</p>
+                </div>
+              </div>
+            );
+          };
+
+          const KPICard = ({ title, value, source, iconName }) => { // Added iconName prop
+            return (
+              <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
+                {iconName && <Icon name={iconName} className="w-6 h-6 text-gray-500 mb-2" />} {/* Render icon if provided */}
+                <span className="text-sm text-gray-500">{title}</span>
+                <span className="text-2xl font-bold text-[var(--color-primary-700)]">{value}</span>
+                {source && <span className="text-xs text-gray-500 mt-1">Source: {source}</span>}
+              </div>
+            );
+          };
+
+          // New ReviewSourceCard component
+          const ReviewSourceCard = ({ review }) => {
+            return (
+              <a href={review.link} target="_blank" rel="noopener noreferrer" className="block bg-white p-4 rounded-lg shadow-sm flex items-center space-x-3 hover:shadow-md transition-shadow">
+                <Icon name="hero-star" className="w-6 h-6 text-yellow-500 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-800">{review.name}</p>
+                  <div className="flex flex-col text-xs text-gray-600"> {/* Changed to flex-col for stacking */}
+                    <span className="font-bold">{review.rating} Stars</span> {/* Added "Stars" for clarity */}
+                    <span className="text-gray-500">({review.count} reviews)</span>
+                  </div>
+                </div>
+              </a>
+            );
+          };
+
+          // Mock data for achievements (to be dynamically pulled in a real app)
+          const todaysAchievements = [
+              { title: "Conducted Agent Productivity Workshop", playbook: { title: "Agent Development Playbook" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) }, // 30 mins ago
+              { title: "Automated Welcome Kit Sent to 5 New Agents", playbook: { title: "Agent Onboarding Playbook" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) }, // 2 hours ago
+              { title: "Finalized Q2 Performance Reviews for 3 Employees", playbook: { title: "Performance Management" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) } // 5 hours ago
+          ];
+
+        // Start of the React App component code from the Canvas
+        function App() {
+          const [objectives, setObjectives] = React.useState([]);
+          const [automations, setAutomations] = React.useState([]);
+          // Initialize kpis with default structure to prevent "undefined" errors
+          const [kpis, setKpis] = React.useState({
+            total_policies: { value: 0, source: '' },
+            annual_premiums: { value: 0, source: '' },
+            new_policies_month: { value: 0, source: '' },
+            claims_processed_month: { value: 0, source: '' },
+            customer_satisfaction_score: { value: 0, source: '' },
+            retention_rate: { value: 0, source: '' },
+            active_agents: { value: 0, source: '' }, // New KPI
+            agent_onboarding_rate: { value: 0, source: '' }, // New KPI
+            team_productivity_score: { value: 0, source: '' }, // New KPI
+            employee_engagement_score: { value: 0, source: '' }, // New KPI
+          });
+          const [coachMessages, setCoachMessages] = React.useState([]);
+          const [upcomingTasks, setUpcomingTasks] = React.useState([]);
+          const [reviews, setReviews] = React.useState([]); // New state for reviews
+
+          // New states for scores
+          const [ndeverScore, setNdeverScore] = React.useState(0);
+          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0);
+          const [objectiveScoreHistory, setObjectiveScoreHistory] = React.useState([]); // History for line chart
+
+
+          React.useEffect(() => {
+            // Simulate fetching initial dashboard data
+            const mockObjectives = [
+                {
+                  id: 'ins_obj1',
+                  name: 'Increase Policy Sales Q3 by 15%',
+                  status: 'on_track',
+                  progress: 70,
+                  weight: 5,
+                  priority: 'critical',
+                  type: 'growth',
+                  metrics_definition: {
+                    new_policy_target: { type: 'number', label: 'New Policy Target' },
+                    current_new_policies: { type: 'number', label: 'Current New Policies' },
+                    premium_target: { type: 'currency', label: 'Premium Target' },
+                    current_premium: { type: 'currency', label: 'Current Premium' },
+                  },
+                  current_values: {
+                    new_policy_target: 250,
+                    current_new_policies: 175,
+                    premium_target: 1500000,
+                    current_premium: 1050000,
+                  },
+                  target_values: {
+                    new_policy_target: 250,
+                    premium_target: 1500000,
+                  },
+                },
+                {
+                  id: 'ins_obj2',
+                  name: 'Enhance Customer Service Rating to 4.8',
+                  status: 'on_track',
+                  progress: 85,
+                  weight: 4,
+                  priority: 'high',
+                  type: 'maintenance',
+                  metrics_definition: {
+                    csat_target: { type: 'scale', label: 'CSAT Target (5.0)' },
+                    current_csat: { type: 'scale', label: 'Current CSAT' },
+                    complaints_resolved: { type: 'number', label: 'Complaints Resolved' },
+                  },
+                  current_values: {
+                    csat_target: 4.8,
+                    current_csat: 4.7,
+                    complaints_resolved: 95,
+                  },
+                  target_values: {
+                    csat_target: 4.8,
+                    complaints_resolved: 100,
+                  },
+                },
+                {
+                  id: 'ins_obj3',
+                  name: 'Improve Agency Renewal Rate to 92%',
+                  status: 'at_risk',
+                  progress: 60, // Slightly increased to reflect efforts
+                  weight: 3,
+                  priority: 'medium',
+                  type: 'growth',
+                  metrics_definition: {
+                    renewal_rate_target: { type: 'percentage', label: 'Renewal Rate Target' },
+                    current_renewal_rate: { type: 'percentage', label: 'Current Renewal Rate' },
+                    customer_outreach: { type: 'number', label: 'Customer Outreach' },
+                  },
+                  current_values: {
+                    renewal_rate_target: 0.92,
+                    current_renewal_rate: 0.89,
+                    customer_outreach: 250, // More outreach for larger agency
+                  },
+                  target_values: {
+                    renewal_rate_target: 0.92,
+                    customer_outreach: 300,
+                  },
+                },
+                {
+                    id: 'ins_obj4',
+                    name: 'Recruit & Onboard 20 New Agents by Year-End',
+                    status: 'at_risk', // This is a challenging goal
+                    progress: 40, // 8 agents onboarded so far
+                    weight: 4,
+                    priority: 'critical',
+                    type: 'growth',
+                    metrics_definition: {
+                        new_agents_target: { type: 'number', label: 'New Agent Target' },
+                        current_new_agents: { type: 'number', label: 'Current New Agents' },
+                        onboarding_completion_rate: { type: 'percentage', label: 'Onboarding Comp. Rate' }
+                    },
+                    current_values: {
+                        new_agents_target: 20,
+                        current_new_agents: 8,
+                        onboarding_completion_rate: 0.75 // 75% of those onboarded completed
+                    },
+                    target_values: {
+                        new_agents_target: 20,
+                        onboarding_completion_rate: 0.90
+                    }
+                },
+                {
+                    id: 'ins_obj5',
+                    name: 'Increase Overall Team Productivity Score by 0.5 points',
+                    status: 'on_track',
+                    progress: 75, // Good progress
+                    weight: 3,
+                    priority: 'high',
+                    type: 'growth',
+                    metrics_definition: {
+                        productivity_score_target: { type: 'scale', label: 'Productivity Target (10)' },
+                        current_productivity_score: { type: 'scale', label: 'Current Productivity' },
+                        average_policy_per_agent: { type: 'number', label: 'Avg. Policies/Agent' }
+                    },
+                    current_values: {
+                        productivity_score_target: 8.5,
+                        current_productivity_score: 8.2,
+                        average_policy_per_agent: 15 // Example: 15 policies/agent
+                    },
+                    target_values: {
+                        productivity_score_target: 8.5,
+                        average_policy_per_agent: 18
+                    }
+                },
+                {
+                    id: 'ins_obj6',
+                    name: 'Maintain Employee Retention Above 90%',
+                    status: 'on_track',
+                    progress: 92, // Currently above target
+                    weight: 2,
+                    priority: 'medium',
+                    type: 'maintenance',
+                    metrics_definition: {
+                        retention_target: { type: 'percentage', label: 'Retention Target' },
+                        current_retention: { type: 'percentage', label: 'Current Retention' },
+                        employee_satisfaction: { type: 'scale', label: 'Employee Sat. (5.0)' }
+                    },
+                    current_values: {
+                        retention_target: 0.90,
+                        current_retention: 0.92,
+                        employee_satisfaction: 4.1
+                    },
+                    target_values: {
+                        retention_target: 0.90,
+                        employee_satisfaction: 4.2
+                    }
+                }
+              ];
+              setObjectives(mockObjectives);
+
+
+              setKpis({
+                total_policies: { value: 15000, source: 'Policy Management System' }, // Scaled up
+                annual_premiums: { value: 7500000, source: 'Accounting Software' }, // Scaled up
+                new_policies_month: { value: 180, source: 'Sales CRM' }, // Scaled up
+                claims_processed_month: { value: 850, source: 'Claims System' }, // Scaled up
+                customer_satisfaction_score: { value: 4.6, source: 'Survey Platform' },
+                retention_rate: { value: 0.88, source: 'Policy Management System' },
+                active_agents: { value: 125, source: 'Internal HRIS/Agent Roster' }, // New KPI for agent network
+                agent_onboarding_rate: { value: 0.75, source: 'Onboarding Platform' }, // New KPI
+                team_productivity_score: { value: 8.2, source: 'Internal Metrics System' }, // New KPI
+                employee_engagement_score: { value: 4.1, source: 'HR Survey Data' }, // New KPI for W2 employees
+              });
+
+              setAutomations([
+                {
+                  id: 'ins_auto1',
+                  name: 'New Client Welcome Sequence',
+                  status: 'Active',
+                  executions_today: 35, // Scaled up
+                  executions_this_week: 180, // Scaled up
+                  type: 'email_sequence',
+                  last_executed: '2025-06-17T09:00:00Z',
+                  integration_source: 'CRM & Email Marketing'
+                },
+                {
+                  id: 'ins_auto2',
+                  name: 'Policy Renewal Reminder Workflow',
+                  status: 'Active',
+                  executions_today: 45, // Scaled up
+                  executions_this_week: 220, // Scaled up
+                  type: 'email_notifications',
+                  last_executed: '2025-06-17T11:00:00Z',
+                  integration_source: 'Policy System & CRM'
+                },
+                {
+                  id: 'ins_auto3',
+                  name: 'Claims Status Updates',
+                  status: 'Active',
+                  executions_today: 28, // Scaled up
+                  executions_this_week: 150, // Scaled up
+                  type: 'sms_notifications',
+                  last_executed: '2025-06-17T14:00:00Z',
+                  integration_source: 'Claims System & Twilio'
+                },
+                {
+                  id: 'ins_auto4',
+                  name: 'New Agent Onboarding Sequence', // New automation for agents
+                  status: 'Active',
+                  executions_today: 2,
+                  executions_this_week: 8,
+                  type: 'onboarding_workflow',
+                  last_executed: '2025-06-17T10:30:00Z',
+                  integration_source: 'HRIS & Onboarding Platform'
+                },
+              ]);
+
+              setCoachMessages([
+                { sender: 'coach', text: "Good morning, Joel! Your 'Recruit & Onboard 20 New Agents' objective needs attention; we're at 40% progress. Let's discuss accelerating this." },
+                { sender: 'user', text: "Morning! How are we doing on overall team productivity? I'm keen to ensure our W2 employees and independent agents are all performing optimally." },
+                { sender: 'coach', text: "Your 'Overall Team Productivity Score' is on track at 8.2. I've highlighted tasks in the 'Team Performance Optimization Playbook' to further enhance collaboration and resource utilization. Would you like to review the latest agent productivity reports?" },
+                { sender: 'user' , text: "Yes, please. And can you suggest actions to improve our W2 employee retention? It's crucial for our core operations." },
+                { sender: 'coach', text: "Certainly. I've highlighted the 'Employee Development & Retention Playbook' for your W2 staff. We can also activate automated feedback loops to proactively address any concerns." },
+              ]);
+
+              setUpcomingTasks([
+                { id: 'ins_task1', name: 'Host weekly Agent Network meeting', dueDate: 'Today', playbook: { title: 'Agent Management' } },
+                { id: 'ins_task2', name: 'Review Q2 W2 Employee Performance Metrics', dueDate: 'Fri, Jun 21', playbook: { title: 'Employee Performance Review' } },
+                { id: 'ins_task3', name: 'Conduct 1:1 with top 3 agents (productivity coaching)', dueDate: 'Next Week', playbook: { title: 'Agent Development' } },
+              ]);
+
+              setReviews([
+                { id: 'google', name: 'Google Reviews', rating: 4.7, count: 210, link: 'https://google.com/your-insurance-agency' },
+                { id: 'facebook', name: 'Facebook Reviews', rating: 4.5, count: 150, link: 'https://facebook.com/your-insurance-agency' },
+                { id: 'yelp', name: 'Yelp Reviews', rating: 4.2, count: 80, link: 'https://yelp.com/your-insurance-agency' },
+              ]);
+
+              const calculatedObjectiveScore = calculateOverallObjectiveScore(mockObjectives);
+              setNdeverScore(2500); // Scaled Ndever Score for larger agency
+              setTodaysGrowthPoints(150); // Scaled points earned today
+              setObjectiveScoreHistory([70, 72, 75, 74, 76, 78, calculatedObjectiveScore]); // Adjusted history for more objectives
+          }, []);
+
+
+          return (
+            <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+              {/* Header */}
+              <header className="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200">
+                <div className="flex items-center">
+                  {/* Ndever Logo Image */}
+                  <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/120x32/white/ed8622/white?text=Ndever+Logo'; }} />
+                  <h1 className="text-xl font-semibold text-gray-800">Acme Insurance Agency Dashboard</h1>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-600">Hi, Joel!</span>
+                  {/* User Avatar Placeholder */}
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">J</div>
+                </div>
+              </header>
+
+              <main className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Header Section */}
+                <div className="lg:col-span-3 mb-8">
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    {greeting_by_time()}, Joel!
+                  </h1>
+                  <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
+                    Your Ndever growth journey in progress.
+                  </p>
+                </div>
+
+                {/* Growth Overview Scores (Objective Score Widget, Ndever Score, Today's Growth Wins) */}
+                <ObjectiveScoreWidget
+                    objectives={objectives}
+                    ndeverScore={ndeverScore}
+                    todaysGrowthPoints={todaysGrowthPoints}
+                    objectiveScoreHistory={objectiveScoreHistory}
+                />
+
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Key Performance Indicators */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Your Key Performance Indicators</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <KPICard title="Total Policies" value={kpis.total_policies.value.toLocaleString()} source={kpis.total_policies.source} iconName="hero-shield-check" />
+                      <KPICard title="Annual Premiums" value={formatCurrency(kpis.annual_premiums.value)} source={kpis.annual_premiums.source} iconName="hero-currency-dollar" />
+                      <KPICard title="New Policies (Mo)" value={kpis.new_policies_month.value} source={kpis.new_policies_month.source} iconName="hero-document-text" />
+                      <KPICard title="Claims Processed (Mo)" value={kpis.claims_processed_month.value} source={kpis.claims_processed_month.source} iconName="hero-bell-alert" />
+                      <KPICard title="Customer Satisfaction" value={kpis.customer_satisfaction_score.value.toFixed(1)} source={kpis.customer_satisfaction_score.source} iconName="hero-lifebuoy" />
+                      <KPICard title="Retention Rate" value={formatPercentage(kpis.retention_rate.value)} source={kpis.retention_rate.source} iconName="hero-arrow-path" />
+                      <KPICard title="Active Agents" value={kpis.active_agents.value} source={kpis.active_agents.source} iconName="hero-user-group" />
+                      <KPICard title="Agent Onboarding Rate" value={formatPercentage(kpis.agent_onboarding_rate.value)} source={kpis.agent_onboarding_rate.source} iconName="hero-rocket-launch" />
+                      <KPICard title="Team Productivity Score" value={kpis.team_productivity_score.value.toFixed(1)} source={kpis.team_productivity_score.source} iconName="hero-users-solid" />
+                      <KPICard title="Employee Engagement Score" value={kpis.employee_engagement_score.value.toFixed(1)} source={kpis.employee_engagement_score.source} iconName="hero-briefcase" />
+                    </div>
+                  </section>
+
+                  {/* Today's Achievements */}
+                  {todaysAchievements.length > 0 && (
+                    <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
+                      <div className="px-6 py-4 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-medium text-gray-900">
+                            Today's Achievements
+                          </h3>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
+                            {todaysAchievements.length} completed
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <div className="space-y-3">
+                          {todaysAchievements.map((achievement, index) => (
+                            <div key={index} className="flex items-start space-x-3">
+                              <div className="w-8 h-8 bg-[var(--color-success-100)] rounded-full flex items-center justify-center flex-shrink-0">
+                                <Icon name="hero-check" className="w-4 h-4 text-[var(--color-success-600)]" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm text-gray-900">
+                                  {achievement.title}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {achievement.playbook.title} • Completed{" "}
+                                  {new Date(achievement.completed_at).toLocaleTimeString()}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {todaysAchievements.length >= 3 && (
+                          <div className="mt-4 p-3 bg-[var(--color-success-50)] border border-[var(--color-success-200)] rounded-lg">
+                            <p className="text-sm text-[var(--color-success-800)] font-medium">
+                              <Icon name="hero-fire" className="w-4 h-4 inline mr-1" />
+                              Outstanding execution. You're demonstrating the consistent action that drives exceptional results.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Objectives Section */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Your Active Objectives</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {objectives.map(obj => (
+                        <ObjectiveCard key={obj.id} objective={obj} />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Upcoming Tasks */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Upcoming Tasks</h2>
+                    <ul className="space-y-3">
+                      {upcomingTasks.map(task => (
+                        <li key={task.id} className="flex items-center bg-gray-50 p-3 rounded-lg shadow-sm">
+                          <input type="checkbox" className="form-checkbox h-5 w-5 text-[var(--color-primary-600)] rounded mr-3" />
+                          <div className="flex-1">
+                            <p className="text-base font-medium text-gray-800">{task.name}</p>
+                            <p className="text-sm text-gray-500">{task.dueDate}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                </div>
+
+                {/* Right Column: Ndever Coach, Automation Summary, Client Feedback */}
+                <div className="space-y-6">
+                  {/* Ndever Coach Chat */}
+                  <section className="bg-white p-6 rounded-lg shadow-md h-96 flex flex-col">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever Coach</h2>
+                    <div className="flex-1 overflow-y-auto border border-gray-200 p-3 rounded-lg bg-gray-50 mb-3 text-sm">
+                      {coachMessages.map((msg, index) => (
+                        <div key={index} className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                          <span className={`inline-block p-2 rounded-lg ${
+                            msg.sender === 'user' ? 'bg-[var(--color-primary-500)] text-white' : 'bg-gray-200 text-gray-800'
+                          }`}>
+                            {msg.text}
+                          </span>
+                        </div>
+                      ))}
+                      <div className="text-gray-400 text-xs text-center mt-2">Ndever Coach is typing...</div>
+                    </div>
+                    <div className="flex">
+                      <input
+                        type="text"
+                        placeholder="Message Ndever Coach..."
+                        className="flex-1 border border-gray-300 p-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)]"
+                      />
+                      <button className="bg-[var(--color-primary-600)] text-white p-2 rounded-r-lg hover:bg-[var(--color-primary-700)] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </button>
+                    </div>
+                  </section>
+
+                  {/* Workflow Automation Summary */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                      Workflow Automations
+                      <span className="ml-2 px-2 py-1 bg-[var(--color-primary-100)] text-[var(--color-primary-700)] text-sm font-medium rounded-full">Active: {automations.length}</span>
+                    </h2>
+                    <div className="space-y-3">
+                      <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
+                        <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">
+                            {automations.reduce((sum, auto) => sum + auto.executions_today, 0)}
+                        </span>Automations Executed Today
+                      </div>
+                      {automations.map(auto => (
+                        <AutomationCard key={auto.id} automation={auto} />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Client Feedback & Reputation Section */}
+                  <section className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Client Feedback & Reputation</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {reviews.map(review => (
+                        <ReviewSourceCard key={review.id} review={review} />
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </main>
+            </div>
+          );
+        }
+
+        // Mount the React App to the DOM
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container); // Create a root
+        root.render(<App />); // Render the App
+    </script>
+</body>
+</html>
