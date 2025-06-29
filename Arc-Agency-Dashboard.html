@@ -1,1137 +1,513 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arc Realty Dashboard</title>
-    <!-- Favicon (optional, assuming a favicon.png exists in the same directory for GitHub Pages) -->
-    <link rel="icon" type="image/png" href="./favicon.png">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- React and ReactDOM CDNs -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for in-browser JSX transpilation -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-      /* Custom styles for the form checkbox */
-      .form-checkbox {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        border: 1px solid var(--color-gray-300); /* gray-300 */
-        border-radius: 0.25rem; /* rounded */
-        width: 1.25rem; /* h-5 */
-        height: 1.25rem; /* w-5 */
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        vertical-align: middle;
-        position: relative;
-      }
+import React, { useState, useEffect } from 'react';
 
-      .form-checkbox:checked {
-        background-color: var(--color-primary-600); /* Using new theme variable */
-        border-color: var(--color-primary-600); /* Using new theme variable */
-      }
+// Define the Ndever Score colors
+const NdeverColors = {
+  LOW: { name: 'Low Ndever', color: '#10B981' }, // Green-500
+  MEDIUM: { name: 'Medium Ndever', color: '#FBBF24' }, // Yellow-400
+  HIGH: { name: 'High Ndever', color: '#FB923C' }, // Orange-400
+  MAX: { name: 'Max Ndever', color: '#EA580C' }, // Orange-700 (Ndever Orange)
+};
 
-      .form-checkbox:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px var(--color-primary-500); /* Using new theme variable */
-      }
+// Function to get color based on score
+const getScoreColor = (score) => {
+  if (score >= 4) return NdeverColors.MAX;
+  if (score >= 3) return NdeverColors.HIGH;
+  if (score >= 2) return NdeverColors.MEDIUM;
+  return NdeverColors.LOW;
+};
 
-      /* Ndever Branding CSS Variables */
-      :root {
-        --color-casablanca-50: #fef8ee;
-        --color-casablanca-100: #fdf0d7;
-        --color-casablanca-200: #faddae;
-        --color-casablanca-300: #f4b860;
-        --color-casablanca-400: #f1a146;
-        --color-casablanca-500: #ed8622; /* Ndever Orange */
-        --color-casablanca-600: #de6d18;
-        --color-casablanca-700: #b95315;
-        --color-casablanca-800: #934219;
-        --color-casablanca-900: #763818;
-        --color-casablanca-950: #401b0a;
+// Mock Data for Objectives with Ndever Scores
+const mockObjectives = [
+  { id: 'obj1', name: 'New Agent Onboarding', ndeScore: 3, completion: 65, complexityScore: 30, type: 'Organizational' }, // High Ndever
+  { id: 'obj2', name: 'Q3 GCI Growth', ndeScore: 4, completion: 40, complexityScore: 60, type: 'Revenue' }, // Max Ndever
+  { id: 'obj3', name: 'Compliance Checklist Completion', ndeScore: 1, completion: 80, complexityScore: 10, type: 'Maintenance' }, // Low Ndever
+  { id: 'obj4', name: 'Team Training Initiative', ndeScore: 2, completion: 55, complexityScore: 25, type: 'Development' }, // Medium Ndever
+  { id: 'obj5', name: 'Agent Retention Improvement', ndeScore: 3, completion: 30, complexityScore: 45, type: 'Organizational' }, // High Ndever
+  { id: 'obj6', name: 'Marketing Campaign Launch', ndeScore: 2, completion: 90, complexityScore: 20, type: 'Growth' }, // Medium Ndever
+];
 
-        --color-primary-50: var(--color-casablanca-50);
-        --color-primary-100: var(--color-casablanca-100);
-        --color-primary-200: var(--color-casablanca-200);
-        --color-primary-300: var(--color-casablanca-300);
-        --color-primary-400: var(--color-casablanca-400);
-        --color-primary-500: var(--color-casablanca-500);
-        --color-primary-600: var(--color-casablanca-600);
-        --color-primary-700: var(--color-casablanca-700);
-        --color-primary-800: var(--color-casablanca-800);
-        --color-primary-900: var(--color-casablanca-900);
-        --color-primary-950: var(--color-casablanca-950);
+// Mock User/Group Data (Simplified from CSV, focusing on relevant roles and grouping)
+const mockUsersAndGroups = [
+  { id: 'user1', name: 'Mechelle Wilder', role: 'Partner, Associate Broker, JD', department: 'Leadership', office: 'Homewood', isHighProducer: true },
+  { id: 'user2', name: 'Norman Schlemmer', role: 'Managing Partner', department: 'Leadership', office: 'Cahaba Heights', isHighProducer: false },
+  { id: 'user3', name: 'Amy Henson', role: 'VP of Operations', department: 'Leadership', office: 'Corporate', isHighProducer: false },
+  { id: 'user4', name: 'Don Brewer', role: 'Qualifying Broker', department: 'Brokers', office: 'Wetumpka', isHighProducer: false },
+  { id: 'user5', name: 'Anna-Marie Ellison', role: 'Qualifying Broker', department: 'Brokers', office: 'Highway 280/Inverness', isHighProducer: false },
+  { id: 'user6', name: 'Denise Nolen', role: 'Agent Services Manager', department: 'Office Administration', office: 'Corporate', isHighProducer: false },
+  { id: 'user7', name: 'Jane Bellsnyder', role: 'Office Manager', department: 'Office Administration', office: 'Homewood', isHighProducer: false },
+  { id: 'user8', name: 'Stacey Cingoranelli', role: 'Transaction Coordinator', department: 'Transaction Support', office: 'Corporate', isHighProducer: false },
+  // Adding some mock agents to demonstrate the "Groups" feature
+  { id: 'agent1', name: 'Agent Alpha', role: 'Agent', department: 'Sales', office: 'Homewood', isHighProducer: true },
+  { id: 'agent2', name: 'Agent Beta', role: 'Agent', department: 'Sales', office: 'Homewood', isHighProducer: false },
+  { id: 'agent3', name: 'Agent Gamma', role: 'Agent', department: 'Sales', office: 'Wetumpka', isHighProducer: false },
+  { id: 'agent4', name: 'Agent Delta', role: 'Agent', department: 'Wetumpka', office: 'Wetumpka', isHighProducer: true },
+];
 
-        /* Teal for secondary, info, etc. to represent "cool" or initial stages */
-        --color-teal-50: #f0fdfa;
-        --color-teal-100: #ccfbf1;
-        --color-teal-200: #99f6e4;
-        --color-teal-300: #5eead4;
-        --color-teal-400: #2dd4bf;
-        --color-teal-500: #14b8a6;
-        --color-teal-600: #0d9488;
-        --color-teal-700: #0f766e;
-        --color-teal-800: #115e59;
-        --color-teal-900: #134e4a;
-        --color-teal-950: #042f2e;
+// Helper to group agents by office
+const groupUsersByOffice = (users) => {
+  return users.reduce((acc, user) => {
+    const office = user.office || 'Unassigned';
+    if (!acc[office]) {
+      acc[office] = [];
+    }
+    acc[office].push(user);
+    return acc;
+  }, {});
+};
 
-        --color-secondary-50: var(--color-teal-50);
-        --color-secondary-100: var(--color-teal-100);
-        --color-secondary-200: var(--color-teal-200);
-        --color-secondary-300: var(--color-teal-300);
-        --color-secondary-400: var(--color-teal-400);
-        --color-secondary-500: var(--color-teal-500);
-        --color-secondary-600: var(--color-teal-600);
-        --color-secondary-700: var(--color-teal-700);
-        --color-secondary-800: var(--color-teal-800);
-        --color-secondary-900: var(--color-teal-900);
-        --color-secondary-950: var(--color-teal-950);
-
-        /* Success/Green remains for "on-track" or positive status */
-        --color-green-50: #f0fdf4;
-        --color-green-100: #dcfce7;
-        --color-green-200: #bbf7d0;
-        --color-green-300: #86efac;
-        --color-green-400: #4ade80;
-        --color-green-500: #22c55e;
-        --color-green-600: #16a34a;
-        --color-green-700: #15803d;
-        --color-green-800: #166534;
-        --color-green-900: #14532d;
-        --color-green-950: #0d2a1b;
-
-        --color-success-50: var(--color-green-50);
-        --color-success-100: var(--color-green-100);
-        --color-success-200: var(--color-green-200);
-        --color-success-300: var(--color-green-300);
-        --color-success-400: var(--color-green-400);
-        --color-success-500: var(--color-green-500);
-        --color-success-600: var(--color-green-600);
-        --color-success-700: var(--color-green-700);
-        --color-success-800: var(--color-green-800);
-        --color-success-900: var(--color-green-900);
-        --color-success-950: var(--color-green-950);
-
-        /* Red for danger/behind */
-        --color-red-50: #fef2f2;
-        --color-red-100: #fee2e2;
-        --color-red-200: #fecaca;
-        --color-red-300: #fca5a5;
-        --color-red-400: #f87171;
-        --color-red-500: #ef4444;
-        --color-red-600: #dc2626;
-        --color-red-700: #b91c1c;
-        --color-red-800: #991b1b;
-        --color-red-900: #7f1d1d;
-        --color-red-950: #450a0a;
-
-        --color-danger-50: var(--color-red-50);
-        --color-danger-100: var(--color-red-100);
-        --color-danger-200: var(--color-red-200);
-        --color-danger-300: var(--color-red-300);
-        --color-danger-400: var(--color-red-400);
-        --color-danger-500: var(--color-red-500);
-        --color-danger-600: var(--color-red-600);
-        --color-danger-700: var(--color-red-700);
-        --color-danger-800: var(--color-red-800);
-        --color-danger-900: var(--color-red-900);
-        --color-danger-950: var(--color-red-950);
-
-        /* Yellow for warning/at-risk */
-        --color-yellow-50: #fefce8;
-        --color-yellow-100: #fef9c3;
-        --color-yellow-200: #fef08a;
-        --color-yellow-300: #fde047;
-        --color-yellow-400: #facc15;
-        --color-yellow-500: #eab308;
-        --color-yellow-600: #ca8a04;
-        --color-yellow-700: #a16207;
-        --color-yellow-800: #854d09;
-        --color-yellow-900: #713f12;
-        --color-yellow-950: #422006;
-
-        --color-warning-50: var(--color-yellow-50);
-        --color-warning-100: var(--color-yellow-100);
-        --color-warning-200: var(--color-yellow-200);
-        --color-warning-300: var(--color-yellow-300);
-        --color-warning-400: var(--color-yellow-400);
-        --color-warning-500: var(--color-yellow-500);
-        --color-warning-600: var(--color-yellow-600);
-        --color-warning-700: var(--color-yellow-700);
-        --color-warning-800: var(--color-yellow-800);
-        --color-warning-900: var(--color-yellow-900);
-        --color-warning-950: var(--color-yellow-950);
-
-        /* Sky blue for info/secondary elements */
-        --color-sky-50: #f0f9ff;
-        --color-sky-100: #e0f2fe;
-        --color-sky-200: #bae6fd;
-        --color-sky-300: #7dd3fc;
-        --color-sky-400: #38bdf8;
-        --color-sky-500: #0ea5e9;
-        --color-sky-600: #0284c7;
-        --color-sky-700: #0369a1;
-        --color-sky-800: #075985;
-        --color-sky-900: #082f49;
-        --color-sky-950: #082f49;
-
-        --color-info-50: var(--color-sky-50);
-        --color-info-100: var(--color-sky-100);
-        --color-info-200: var(--color-sky-200);
-        --color-info-300: var(--color-sky-300);
-        --color-info-400: var(--color-sky-400);
-        --color-info-500: var(--color-sky-500);
-        --color-info-600: var(--color-sky-600);
-        --color-info-700: var(--color-sky-700);
-        --color-info-800: var(--color-sky-800);
-        --color-info-900: var(--color-sky-900);
-        --color-info-950: var(--color-sky-950);
-
-        /* Gray for text/backgrounds */
-        --color-slate-50: #f8fafc;
-        --color-slate-100: #f1f5f9;
-        --color-slate-200: #e2e8f0;
-        --color-slate-300: #cbd5e1;
-        --color-slate-400: #94a3b8;
-        --color-slate-500: #64748b;
-        --color-slate-600: #475569;
-        --color-slate-700: #334155;
-        --color-slate-800: #1e293b;
-        --color-slate-900: #0f172a;
-        --color-slate-950: #020617;
-
-        --color-gray-50: var(--color-slate-50);
-        --color-gray-100: var(--color-slate-100);
-        --color-gray-200: var(--color-slate-200);
-        --color-gray-300: var(--color-slate-300);
-        --color-gray-400: var(--color-slate-400);
-        --color-gray-500: var(--color-slate-500);
-        --color-gray-600: var(--color-slate-600);
-        --color-gray-700: var(--color-slate-700);
-        --color-gray-800: var(--color-slate-800);
-        --color-gray-900: var(--color-slate-900);
-        --color-gray-950: var(--color-slate-950);
-      }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        // --- Helper Functions ---
-        const greeting_by_time = () => {
-            const hour = new Date().getHours();
-            if (hour < 12) return "Good morning";
-            if (hour < 18) return "Good afternoon";
-            return "Good evening";
-        };
-
-        const formatCurrency = (value) => {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
-        };
-
-        const formatPercentage = (value) => {
-            return new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value);
-        };
-
-        // Function to get color based on status
-        const getStatusColorClass = (status) => {
-            switch (status) {
-                case 'on_track': return 'text-[var(--color-success-600)]';
-                case 'at_risk': return 'text-[var(--color-warning-600)]';
-                case 'behind': return 'text-[var(--color-danger-600)]';
-                case 'completed': return 'text-[var(--color-info-600)]';
-                default: return 'text-gray-500';
-            }
-        };
-
-        // Function to map progress to a gradient color for the ring fill
-        const getProgressColor = (progress) => {
-            if (progress <= 25) return 'var(--color-secondary-500)'; // Teal
-            if (progress <= 50) return 'var(--color-info-500)';     // Sky blue
-            if (progress <= 75) return 'var(--color-primary-400)';  // Lighter Ndever Orange
-            return 'var(--color-primary-600)';                      // Stronger Ndever Orange
-        };
-
-        // Calculate the overall Objective Score (weighted by both weight and priority)
-        const calculateOverallObjectiveScore = (objs) => {
-            if (!objs || objs.length === 0) return 0;
-            let totalWeightedProgress = 0;
-            let totalWeight = 0;
-
-            // Map priority string to a numerical value for calculation
-            const getPriorityValue = (priority) => {
-                switch (priority) {
-                    case 'low': return 1;
-                    case 'medium': return 2;
-                    case 'high': return 3;
-                    case 'critical': return 4;
-                    default: return 1; // Default to medium if not specified
-                }
-            };
-
-            objs.forEach(obj => {
-                const priorityValue = getPriorityValue(obj.priority);
-                // Incorporate both weight and priority into the calculation
-                totalWeightedProgress += (obj.progress * (obj.weight || 1) * priorityValue);
-                totalWeight += ((obj.weight || 1) * priorityValue);
-            });
-            return totalWeight === 0 ? 0 : Math.round(totalWeightedProgress / totalWeight);
-        };
-
-        // --- React Components for Dashboard Elements ---
-        // Define Icon component first as others use it
-        const Icon = ({ name, className }) => {
-            const icons = {
-              "hero-scale": ( // For Objective Score
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.125 12.75l-1.108 1.107A.75.75 0 018.842 14v-.825a2.25 2.25 0 00-2.25-2.25H4.125m11.25 0h-.825a2.25 2.25 0 00-2.25 2.25v.825c0 .211-.081.416-.226.561l-1.108 1.107c-.42.42-.647 1-.647 1.636v.433a2.25 2.25 0 002.25 2.25h.825m0-15l1.108-1.107A.75.75 0 0115.158 10V10.825a2.25 2.25 0 002.25 2.25h1.625M9.75 3.75v.825a2.25 2.25 0 002.25 2.25h.825m0-4.5L12 3.75l-1.108 1.107A.75.75 0 0010.842 5V5.825a2.25 2.25 0 00-2.25 2.25H4.125" />
-                </svg>
-              ),
-              "hero-sparkles": ( // For Ndever Score / Gamification
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a.75.75 0 01.75.75v16.5a.75.75 0 01-1.5 0V3.75A.75.75 0 0112 3zm.75 14.25l4.303 2.656a.75.75 0 001.233-.696l-1.02-4.839 3.636-3.486a.75.75 0 00-.435-1.32l-4.82-.587-2.288-4.478a.75.75 0 00-1.353.001L8.71 8.874l-4.82.587a.75.75 0 00-.435 1.32l3.636 3.486-1.02 4.839a.75.75 0 001.233.696L12 17.25z" />
-                </svg>
-              ),
-              "hero-fire": ( // For Today's Growth Wins
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 22.5 12 13.5H3.75z" />
-                </svg>
-              ),
-              "hero-star": ( // New star icon for reviews
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
-                  <path fillRule="evenodd" d="M10.868 2.884c.321-.772 1.415-.772 1.736 0l1.82 4.394a1.625 1.625 0 011.213.882l4.394 1.82c.772.321.772 1.415 0 1.736l-4.394 1.82a1.625 1.625 0 01-1.213.882l-1.82 4.394c-.321.772-1.415.772-1.736 0l-1.82-4.394a1.625 1.625 0 01-1.213-.882l-4.394-1.82c-.772-.321-.772-1.415 0-1.736l4.394-1.82a1.625 1.625 0 011.213-.882l1.82-4.394z" clipRule="evenodd" />
-                </svg>
-              ),
-               "hero-check": ( // Used for growth wins checkmark
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>
-              ),
-              "hero-arrow-path": ( // For maintenance objectives
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.181m0 0l-3.181-3.181A1.5 1.5 0 005.15 12.75H1.5m11.183 2.928a3.75 3.75 0 00-4.781-4.781m0 0H6.75m11.183 2.928a3.75 3.75 0 01-4.781 4.781m0 0H17.25m-4.634-11.233l1.92-2.166A1.5 1.5 0 0118 7.25h3.75h-.001v-.001m-1.92 2.166A1.5 1.5 0 0015.75 12.75H1.5" />
-                </svg>
-              ),
-              "hero-rocket": ( // For growth objectives
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.31a.75.75 0 01-.176.793l-1.42 1.42a.75.75 0 01-1.06 0L9.423 13.92a.75.75 0 010-1.06l1.42-1.42a.75.75 0 01.793-.176m.503 1.05v2.806m-2.806.503H9.418M8.25 18.75a1.5 1.5 0 00-1.5 1.5v.75m1.5-1.5H7.5m-.75 0h-1.5M12 4.5l-2.072 2.072a.75.75 0 00-.22.53v.794l-1.071 1.071M10.5 8.25L9 9.75m-3.75 0L1.5 14.25m5.25-9.75h-.75m-1.5 0h-.75M12 9a.75.75 0 01-.75-.75V6.75m0-1.5a.75.75 0 00-.75-.75H5.25M17.25 4.5h-.75m-1.5 0h-.75m2.25 2.25h.75m1.5 0h.75m-2.25-2.25L12 9M18 1.5l-2.072 2.072a.75.75 0 00-.22.53V6.75l-1.071 1.071M22.5 7.5h-.75m-1.5 0h-.75m-2.25 2.25h.75m1.5 0h.75M22.5 12L18 16.5m-3.75 0H12m0-2.25h-2.25" />
-                </svg>
-              ),
-              "hero-users": ( // For Active Agents/Teams
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.75V10.5m-1.05 6.445L15 15.375M18 21a3 3 0 110-6 3 3 0 010 6zM6 18.75V10.5M6 21a3 3 0 110-6 3 3 0 010 6zM12 18.75V7.5m-1.05 6.445L9 12.375M12 21a3 3 0 110-6 3 3 0 010 6z" />
-                </svg>
-              ),
-              "hero-building-office": ( // For Listing Volume
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.5m-4.125 0H3m4.875 0h.625c.621 0 1.125-.504 1.125-1.125V8.25m0 0H3m3.125 12H12m-2.625 0h2.625m-2.625 0h1.5m1.5 0h.75m0 0h1.5m-1.5 0h.75m0 0h1.5m-1.5 0H21M9 16.5v-4.5m0 0H3m4.875 0h.625c.621 0 1.125-.504 1.125-1.125V4.5m0 0H3m3.125 12H12M9 7.5V4.5m0 0H3" />
-                </svg>
-              ),
-              "hero-wallet": ( // For GCI
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a3.75 3.75 0 100-7.5h16.5a3.75 3.75 0 100 7.5H2.25z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12.75V11.25m0-1.5v-3m0 4.5H9.75M12 11.25h2.25m-2.25 0v2.25m0-4.5h-.75m.75 0h.75" />
-                </svg>
-              ),
-              "hero-document-text": ( // For Lead Conversion Rate
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625A3.375 3.375 0 0016.125 8.25H13.5m0-1.5L21 4.5m-9.75 3.75L21 4.5M10.5 7.5L21 4.5M19.5 14.25v2.625A3.375 3.375 0 0116.125 20.25H6.375a3.375 3.375 0 01-3.375-3.375V10.375m9.75-3.75l-1.5-1.5M19.5 14.25L12 21" />
-                </svg>
-              ),
-              "hero-user-group": ( // For Team Performance Overview
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.75V10.5m-1.05 6.445L15 15.375M18 21a3 3 0 110-6 3 3 0 010 6zM6 18.75V10.5M6 21a3 3 0 110-6 3 3 0 010 6zM12 18.75V7.5m-1.05 6.445L9 12.375M12 21a3 3 0 110-6 3 3 0 010 6z" />
-                </svg>
-              ),
-            };
-            return icons[name] || null;
-          };
-
-        // ObjectiveProgressRing Component (replaces simple progress bar in ObjectiveCard)
-        const ObjectiveProgressRing = ({ progress, status, priority, type, size = 20 }) => {
-            const strokeWidth = 4;
-            const radius = (size * 2 / 2) - (strokeWidth / 2);
-            const circumference = 2 * Math.PI * radius;
-            const offset = circumference - (progress / 100) * circumference;
-
-            const progressColor = getProgressColor(progress);
-            const bgColor = 'var(--color-gray-200)';
-            const textColor = 'var(--color-gray-800)';
-
-            const textSizeClass = size <= 24 ? 'text-[9px]' : (size <= 28 ? 'text-[10px]' : 'text-xs');
-
-            return (
-              <div className={`relative w-${size} h-${size} flex-shrink-0`}>
-                <svg className="w-full h-full" viewBox={`0 0 ${size * 2} ${size * 2}`}>
-                  <circle
-                    className="text-gray-200"
-                    strokeWidth={strokeWidth}
-                    stroke={bgColor}
-                    fill="transparent"
-                    r={radius}
-                    cx={size}
-                    cy={size}
-                  />
-                  <circle
-                    className="progress-ring-circle"
-                    strokeWidth={strokeWidth}
-                    strokeDasharray={circumference}
-                    strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    stroke={progressColor}
-                    fill="transparent"
-                    r={radius}
-                    cx={size}
-                    cy={size}
-                    style={{ transition: 'stroke-dashoffset 0.35s' }}
-                  />
-                  <text
-                    x="50%"
-                    y="50%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className={`${textSizeClass} font-bold`}
-                    fill={textColor}
-                  >
-                    {progress}%
-                  </text>
-                </svg>
-              </div>
-            );
-        };
-
-        // ObjectiveScoreWidget Component
-        const ObjectiveScoreWidget = ({ objectives, ndeverScore, todaysGrowthPoints }) => {
-            const overallObjectiveScore = calculateOverallObjectiveScore(objectives);
-
-            // Sort objectives by priority (highest first) then by progress (descending)
-            const sortedObjectives = [...objectives].sort((a, b) => {
-                const getPriorityValue = (p) => {
-                    switch (p) {
-                        case 'critical': return 4;
-                        case 'high': return 3;
-                        case 'medium': return 2;
-                        case 'low': return 1;
-                        default: return 0;
-                    }
-                };
-                const priorityDiff = getPriorityValue(b.priority) - getPriorityValue(a.priority);
-                if (priorityDiff !== 0) return priorityDiff;
-                return b.progress - a.progress;
-            }).slice(0, 3); // Take top 3
-
-            // Determine overall score color
-            const overallScoreColor = overallObjectiveScore > 85 ? 'var(--color-success-600)' :
-                                      overallObjectiveScore > 60 ? 'var(--color-primary-600)' :
-                                      'var(--color-danger-600)';
+const groupedUsers = groupUsersByOffice(mockUsersAndGroups);
 
 
-            const radiusOverall = 50;
-            const circumferenceOverall = 2 * Math.PI * radiusOverall;
-            const offsetOverall = circumferenceOverall - (overallObjectiveScore / 100) * circumferenceOverall;
+// Component for the Objective Ring Visualization
+const ObjectiveRing = ({ completion, color, size = 24, strokeWidth = 3 }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (completion / 100) * circumference;
 
-            return (
-              <div className="bg-gradient-to-br from-[var(--color-info-50)] to-[var(--color-info-100)] shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 relative overflow-hidden flex flex-col items-center justify-between col-span-1 lg:col-span-3">
-                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[var(--color-info-500)]/10 rounded-full blur-2xl"></div>
+  return (
+    <svg width={size} height={size} className="rounded-full">
+      <circle
+        className="text-gray-300"
+        strokeWidth={strokeWidth}
+        stroke="currentColor"
+        fill="transparent"
+        r={radius}
+        cx={size / 2}
+        cy={size / 2}
+      />
+      <circle
+        className={`transition-all duration-500 ease-in-out`}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        stroke={color}
+        fill="transparent"
+        r={radius}
+        cx={size / 2}
+        cy={size / 2}
+        style={{
+          strokeDasharray: circumference,
+          strokeDashoffset: offset,
+          transform: 'rotate(-90deg)',
+          transformOrigin: '50% 50%',
+        }}
+      />
+      <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        className="text-[8px] font-bold text-gray-700"
+      >
+        {completion}%
+      </text>
+    </svg>
+  );
+};
 
-                <div className="w-full flex flex-col md:flex-row justify-around items-center">
-                    {/* Overall Objective Score Ring */}
-                    <div className="relative w-36 h-36 flex items-center justify-center flex-shrink-0 md:mr-8 mb-4 md:mb-0">
-                      <svg className="w-full h-full" viewBox="0 0 120 120">
-                        <circle
-                          className="text-gray-200"
-                          strokeWidth="8"
-                          stroke="var(--color-gray-200)"
-                          fill="transparent"
-                          r={radiusOverall}
-                          cx="60"
-                          cy="60"
-                        />
-                        <circle
-                          className="progress-ring-circle"
-                          strokeWidth="8"
-                          strokeDasharray={circumferenceOverall}
-                          strokeDashoffset={offsetOverall}
-                          strokeLinecap="round"
-                          stroke={overallScoreColor}
-                          fill="transparent"
-                          r={radiusOverall}
-                          cx="60"
-                          cy="60"
-                          style={{ transition: 'stroke-dashoffset 0.35s' }}
-                        />
-                        <text
-                          x="60"
-                          y="50"
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className="text-3xl font-bold"
-                          fill={overallScoreColor}
-                        >
-                          {overallObjectiveScore}%
-                        </text>
-                         <text
-                          x="60"
-                          y="75"
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className="text-sm font-semibold"
-                          fill="var(--color-gray-700)"
-                        >
-                          Overall Score
-                        </text>
-                      </svg>
-                    </div>
 
-                    {/* Top Objectives Section */}
-                    <div className="flex flex-col items-center flex-grow">
-                      <h3 className="text-sm font-semibold text-[var(--color-info-700)] uppercase tracking-wide mb-2">Top Objectives</h3>
-                      {/* Adjusted grid for better spacing and individual card styling */}
-                      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {sortedObjectives.map(obj => (
-                            <div key={obj.id} className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm h-40 justify-between">
-                                <ObjectiveProgressRing progress={obj.progress} size={24} />
-                                <div className="flex flex-col items-center mt-2 px-2 pb-2 text-center">
-                                    <p className="text-xs font-medium text-gray-700 leading-tight">
-                                        {obj.name.length > 25 ? `${obj.name.slice(0, 25)}...` : obj.name}
-                                    </p>
-                                    <span className={`text-[8px] font-semibold ${getStatusColorClass(obj.status)}`}>
-                                        {obj.status.replace('_', ' ').charAt(0).toUpperCase() + obj.status.replace('_', ' ').slice(1)}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                      </div>
-                    </div>
+// Component for the Current Objective Score Donut Chart
+const CurrentObjectiveScoreChart = ({ objectives }) => {
+  const totalComplexity = objectives.reduce((sum, obj) => sum + obj.complexityScore, 0);
+  let cumulativeAngle = 0;
 
-                    {/* Ndever Score & Growth Wins - Now in curved boxes */}
-                    <div className="flex md:flex-col justify-around w-full md:w-auto mt-6 md:mt-0 text-center text-sm md:border-l border-gray-200 md:pl-8 space-y-4 md:space-y-6">
-                        <div className="flex flex-col items-center flex-1 p-4 bg-white rounded-xl shadow-md">
-                            <Icon name="hero-sparkles" className="w-8 h-8 text-[var(--color-primary-600)] mb-2" />
-                            <span className="text-2xl font-bold text-[var(--color-primary-900)]">{ndeverScore}</span>
-                            <span className="text-xs text-[var(--color-primary-700)]">Ndever Score</span>
-                        </div>
-                        <div className="flex flex-col items-center flex-1 p-4 bg-white rounded-xl shadow-md">
-                            <Icon name="hero-fire" className="w-8 h-8 text-[var(--color-success-600)] mb-2" />
-                            <span className="text-2xl font-bold text-[var(--color-success-900)]">+{todaysGrowthPoints}</span>
-                            <span className="text-xs text-[var(--color-success-700)]">Growth Wins Today</span>
-                        </div>
-                    </div>
+  const segments = objectives.map((obj) => {
+    const angle = (obj.complexityScore / totalComplexity) * 360;
+    const startAngle = cumulativeAngle;
+    const endAngle = cumulativeAngle + angle;
+    cumulativeAngle = endAngle;
+
+    // For completion arc
+    const completionRatio = obj.completion / 100;
+    const completionAngle = angle * completionRatio;
+    const completionStartAngle = startAngle;
+    const completionEndAngle = startAngle + completionAngle;
+
+    const largeArcFlag = angle > 180 ? 1 : 0;
+    const largeArcFlagCompletion = completionAngle > 180 ? 1 : 0;
+
+    const outerRadius = 70; // Outer radius of the donut
+    const innerRadius = 50; // Inner radius of the donut
+    const centerX = 100;
+    const centerY = 100;
+
+    // Functions to convert polar to Cartesian coordinates
+    const toCartesian = (radius, angleInDegrees) => {
+      const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+      return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians))
+      };
+    };
+
+    // Path for the segment itself (the "pie slice" part of the donut)
+    const p1 = toCartesian(outerRadius, startAngle);
+    const p2 = toCartesian(outerRadius, endAngle);
+    const p3 = toCartesian(innerRadius, endAngle);
+    const p4 = toCartesian(innerRadius, startAngle);
+
+    const segmentPath = [
+      `M ${p4.x} ${p4.y}`, // Move to inner start point
+      `L ${p1.x} ${p1.y}`, // Draw line to outer start point
+      `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${p2.x} ${p2.y}`, // Arc to outer end point
+      `L ${p3.x} ${p3.y}`, // Draw line to inner end point
+      `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${p4.x} ${p4.y}`, // Arc back to inner start point
+      `Z`
+    ].join(' ');
+
+    // Path for the completion overlay (fills up a portion of the segment)
+    const pc1 = toCartesian(outerRadius, completionStartAngle);
+    const pc2 = toCartesian(outerRadius, completionEndAngle);
+    const pc3 = toCartesian(innerRadius, completionEndAngle);
+    const pc4 = toCartesian(innerRadius, completionStartAngle);
+
+    const completionPath = [
+        `M ${pc4.x} ${pc4.y}`,
+        `L ${pc1.x} ${pc1.y}`,
+        `A ${outerRadius} ${outerRadius} 0 ${largeArcFlagCompletion} 1 ${pc2.x} ${pc2.y}`,
+        `L ${pc3.x} ${pc3.y}`,
+        `A ${innerRadius} ${innerRadius} 0 ${largeArcFlagCompletion} 0 ${pc4.x} ${pc4.y}`,
+        `Z`
+    ].join(' ');
+
+    const color = getScoreColor(obj.ndeScore).color;
+
+    return (
+      <g key={obj.id}>
+        <path d={segmentPath} fill="#E5E7EB" className="transition-all duration-500 ease-out" /> {/* Base segment, light gray */}
+        <path d={completionPath} fill={color} className="transition-all duration-500 ease-out" /> {/* Filled portion */}
+      </g>
+    );
+  });
+
+  return (
+    <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-md">
+      <h3 className="text-xl font-semibold mb-4 text-gray-800">Current Objective Score</h3>
+      <div className="relative w-[200px] h-[200px]">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          {segments}
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center text-center">
+            <div className="text-gray-700 text-sm font-medium">
+                Overall Progress<br/>
+                <span className="text-2xl font-bold text-nde-orange-700">63%</span> {/* Mock overall progress */}
+            </div>
+        </div>
+      </div>
+      <div className="mt-4 text-sm text-gray-600">
+        <h4 className="font-semibold mb-2 text-gray-800">Objectives Breakdown:</h4>
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {mockObjectives.map((obj) => (
+            <li key={obj.id} className="flex items-center">
+              <span className="inline-block w-3 h-3 rounded-full mr-2" style={{ backgroundColor: getScoreColor(obj.ndeScore).color }}></span>
+              {obj.name} ({obj.completion}%)
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+
+// Reusable Mini Card for Objectives
+const ObjectiveMiniCard = ({ objective }) => {
+  const { name, ndeScore, completion } = objective;
+  const scoreInfo = getScoreColor(ndeScore);
+
+  return (
+    <div className="flex items-center p-4 bg-white rounded-xl shadow-sm border border-gray-100 min-w-[280px]">
+      <ObjectiveRing completion={completion} color={scoreInfo.color} size={48} strokeWidth={4} />
+      <div className="ml-4 flex-grow">
+        <h4 className="text-md font-semibold text-gray-800">{name}</h4>
+        <p className="text-sm text-gray-600">
+          <span className="font-medium" style={{ color: scoreInfo.color }}>{scoreInfo.name}</span> Ndever Objective
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Main Dashboard App
+const App = () => {
+  const [activeTab, setActiveTab] = useState('visibility'); // visibility, onboarding, flailing, checklists, assistance
+
+  // Filter objectives to show only the first 5 for the individual cards
+  const displayObjectives = mockObjectives.slice(0, 5);
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-inter text-gray-900 antialiased p-4 sm:p-8">
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+      <style>
+        {`
+        body { font-family: 'Inter', sans-serif; }
+        .nde-orange-700 { color: #EA580C; }
+        .bg-nde-orange-700 { background-color: #EA580C; }
+        .border-nde-orange-700 { border-color: #EA580C; }
+        .text-nde-orange-600 { color: #F97316; }
+        `}
+      </style>
+
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <header className="mb-8 bg-white p-6 rounded-xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">
+              ARC Realty: <span className="text-nde-orange-700">Growth Command Center</span>
+            </h1>
+            <p className="mt-2 text-lg text-gray-600">
+              Welcome, Mechelle Wilder. Your AI-powered hub for predictable agency growth.
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              (Partner, Associate Broker, JD & High-Producing Agent)
+            </p>
+          </div>
+          <div className="mt-4 sm:mt-0 flex flex-col items-start sm:items-end">
+            <span className="text-sm text-gray-500">Last Updated: Jun 28, 2025</span>
+            <button className="mt-2 px-4 py-2 bg-nde-orange-700 text-white rounded-md shadow hover:bg-nde-orange-600 transition duration-200">
+              Refresh Data
+            </button>
+          </div>
+        </header>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Left Column: Metrics & Objective Scores */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Key Agency Metrics</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                  <p className="text-sm text-gray-500">Active Agents</p>
+                  <p className="text-2xl font-bold text-gray-800">900+</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                  <p className="text-sm text-gray-500">High-Producing Agents</p>
+                  <p className="text-2xl font-bold text-green-600">~30%</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                  <p className="text-sm text-gray-500">New Agents (Q2)</p>
+                  <p className="text-2xl font-bold text-gray-800">45</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                  <p className="text-sm text-gray-500">Agent Retention (YoY)</p>
+                  <p className="text-2xl font-bold text-blue-600">88%</p>
                 </div>
               </div>
-            );
-          };
+            </div>
 
-          const MetricDisplay = ({ definition, value, target }) => {
-            let displayValue = value;
-            if (definition.type === 'currency') displayValue = formatCurrency(value);
-            if (definition.type === 'percentage') displayValue = formatPercentage(value);
-            if (definition.type === 'number') displayValue = value.toLocaleString();
-            if (definition.type === 'scale') displayValue = value.toFixed(1);
+            {/* Current Objective Score Donut Chart */}
+            <CurrentObjectiveScoreChart objectives={mockObjectives} />
 
-            let targetDisplay = target;
-            if (target !== undefined) {
-                if (definition.type === 'currency') targetDisplay = formatCurrency(target);
-                if (definition.type === 'percentage') targetDisplay = formatPercentage(target);
-                if (definition.type === 'number') targetDisplay = target.toLocaleString();
-                if (definition.type === 'scale') targetDisplay = target.toFixed(1);
-            }
-
-            return (
-              <div className="flex justify-between text-sm text-gray-700">
-                <span>{definition.label}: <span className="font-semibold">{displayValue}</span></span>
-                {target !== undefined && <span className="text-gray-500">Target: {targetDisplay}</span>}
+            {/* Individual Objective Score Cards */}
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">My Ndever Objectives (as Leader)</h2>
+              <div className="grid grid-cols-1 gap-4">
+                {displayObjectives.map(obj => (
+                  <ObjectiveMiniCard key={obj.id} objective={obj} />
+                ))}
               </div>
-            );
-          };
+            </div>
+          </div>
 
-          const ObjectiveCard = ({ objective }) => {
-            const statusColorClass = getStatusColorClass(objective.status);
+          {/* Right Column: Agent Overview & Insights */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Tab Navigation for Agent Overview */}
+            <div className="bg-white p-2 rounded-xl shadow-md flex justify-around">
+              <button
+                className={`py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'visibility' ? 'bg-gray-100 text-nde-orange-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setActiveTab('visibility')}
+              >
+                Visibility Overview
+              </button>
+              <button
+                className={`py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'onboarding' ? 'bg-gray-100 text-nde-orange-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setActiveTab('onboarding')}
+              >
+                Onboarding Status
+              </button>
+              <button
+                className={`py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'flailing' ? 'bg-gray-100 text-nde-orange-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setActiveTab('flailing')}
+              >
+                Agent Health
+              </button>
+              <button
+                className={`py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'checklists' ? 'bg-gray-100 text-nde-orange-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setActiveTab('checklists')}
+              >
+                Compliance/Checklists
+              </button>
+              <button
+                className={`py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'assistance' ? 'bg-gray-100 text-nde-orange-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setActiveTab('assistance')}
+              >
+                Tailored Enablement
+              </button>
+            </div>
 
-            const getPriorityClass = (priority) => {
-                switch (priority) {
-                    case 'critical': return 'bg-red-100 text-red-800';
-                    case 'high': return 'bg-orange-100 text-orange-800';
-                    case 'medium': return 'bg-yellow-100 text-yellow-800';
-                    case 'low': return 'bg-gray-100 text-gray-800';
-                    default: return 'bg-gray-100 text-gray-800';
-                }
-            };
-
-            return (
-              <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-lg font-semibold text-gray-800">{objective.name}</h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColorClass.replace('text-', 'bg-').replace('-600', '-100')} ${statusColorClass}`}>
-                    {objective.status.replace('_', ' ').charAt(0).toUpperCase() + objective.status.replace('_', ' ').slice(1)}
-                  </span>
-                </div>
-                <ObjectiveProgressRing
-                    progress={objective.progress}
-                    status={objective.status}
-                    priority={objective.priority}
-                    type={objective.type}
-                />
-                <div className="space-y-1 mt-3">
-                  {Object.keys(objective.metrics_definition).map((key) => (
-                    <MetricDisplay
-                      key={key}
-                      definition={objective.metrics_definition[key]}
-                      value={objective.current_values[key]}
-                      target={objective.target_values[key]}
-                    />
-                  ))}
-                </div>
-                {/* Display Growth or Maintenance type */}
-                <p className="text-xs text-gray-500 mt-2 flex items-center">
-                  Type: <span className="font-medium text-gray-700 ml-1">{objective.type.charAt(0).toUpperCase() + objective.type.slice(1)}</span>
-                  {objective.priority && (
-                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityClass(objective.priority)}`}>
-                          {objective.priority.charAt(0).toUpperCase() + objective.priority.slice(1)} Priority
-                      </span>
-                  )}
-                </p>
-              </div>
-            );
-          };
-
-          const AutomationCard = ({ automation }) => {
-            return (
-              <div className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm text-gray-700 mb-2">
+            {/* Tab Content */}
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              {activeTab === 'visibility' && (
                 <div>
-                  <h4 className="font-medium text-gray-800">{automation.name}</h4>
-                  <p className="text-xs text-gray-500">Last run: {new Date(automation.last_executed).toLocaleTimeString()}</p>
-                  {automation.integration_source && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      <span className="font-medium text-gray-600">Source:</span> {automation.integration_source}
-                    </p>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold">{automation.executions_today} Today</p>
-                  <p className="text-xs text-gray-600">{automation.executions_this_week} This Week</p>
-                </div>
-              </div>
-            );
-          };
-
-          const KPICard = ({ title, value, source, iconName }) => {
-            return (
-              <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col items-start">
-                {iconName && <Icon name={iconName} className="w-6 h-6 text-gray-500 mb-2" />}
-                <span className="text-sm text-gray-500">{title}</span>
-                <span className="text-2xl font-bold text-[var(--color-primary-700)]">{value}</span>
-                {source && <span className="text-xs text-gray-500 mt-1">Source: {source}</span>}
-              </div>
-            );
-          };
-
-          const ReviewSourceCard = ({ review }) => {
-            return (
-              <a href={review.link} target="_blank" rel="noopener noreferrer" className="block bg-white p-4 rounded-lg shadow-sm flex items-center space-x-3 hover:shadow-md transition-shadow">
-                <Icon name="hero-star" className="w-6 h-6 text-yellow-500 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-800">{review.name}</p>
-                  <div className="flex flex-col text-xs text-gray-600">
-                    <span className="font-bold">{review.rating} Stars</span>
-                    <span className="text-gray-500">({review.count} reviews)</span>
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Agency Visibility Overview</h2>
+                  <p className="text-gray-600 mb-4">
+                    Gain a holistic, real-time pulse on your entire organization's performance and agent well-being.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Object.entries(groupedUsers).map(([office, users]) => (
+                      <div key={office} className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                        <h3 className="font-bold text-gray-800">{office} ({users.length} Users)</h3>
+                        <ul className="mt-2 text-sm text-gray-600">
+                          {users.slice(0, 5).map(user => ( // Show top 5 users per office
+                            <li key={user.id} className="flex items-center justify-between py-1">
+                              <span>{user.name}</span>
+                              {user.isHighProducer && (
+                                <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">High Performer</span>
+                              )}
+                            </li>
+                          ))}
+                           {users.length > 5 && (
+                             <li className="text-xs text-gray-500 mt-1">...and {users.length - 5} more</li>
+                           )}
+                        </ul>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </a>
-            );
-          };
+              )}
 
-          const TeamMemberCard = ({ member }) => {
-            const getPerformanceColorClass = (score) => {
-                if (score >= 4.5) return 'text-[var(--color-success-600)]';
-                if (score >= 3.5) return 'text-[var(--color-warning-600)]';
-                return 'text-[var(--color-danger-600)]';
-            };
-
-            return (
-              <div className="bg-white p-3 rounded-lg shadow-sm flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-[var(--color-secondary-200)] flex items-center justify-center text-[var(--color-secondary-800)] font-bold flex-shrink-0">
-                  {member.name.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-800">{member.name}</p>
-                  <p className="text-xs text-gray-500">{member.role}</p>
-                </div>
-                <div className={`text-right text-sm font-semibold ${getPerformanceColorClass(member.performance_score)}`}>
-                  {member.performance_score.toFixed(1)} <span className="text-gray-500">Avg. Score</span>
-                </div>
-              </div>
-            );
-          };
-
-        // Start of the React App component code from the Canvas
-        function App() {
-          const [objectives, setObjectives] = React.useState([]);
-          const [automations, setAutomations] = React.useState([]);
-          const [kpis, setKpis] = React.useState({
-            ytd_gci: { value: 0, source: '' },
-            active_listings: { value: 0, source: '' },
-            buyer_leads_month: { value: 0, source: '' },
-            seller_leads_month: { value: 0, source: '' },
-            avg_comm_rate: { value: 0, source: '' },
-            avg_sales_cycle: { value: 0, source: '' },
-            agent_count: { value: 0, source: '' },
-          });
-          const [copilotMessages, setCopilotMessages] = React.useState([]);
-          const [upcomingTasks, setUpcomingTasks] = React.useState([]);
-          const [reviews, setReviews] = React.useState([]);
-          const [teamMembers, setTeamMembers] = React.useState([]); // New state for team members
-
-          // Ndever Score and Growth Points are now direct state values
-          const [ndeverScore, setNdeverScore] = React.useState(0);
-          const [todaysGrowthPoints, setTodaysGrowthPoints] = React.useState(0);
-
-          const todaysGrowthWinsData = [
-              { id: 'win1', title: "Successfully closed 3 new buyer agreements", playbook: { title: "Buyer Lead Conversion" }, completed_at: new Date(Date.now() - 30 * 60 * 1000) },
-              { id: 'win2', title: "Secured 2 new exclusive listing agreements", playbook: { title: "Listing Acquisition Mastery" }, completed_at: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-              { id: 'win3', title: "Generated 5 new leads from open house event", playbook: { title: "Open House Optimization" }, completed_at: new Date(Date.now() - 5 * 60 * 60 * 1000) }
-          ];
-
-
-          React.useEffect(() => {
-            // Simulate fetching initial dashboard data
-            const fetchDashboardData = () => {
-              const mockObjectives = [
-                {
-                  id: 'obj1',
-                  name: 'Achieve $5M Sales Volume Q3',
-                  status: 'on_track',
-                  progress: 70, // Current progress
-                  weight: 5,   // Higher weight as it's a primary target
-                  priority: 'critical', // Added priority
-                  type: 'growth',
-                  metrics_definition: {
-                    sales_volume_target: { type: 'currency', label: 'Volume Target' },
-                    current_sales_volume: { type: 'currency', label: 'Current Volume' },
-                    active_listings: { type: 'number', label: 'Active Listings' },
-                    buyer_conversion: { type: 'percentage', label: 'Buyer Conv. Rate' },
-                  },
-                  current_values: {
-                    sales_volume_target: 5000000,
-                    current_sales_volume: 3500000,
-                    active_listings: 15,
-                    buyer_conversion: 0.10, // 10%
-                  },
-                  target_values: {
-                    sales_volume_target: 5000000,
-                    active_listings: 20,
-                    buyer_conversion: 0.12, // 12%
-                  },
-                },
-                {
-                  id: 'obj2',
-                  name: 'Increase Agent Productivity by 10%',
-                  status: 'at_risk',
-                  progress: 55,
-                  weight: 4,
-                  priority: 'high', // Added priority
-                  type: 'growth',
-                  metrics_definition: {
-                    avg_transactions_per_agent: { type: 'number', label: 'Avg. Trans/Agent' },
-                    agent_gci_growth: { type: 'percentage', label: 'Agent GCI Growth' },
-                    training_completion: { type: 'percentage', label: 'Training Completion' },
-                  },
-                  current_values: {
-                    avg_transactions_per_agent: 1.8,
-                    agent_gci_growth: 0.05,
-                    training_completion: 0.70,
-                  },
-                  target_values: {
-                    avg_transactions_per_agent: 2.0,
-                    agent_gci_growth: 0.10,
-                    training_completion: 0.90,
-                  },
-                },
-                {
-                  id: 'obj3',
-                  name: 'Enhance Client Satisfaction Score to 4.9',
-                  status: 'on_track',
-                  progress: 90,
-                  weight: 3,
-                  priority: 'medium', // Added priority
-                  type: 'maintenance',
-                  metrics_definition: {
-                    csat_score: { type: 'scale', label: 'CSAT Score (5.0)' },
-                    referral_rate: { type: 'percentage', label: 'Referral Rate' },
-                  },
-                  current_values: {
-                    csat_score: 4.8,
-                    referral_rate: 0.35,
-                  },
-                  target_values: {
-                    csat_score: 4.9,
-                    referral_rate: 0.40,
-                  },
-                },
-                {
-                    id: 'obj4',
-                    name: 'Expand Digital Marketing Reach',
-                    status: 'on_track',
-                    progress: 80,
-                    weight: 2,
-                    priority: 'medium', // Added priority
-                    type: 'growth',
-                    metrics_definition: {
-                        website_traffic: { type: 'number', label: 'Website Traffic' },
-                        social_media_engagement: { type: 'percentage', label: 'Social Engagement' }
-                    },
-                    current_values: {
-                        website_traffic: 5000,
-                        social_media_engagement: 0.04
-                    },
-                    target_values: {
-                        website_traffic: 6000,
-                        social_media_engagement: 0.05
-                    }
-                },
-                {
-                    id: 'obj5',
-                    name: 'Streamline Transaction Coordination',
-                    status: 'completed',
-                    progress: 100,
-                    weight: 1,
-                    priority: 'low', // Added priority
-                    type: 'maintenance',
-                    metrics_definition: {
-                        avg_doc_processing_time: { type: 'days', label: 'Avg. Doc Process Time' },
-                        compliance_rate: { type: 'percentage', label: 'Compliance Rate' }
-                    },
-                    current_values: {
-                        avg_doc_processing_time: 1,
-                        compliance_rate: 1.0
-                    },
-                    target_values: {
-                        avg_doc_processing_time: 1,
-                        compliance_rate: 1.0
-                    }
-                }
-              ];
-              setObjectives(mockObjectives);
-
-              setKpis({
-                ytd_gci: { value: 450000, source: 'Brokerage Software' },
-                active_listings: { value: 22, source: 'MLS Data' },
-                buyer_leads_month: { value: 75, source: 'CRM (e.g., Follow Up Boss)' },
-                seller_leads_month: { value: 30, source: 'CRM (e.g., Follow Up Boss)' },
-                avg_comm_rate: { value: 0.025, source: 'Transaction Data' }, // 2.5%
-                avg_sales_cycle: { value: 65, source: 'CRM' }, // days
-                agent_count: { value: 12, source: 'HRIS' },
-              });
-
-              setAutomations([
-                {
-                  id: 'auto1',
-                  name: 'New Listing Marketing Launch',
-                  status: 'Active',
-                  executions_today: 4,
-                  executions_this_week: 10,
-                  type: 'marketing_syndication',
-                  last_executed: '2025-06-18T09:15:00Z',
-                  integration_source: 'MLS & Social Media'
-                },
-                {
-                  id: 'auto2',
-                  name: 'Buyer Lead Nurturing Drip',
-                  status: 'Active',
-                  executions_today: 20,
-                  executions_this_week: 100,
-                  type: 'email_sequence',
-                  last_executed: '2025-06-18T10:00:00Z',
-                  integration_source: 'CRM & Mailchimp'
-                },
-                {
-                  id: 'auto3',
-                  name: 'Seller Lead Qualification Follow-up',
-                  status: 'Active',
-                  executions_today: 8,
-                  executions_this_week: 35,
-                  type: 'sms_reminder',
-                  last_executed: '2025-06-18T08:30:00Z',
-                  integration_source: 'CRM & Twilio'
-                },
-                 {
-                  id: 'auto4',
-                  name: 'Client Anniversary & Home Purchase Follow-up',
-                  status: 'Active',
-                  executions_today: 3,
-                  executions_this_week: 15,
-                  type: 'personal_touch_reminder',
-                  last_executed: '2025-06-18T11:00:00Z',
-                  integration_source: 'CRM'
-                },
-              ]);
-
-              setCopilotMessages([
-                { sender: 'copilot', text: "Good morning, Loren! Your 'Achieve $5M Sales Volume' objective is at 70%. Your 'New Listing Marketing' automation ran 4 times today. Shall we review high-value buyer leads for immediate action?" },
-                { sender: 'user', text: "Morning! Yes, let's focus on those buyer leads. And what's our current agent productivity look like this quarter?" },
-                { sender: 'copilot', text: "Agent productivity (avg. transactions/agent) is at 1.8. I've flagged tasks in the 'Agent Skill Development' playbook. Also, consider activating the 'High-Conversion Listing Pitch' workflow for your top sellers." },
-                { sender: 'user' , text: "Thanks. Can you also pull up the most effective social media campaigns from last month?" },
-                { sender: 'copilot', text: "Certainly. I've pulled up the analytics for your 'Luxury Homes Spotlight' and 'First-Time Buyer Guide' campaigns. Both showed strong engagement. Shall I suggest a follow-up content strategy for these?" },
-              ]);
-
-              setUpcomingTasks([
-                { id: 'task1', name: 'Prepare Comparative Market Analysis (CMA) for 123 Main St.', dueDate: 'Today', playbook: { title: 'Listing Preparation' } },
-                { id: 'task2', name: 'Follow up with pre-approved buyer, John Doe (Playbook: Buyer Nurturing)', dueDate: 'Tomorrow', playbook: { title: 'Buyer Nurturing' } },
-                { id: 'task3', name: 'Schedule agent training on new CRM features (Playbook: Agent Empowerment)', dueDate: 'Thu, Jun 20', playbook: { title: 'Agent Empowerment' } },
-              ]);
-
-              setReviews([
-                { id: 'google', name: 'Google Reviews', rating: 4.8, count: 185, link: 'https://google.com/your-business' },
-                { id: 'zillow', name: 'Zillow Premier Agent', rating: 4.9, count: 92, link: 'https://zillow.com/your-profile' },
-                { id: 'website', name: 'Website Reviews', rating: 4.7, count: 56, link: 'https://yourwebsite.com/reviews' },
-              ]);
-
-              setTeamMembers([
-                { id: 'agent1', name: 'Sarah Miller', role: 'Sales Agent', performance_score: 4.5, transactions_ytd: 8 },
-                { id: 'agent2', name: 'David Lee', role: 'Sales Agent', performance_score: 3.9, transactions_ytd: 6 },
-                { id: 'agent3', name: 'Emily Chen', role: 'Broker Associate', performance_score: 4.7, transactions_ytd: 10 },
-                { id: 'agent4', name: 'Mark Johnson', role: 'Sales Agent', performance_score: 4.1, transactions_ytd: 7 },
-              ]);
-
-              setNdeverScore(1050);
-              setTodaysGrowthPoints(90);
-            };
-
-            fetchDashboardData();
-          }, []);
-
-
-          return (
-            <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-              {/* Header */}
-              <header className="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200">
-                <div className="flex items-center">
-                  <img src="./Logo-Color@2x.png" alt="Ndever Logo" className="h-8 w-auto mr-4" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/120x32/white/ed8622/white?text=Ndever+Logo'; }} />
-                  <h1 className="text-xl font-semibold text-gray-800">Arc Realty Dashboard</h1>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-600">Hi, Loren!</span>
-                  <div className="w-10 h-10 rounded-full bg-[var(--color-info-200)] flex items-center justify-center text-[var(--color-info-800)] font-bold">L</div>
-                </div>
-              </header>
-
-              <main className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Growth Overview Scores (Objective Score Widget, Ndever Score, Today's Growth Wins) */}
-                <ObjectiveScoreWidget
-                    objectives={objectives}
-                    ndeverScore={ndeverScore}
-                    todaysGrowthPoints={todaysGrowthPoints}
-                />
-
-                {/* Header Section (Greeting & Motivational Message) */}
-                <div className="lg:col-span-3 mb-8">
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    {greeting_by_time()}, Loren!
-                  </h1>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">
-                    Your Arc Realty growth journey in progress.
+              {activeTab === 'onboarding' && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Onboarding Status: Who's Coming In and When?</h2>
+                  <p className="text-gray-600 mb-4">
+                    Track every new agent's journey from hire to full productivity.
                   </p>
-                </div>
-
-
-                <div className="lg:col-span-2 space-y-6">
-                  {/* Key Performance Indicators (for Loren) */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Your Key Performance Indicators</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      <KPICard title="YTD GCI" value={formatCurrency(kpis.ytd_gci.value)} source={kpis.ytd_gci.source} iconName="hero-wallet" />
-                      <KPICard title="Active Listings" value={kpis.active_listings.value} source={kpis.active_listings.source} iconName="hero-building-office" />
-                      <KPICard title="Buyer Leads (Mo)" value={kpis.buyer_leads_month.value} source={kpis.buyer_leads_month.source} iconName="hero-users" />
-                      <KPICard title="Seller Leads (Mo)" value={kpis.seller_leads_month.value} source={kpis.seller_leads_month.source} iconName="hero-users" />
-                      <KPICard title="Avg. Commission Rate" value={formatPercentage(kpis.avg_comm_rate.value)} source={kpis.avg_comm_rate.source} iconName="hero-document-text" />
-                      <KPICard title="Avg. Sales Cycle (Days)" value={kpis.avg_sales_cycle.value} source={kpis.avg_sales_cycle.source} iconName="hero-calendar-days" />
-                      <KPICard title="Agent Count" value={kpis.agent_count.value} source={kpis.agent_count.source} iconName="hero-user-group" />
-                    </div>
-                  </section>
-
-                  {/* Objectives Section */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Your Active Objectives</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {objectives.map(obj => (
-                        <ObjectiveCard key={obj.id} objective={obj} />
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Upcoming Tasks */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Upcoming Tasks</h2>
-                    <ul className="space-y-3">
-                      {upcomingTasks.map(task => (
-                        <li key={task.id} className="flex items-center bg-gray-50 p-3 rounded-lg shadow-sm">
-                          <input type="checkbox" className="form-checkbox h-5 w-5 text-[var(--color-primary-600)] rounded mr-3" />
-                          <div className="flex-1">
-                            <p className="text-base font-medium text-gray-800">{task.name}</p>
-                            {task.playbook?.title && <p className="text-sm text-gray-500">Playbook: {task.playbook.title}</p>}
-                            <p className="text-sm text-gray-500">{task.dueDate}</p>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-
-                  {/* Recent Growth Wins */}
-                  {todaysGrowthWinsData.length > 0 && (
-                    <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
-                      <div className="px-6 py-4 border-b border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-medium text-gray-900">
-                            Recent Growth Wins
-                          </h3>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
-                            {todaysGrowthWinsData.length} completed
-                          </span>
-                        </div>
+                  <ul className="space-y-4">
+                    <li className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-gray-800">Agent Beta (Homewood Office)</h3>
+                        <span className="text-sm px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">65% Complete</span>
                       </div>
-                      <div className="p-6">
-                        <div className="space-y-3">
-                          {todaysGrowthWinsData.map((win, index) => (
-                            <div key={index} className="flex items-start space-x-3">
-                              <div className="w-8 h-8 bg-[var(--color-success-100)] rounded-full flex items-center justify-center flex-shrink-0">
-                                <Icon name="hero-check" className="w-4 h-4 text-[var(--color-success-600)]" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm text-gray-900">
-                                  {win.title}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {win.playbook.title} • Completed{" "}
-                                  {new Date(win.completed_at).toLocaleDateString()}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        {todaysGrowthWinsData.length >= 3 && (
-                          <div className="mt-4 p-3 bg-[var(--color-success-50)] border border-[var(--color-success-200)] rounded-lg">
-                            <p className="text-sm text-[var(--color-success-800)] font-medium">
-                              <Icon name="hero-fire" className="w-4 h-4 inline mr-1" />
-                              Outstanding progress in recent initiatives!
-                            </p>
-                          </div>
-                        )}
+                      <p className="text-gray-600 text-sm">Onboarding Playbook: MLS Access Overdue (7 days)</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        <span className="font-semibold text-red-600">AI Nudge:</span> Agent Beta has not completed their MLS access checklist. Suggest a reminder or offer 1:1 support.
+                      </p>
+                    </li>
+                    <li className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-gray-800">Agent Gamma (Wetumpka Office)</h3>
+                        <span className="text-sm px-3 py-1 bg-green-100 text-green-700 rounded-full">90% Complete</span>
                       </div>
-                    </div>
-                  )}
+                      <p className="text-gray-600 text-sm">Onboarding Playbook: Ready for First Listing Prep</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        <span className="font-semibold text-blue-600">AI Nudge:</span> Agent Gamma is progressing well. Recommend assigning 'First Client Meeting Playbook'.
+                      </p>
+                    </li>
+                  </ul>
                 </div>
+              )}
 
-                {/* Right Column: Ndever Copilot, Automation Summary, Client Feedback */}
-                <div className="space-y-6">
-                  {/* Ndever Copilot Chat */}
-                  <section className="bg-white p-6 rounded-lg shadow-md h-96 flex flex-col">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Ndever Copilot</h2>
-                    <div className="flex-1 overflow-y-auto border border-gray-200 p-3 rounded-lg bg-gray-50 mb-3 text-sm">
-                      {copilotMessages.map((msg, index) => (
-                        <div key={index} className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
-                          <span className={`inline-block p-2 rounded-lg ${
-                            msg.sender === 'user' ? 'bg-[var(--color-primary-500)] text-white' : 'bg-gray-200 text-gray-800'
-                          }`}>
-                            {msg.text}
-                          </span>
-                        </div>
-                      ))}
-                      <div className="text-gray-400 text-xs text-center mt-2">Ndever Copilot is typing...</div>
-                    </div>
-                    <div className="flex">
-                      <input
-                        type="text"
-                        placeholder="Message Ndever Copilot..."
-                        className="flex-1 border border-gray-300 p-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)]"
-                      />
-                      <button className="bg-[var(--color-primary-600)] text-white p-2 rounded-r-lg hover:bg-[var(--color-primary-700)] transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                      </button>
-                    </div>
-                  </section>
-
-                  {/* Workflow Automation Summary */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                      Workflow Automations
-                      <span className="ml-2 px-2 py-1 bg-[var(--color-primary-100)] text-[var(--color-primary-700)] text-sm font-medium rounded-full">Active: {automations.length}</span>
-                    </h2>
-                    <div className="space-y-3">
-                      <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                        <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">
-                            {automations.reduce((sum, auto) => sum + auto.executions_today, 0)}
-                        </span>Automations Executed Today
+              {activeTab === 'flailing' && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Agent Health: Who's Flailing and Needs Support?</h2>
+                  <p className="text-gray-600 mb-4">
+                    Proactive alerts and insights to identify agents at risk, enabling timely intervention.
+                  </p>
+                  <ul className="space-y-4">
+                    <li className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-gray-800">Agent Beta (Homewood Office)</h3>
+                        <span className="text-sm px-3 py-1 bg-red-100 text-red-700 rounded-full">High Risk</span>
                       </div>
-                      {automations.map(auto => (
-                        <AutomationCard key={auto.id} automation={auto} />
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Client Feedback & Reputation Section */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">Client Feedback & Reputation</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {reviews.map(review => (
-                        <ReviewSourceCard key={review.id} review={review} />
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Team Performance Overview */}
-                  <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <Icon name="hero-user-group" className="w-5 h-5 mr-2 text-[var(--color-gray-700)]" />
-                        Team Performance Overview
-                    </h2>
-                    <div className="grid grid-cols-1 gap-4">
-                        <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-700 font-semibold text-lg">
-                            <span className="text-3xl font-bold text-[var(--color-primary-700)] mr-2">{kpis.agent_count.value}</span>
-                            Total Agents
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-gray-50 p-3 rounded-lg text-center">
-                                <p className="text-xl font-bold text-[var(--color-success-700)]">{kpis.active_listings.value}</p>
-                                <p className="text-sm text-gray-600">Active Listings</p>
-                            </div>
-                            <div className="bg-gray-50 p-3 rounded-lg text-center">
-                                <p className="text-xl font-bold text-[var(--color-info-700)]">{teamMembers.reduce((sum, member) => sum + member.transactions_ytd, 0)}</p>
-                                <p className="text-sm text-gray-600">Transactions YTD</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mt-4">
-                        <h3 className="text-lg font-medium text-gray-800 mb-3">Top Performing Agents (YTD)</h3>
-                        <div className="space-y-2">
-                            {teamMembers.sort((a,b) => b.transactions_ytd - a.transactions_ytd).slice(0, 3).map(member => (
-                                <TeamMemberCard key={member.id} member={member} />
-                            ))}
-                        </div>
-                    </div>
-                  </section>
+                      <p className="text-gray-600 text-sm">Lead Conversion Rate: -15% in 30 days. No CRM activity for 5 days.</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        <span className="font-semibold text-red-600">AI Nudge:</span> Agent Beta's lead conversion has dropped significantly. Recommend assigning 'Lead Conversion Optimization Playbook' or scheduling a coaching session.
+                      </p>
+                    </li>
+                    <li className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-gray-800">Agent Gamma (Wetumpka Office)</h3>
+                        <span className="text-sm px-3 py-1 bg-orange-100 text-orange-700 rounded-full">Medium Risk</span>
+                      </div>
+                      <p className="text-gray-600 text-sm">Last transaction milestone not updated in 7 days.</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        <span className="font-semibold text-orange-600">AI Nudge:</span> Agent Gamma's latest transaction appears stalled. Suggest check-in or assigning 'Transaction Management Checklist'.
+                      </p>
+                    </li>
+                  </ul>
                 </div>
-              </main>
+              )}
+
+              {activeTab === 'checklists' && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Compliance & Checklists: Ensure Consistency</h2>
+                  <p className="text-gray-600 mb-4">
+                    Monitor adherence to critical internal processes and compliance requirements agency-wide.
+                  </p>
+                  <ul className="space-y-4">
+                    <li className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-gray-800">New Listing Checklist</h3>
+                        <span className="text-sm px-3 py-1 bg-red-100 text-red-700 rounded-full">5 Agents Overdue</span>
+                      </div>
+                      <p className="text-gray-600 text-sm">Critical tasks incomplete for multiple active listings.</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        <span className="font-semibold text-red-600">AI Nudge:</span> 5 agents have overdue tasks on 'Listing Activation Playbook'. Recommend automated reminder or team-wide mini-training.
+                      </p>
+                    </li>
+                    <li className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-gray-800">Transaction Closing Compliance</h3>
+                        <span className="text-sm px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">2 Agents At Risk</span>
+                      </div>
+                      <p className="text-gray-600 text-sm">Pending document uploads for 2 closings this week.</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        <span className="font-semibold text-orange-600">AI Nudge:</span> Critical closing documents missing for Agents Delta and Epsilon. Send automated alert to agents and TC.
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              )}
+
+              {activeTab === 'assistance' && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">Tailored Enablement: Fuel Your Top Performers</h2>
+                  <p className="text-gray-600 mb-4">
+                    Identify and accelerate your highest-potential agents with personalized growth paths.
+                  </p>
+                  <ul className="space-y-4">
+                    <li className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-gray-800">Agent Alpha (Homewood Office)</h3>
+                        <span className="text-sm px-3 py-1 bg-blue-100 text-blue-700 rounded-full">High Potential</span>
+                      </div>
+                      <p className="text-gray-600 text-sm">Exceeded GCI target by 20%. Completed 3 'Lead Conversion' playbooks.</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        <span className="font-semibold text-blue-600">AI Nudge:</span> Agent Alpha is excelling. Recommend assigning 'Luxury Market Expansion Playbook' or connecting with a mentor for advanced strategies.
+                      </p>
+                    </li>
+                    <li className="p-4 border rounded-xl shadow-sm bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-gray-800">Mechelle Wilder (Homewood Office)</h3>
+                        <span className="text-sm px-3 py-1 bg-blue-100 text-blue-700 rounded-full">Leader & Top Performer</span>
+                      </div>
+                      <p className="text-gray-600 text-sm">Consistently exceeds goals. Optimal workflow utilization.</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        <span className="font-semibold text-blue-600">AI Nudge:</span> Mechelle's strategic insights are invaluable. Suggest a 'Thought Leadership Playbook' to share best practices across ARC Realty.
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
-          );
-        }
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-        // Mount the React App to the DOM
-        const container = document.getElementById('root');
-        const root = ReactDOM.createRoot(container);
-        root.render(<App />);
-    </script>
-</body>
-</html>
+export default App;
