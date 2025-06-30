@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>McGriff Claims Operations Command Center - Ndever Mockup</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="./favicon.png">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter -->
@@ -420,45 +418,44 @@
                         </div>
                     </header>
 
-                    {/* Key Claims Metrics - Single Column */}
-                    <div className="bg-white p-6 rounded-xl shadow-md mb-6">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-800">Key Claims Metrics</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <p className="text-sm text-gray-500">Total Claims Reps</p>
-                                <p className="text-2xl font-bold text-gray-800">150</p>
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <p className="text-sm text-gray-500">Avg. Claim Cycle Time (Days)</p>
-                                <p className="text-2xl font-bold text-blue-600">18.2</p>
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <p className="text-sm text-gray-500">First Call Resolution Rate</p>
-                                <p className="text-2xl font-bold text-green-600">74%</p>
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <p className="text-sm text-gray-500">Claims Handled (Q2)</p>
-                                <p className="text-2xl font-bold text-gray-800">9,850</p>
+                    {/* Key Claims Metrics (left) & Current Objective Score (right) - Two Columns */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        {/* Key Claims Metrics */}
+                        <div className="bg-white p-6 rounded-xl shadow-md h-full">
+                            <h2 className="text-xl font-semibold mb-4 text-gray-800">Key Claims Metrics</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                                    <p className="text-sm text-gray-500">Total Claims Reps</p>
+                                    <p className="text-2xl font-bold text-gray-800">150</p>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                                    <p className="text-sm text-gray-500">Avg. Claim Cycle Time (Days)</p>
+                                    <p className="text-2xl font-bold text-blue-600">18.2</p>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                                    <p className="text-sm text-gray-500">First Call Resolution Rate</p>
+                                    <p className="text-2xl font-bold text-green-600">74%</p>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                                    <p className="text-sm text-gray-500">Claims Handled (Q2)</p>
+                                    <p className="text-2xl font-bold text-gray-800">9,850</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Current Objective Score (left) and My Strategic Objectives (right) - Two Columns */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         {/* Current Objective Score Chart */}
                         <div>
                             <CurrentObjectiveScoreChart objectives={mockObjectives} />
                         </div>
-                        {/* Individual Objective Score Cards */}
-                        <div>
-                            <div className="bg-white p-6 rounded-xl shadow-md h-full">
-                                <h2 className="text-xl font-semibold mb-4 text-gray-800">My Strategic Objectives</h2>
-                                <div className="grid grid-cols-1 gap-4">
-                                    {displayObjectives.map(obj => (
-                                        <ObjectiveMiniCard key={obj.id} objective={obj} />
-                                    ))}
-                                </div>
-                            </div>
+                    </div>
+
+                    {/* My Strategic Objectives - Single Column */}
+                    <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+                        <h2 className="text-xl font-semibold mb-4 text-gray-800">My Strategic Objectives</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> {/* Increased grid columns for better use of space */}
+                            {displayObjectives.map(obj => (
+                                <ObjectiveMiniCard key={obj.id} objective={obj} />
+                            ))}
                         </div>
                     </div>
 
