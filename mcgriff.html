@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>McGriff Claims Operations Command Center - Ndever Mockup</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="./favicon.png">
+    <link rel="icon" href="https://placehold.co/16x16/EA580C/FFFFFF?text=ND" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -375,7 +374,6 @@
 
             const displayObjectives = mockObjectives.slice(0, 5);
 
-            // FIX: Replaced all 'class' with 'className' for JSX compatibility
             return (
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
@@ -392,7 +390,7 @@
                             </p>
                         </div>
                         <div className="mt-4 sm:mt-0 flex flex-col items-start sm:items-end">
-                            <span className="text-sm text-gray-500">Last Updated: Jun 30, 2025</span>
+                            <span className="text-sm text-gray-500">Last Updated: June 30, 2025</span>
                             <button className="mt-2 px-4 py-2 bg-nde-orange-700 text-white rounded-md shadow hover:bg-nde-orange-600 transition duration-200">
                                 Refresh Data
                             </button>
@@ -497,7 +495,6 @@
                                                             )}
                                                         </li>
                                                     ))}
-                                                    {/* FIX: Properly closed the conditional rendering and list item */}
                                                     {users.length > 5 && (
                                                         <li className="text-xs text-gray-500 mt-1">...and {users.length - 5} more</li>
                                                     )}
@@ -507,7 +504,6 @@
                                     </div>
                                 </div>
                             )}
-                             {/* FIX: Added placeholder content for other tabs */}
                             {activeTab === 'onboarding' && <div className="text-center text-gray-500 py-8">Rep Onboarding content will be displayed here.</div>}
                             {activeTab === 'teamHealth' && <div className="text-center text-gray-500 py-8">Team Health metrics will be displayed here.</div>}
                             {activeTab === 'compliance' && <div className="text-center text-gray-500 py-8">Regulatory Compliance status will be displayed here.</div>}
@@ -518,12 +514,10 @@
             );
         };
 
-        // FIX: Added the code to render the React App into the 'root' div
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
         root.render(<App />);
 
     </script>
-    {/* FIX: Added closing body and html tags */}
 </body>
 </html>
