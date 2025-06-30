@@ -54,7 +54,7 @@
                 goalConfig: {
                     type: 'Completion-based',
                     description: 'Develop and roll out a standardized, comprehensive onboarding program for all new claims representatives across all regions to ensure consistent training and faster time-to-productivity.',
-                    linkedPlaybooks: ['Claims Rep Onboarding Playbook V2.0'],
+                    linkedPlaybooks: ['Claims Rep Onboarding Playbook V2.0 (7/10 steps completed)'],
                     linkedMilestones: ['All Regional Onboarding Leads Certified (Achieved)', 'Onboarding Materials Distributed to All Regions (Achieved)'],
                     linkedTasks: ['Finalize Training Modules for Policy Systems (Completed)', 'Conduct Regional Onboarding Lead Training Session (Completed)', 'Deploy Onboarding Feedback Survey (Pending)']
                 }
@@ -195,7 +195,8 @@
                         y="50%"
                         textAnchor="middle"
                         dominantBaseline="middle"
-                        className="text-[8px] font-bold text-gray-700"
+                        fill="#4B5563" /* Directly setting fill color for visibility */
+                        className="text-[10px] font-bold" /* Increased font size */
                     >
                         {completion}%
                     </text>
@@ -334,7 +335,7 @@
                             {config.metrics.map((metric, i) => (
                                 <div key={metric.name} className="mt-1">
                                     <span className="font-medium text-gray-700">{metric.name}:</span> {metric.current}{metric.unit} / {metric.target}{metric.unit}
-                                    <span className={`ml-2 text-[10px] ${metric.isAutomated ? 'text-blue-500' : 'text-gray-400'}`}>
+                                    <span className={`ml-2 text-[10px] ${metric.isAutomated ? 'text-blue-500 font-semibold' : 'text-gray-400'}`}>
                                         ({metric.isAutomated ? `Auto via ${metric.integrationSource}` : 'Manual'})
                                     </span>
                                     <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
@@ -361,7 +362,7 @@
                                 {config.metrics.map((metric, i) => (
                                     <div key={metric.name} className="mt-1">
                                         <span className="font-medium text-gray-700">{metric.name}:</span> {metric.current}{metric.unit} / {metric.target}{metric.unit}
-                                        <span className={`ml-2 text-[10px] ${metric.isAutomated ? 'text-blue-500' : 'text-gray-400'}`}>
+                                        <span className={`ml-2 text-[10px] ${metric.isAutomated ? 'text-blue-500 font-semibold' : 'text-gray-400'}`}>
                                             ({metric.isAutomated ? `Auto via ${metric.integrationSource}` : 'Manual'})
                                         </span>
                                     </div>
@@ -610,7 +611,7 @@
                                                 <h3 className="font-bold text-gray-800">New Policy Compliance Review</h3>
                                                 <span className="text-sm px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">Automated Review Pending for 15 Claims</span>
                                             </div>
-                                            <p className="text-gray-600 text-sm">Claims filed under new policy terms requiring automated review.</p>
+                                            <p className="text-gray-600 text-sm">Claims filed under new policy terms requiring automated review. <span className="font-semibold text-blue-500">(Automated via iPaaS)</span></p>
                                             <p className="text-xs text-gray-500 mt-2">
                                                 <span className="font-semibold text-orange-600">AI Nudge:</span> 15 claims under new policy terms are awaiting automated compliance review. Verify iPaaS workflow status.
                                             </p>
