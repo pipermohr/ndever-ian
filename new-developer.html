@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ndever Dashboard - New Employee</title>
+    <link rel="icon" href="https://placehold.co/16x16/EA580C/FFFFFF?text=ND" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nde-orange-700 { color: #EA580C; }
+        .bg-nde-orange-700 { background-color: #EA580C; }
+        .border-nde-orange-700 { border-color: #EA580C; }
+        .text-nde-orange-600 { color: #F97316; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900 antialiased p-4 sm:p-8">
+
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        // Define the Ndever Score colors
+        const NdeverColors = {
+            LOW: { name: 'Low Ndever', color: '#10B981' },
+            MEDIUM: { name: 'Medium Ndever', color: '#FBBF24' },
+            HIGH: { name: 'High Ndever', color: '#FB923C' },
+            MAX: { name: 'Max Ndever', color: '#EA580C' },
+        };
+
+        // Function to get color based on score
+        const getScoreColor = (score) => {
+            if (score >= 4) return NdeverColors.MAX;
+            if (score >= 3) return NdeverColors.HIGH;
+            if (score >= 2) return NdeverColors.MEDIUM;
+            return NdeverColors.LOW;
+        };
+
+        const mockObjectives = [
+            {
+                id: 'onboarding1',
+                name: 'Complete HR & Benefits Onboarding',
+                ndeScore: 3, // High priority for new hire
+                completion: 70,
+                type: 'Onboarding',
+                goalConfig: {
+                    type: 'Completion-based',
+                    description: 'Finish all required HR paperwork and benefits enrollment within the first week.',
+                    linkedPlaybooks: ['HR Onboarding Checklist', 'Benefits Enrollment Guide'],
+                    linkedMilestones: ['All Forms Submitted (Achieved)', 'Benefits Activated (Pending)'],
+                    linkedTasks: ['Review Employee Handbook (Completed)', 'Submit W-4 and I-9 (Completed)', 'Select Health Insurance Plan (Pending)']
+                }
+            },
+            {
+                id: 'onboarding2',
+                name: 'Set Up Development Environment',
+                ndeScore: 4, // Critical for engineers
+                completion: 85,
+                type: 'Technical Setup',
+                goalConfig: {
+                    type: 'Completion-based',
+                    description: 'Get all necessary software, tools, and access configured for daily work.',
+                    linkedPlaybooks: ['Dev Environment Setup Guide', 'Access Request Playbook'],
+                    linkedMilestones: ['Laptop Configured (Achieved)', 'All Software Installed (Achieved)', 'Codebase Cloned (Achieved)'],
+                    linkedTasks: ['Install IDE (Completed)', 'Request Git Access (Completed)', 'Run First Build (Pending)']
+                }
+            },
+            {
+                id: 'onboarding3',
+                name: 'Understand Team & Project Basics',
+                ndeScore: 2, // Medium, ongoing
+                completion: 40,
+                type: 'Integration',
+                goalConfig: {
+                    type: 'Completion-based',
+                    description: 'Learn about team structure, current projects, and key stakeholders.',
+                    linkedPlaybooks: ['Team Introduction Playbook', 'Project X Overview'],
+                    linkedMilestones: ['Met All Team Members (Pending)', 'Understood Project Scope (Pending)'],
+                    linkedTasks: ['Schedule 1:1 with Manager (Completed)', 'Meet Team Buddy (Completed)', 'Attend Daily Stand-up (Ongoing)']
+                }
+            },
+            {
+                id: 'onboarding4',
+                name: 'Complete Security & Compliance Training',
+                ndeScore: 3, // High, mandatory
+                completion: 90,
+                type: 'Compliance',
+                goalConfig: {
+                    type: 'Completion-based',
+                    description: 'Finish all mandatory company security and compliance training modules.',
+                    linkedPlaybooks: ['Annual Compliance Training'],
+                    linkedMilestones: ['Data Privacy Module Complete (Achieved)'],
+                    linkedTasks: ['Complete Phishing Awareness Training (Completed)', 'Review Code of Conduct (Completed)']
+                }
+            },
+        ];
+
+        const mockTasks = [
+            { id: 'task1', name: 'Select Health Insurance Plan', dueDate: '2025-07-05', status: 'Pending', category: 'HR & Benefits', playbook: 'Benefits Enrollment Guide' },
+            { id: 'task2', name: 'Run First Build of Project X', dueDate: '2025-07-08', status: 'Pending', category: 'Technical Setup', playbook: 'Dev Environment Setup Guide' },
+            { id: 'task3', name: 'Attend Team Welcome Lunch', dueDate: '2025-07-03', status: 'Upcoming', category: 'Integration', playbook: 'Team Introduction Playbook' },
+            { id: 'task4', name: 'Review Q3 Team Goals in Ndever', dueDate: '2025-07-10', status: 'Pending', category: 'Objectives', playbook: 'Team Onboarding Playbook' },
+            { id: 'task5', name: 'Submit IT Support Ticket for Monitor Setup', dueDate: '2025-07-02', status: 'Overdue', category: 'Technical Setup', playbook: 'Dev Environment Setup Guide' },
+            { id: 'task6', name: 'Complete Company Culture Module', dueDate: '2025-07-04', status: 'Pending', category: 'Onboarding', playbook: 'HR Onboarding Checklist' },
+        ];
+
+        const ObjectiveRing = ({ completion, color, size = 24, strokeWidth = 3 }) => {
+            const radius = (size - strokeWidth) / 2;
+            const circumference = radius * 2 * Math.PI;
+            const offset = circumference - (completion / 100) * circumference;
+
+            return (
+                <svg width={size} height={size} className="transform -rotate-90">
+                    <circle
+                        className="text-gray-300"
+                        strokeWidth={strokeWidth}
+                        stroke="currentColor"
+                        fill="transparent"
+                        r={radius}
+                        cx={size / 2}
+                        cy={size / 2}
+                    />
+                    <circle
+                        className={`transition-all duration-500 ease-in-out`}
+                        strokeWidth={strokeWidth}
+                        strokeLinecap="round"
+                        stroke={color}
+                        fill="transparent"
+                        r={radius}
+                        cx={size / 2}
+                        cy={size / 2}
+                        style={{
+                            strokeDasharray: circumference,
+                            strokeDashoffset: offset,
+                        }}
+                    />
+                </svg>
+            );
+        };
+
+        const CurrentObjectiveScoreChart = ({ objectives }) => {
+            // FIXED: Changed obj.complexityScore to obj.ndeScore
+            const totalScore = objectives.reduce((sum, obj) => sum + obj.ndeScore, 0);
+            let cumulativeAngle = 0;
+
+            const segments = objectives.map((obj) => {
+                // FIXED: Changed obj.complexityScore to obj.ndeScore
+                const angle = (obj.ndeScore / totalScore) * 360;
+                const startAngle = cumulativeAngle;
+                const endAngle = cumulativeAngle + angle;
+                cumulativeAngle = endAngle;
+
+                const completionRatio = obj.completion / 100;
+                const completionAngle = angle * completionRatio;
+                const completionStartAngle = startAngle;
+                const completionEndAngle = startAngle + completionAngle;
+
+                const largeArcFlag = angle > 180 ? 1 : 0;
+                const largeArcFlagCompletion = completionAngle > 180 ? 1 : 0;
+
+                const outerRadius = 70;
+                const innerRadius = 50;
+                const centerX =
