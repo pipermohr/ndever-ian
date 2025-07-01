@@ -3,165 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ndever Dashboard - Experienced Employee</title>
-    <link rel="icon" href="https://placehold.co/16x16/EA580C/FFFFFF?text=ND" type="image/png">
-    
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Incident Commander View</title>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .nde-orange-700 { color: #EA580C; }
-        .bg-nde-orange-700 { background-color: #EA580C; }
-        .border-nde-orange-700 { border-color: #EA580C; }
-        .text-nde-orange-600 { color: #F97316; }
+        /* General Body Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* Header Styles */
+        h1 {
+            color: #1c3d5a;
+            border-bottom: 2px solid #1c3d5a;
+            padding-bottom: 10px;
+        }
+
+        /* Container for the dashboard */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #1c3d5a;
+            font-size: 1.2em;
+        }
+
+        /* Status Indicators */
+        .status {
+            padding: 5px 10px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            width: fit-content;
+            margin-bottom: 15px;
+        }
+        .status-active { background-color: #28a745; }
+        .status-pending { background-color: #ffc107; }
+        .status-down { background-color: #dc3545; }
+
+        /* List Styles */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 15px;
+            flex-grow: 1; /* Allows button to stick to bottom */
+        }
+
+        ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: auto; /* Pushes button to the bottom of the card */
+            text-decoration: none; /* In case you use an <a> tag */
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-900 antialiased p-4 sm:p-8">
+<body>
 
-    <div id="root"></div>
+    <h1>Incident Commander Dashboard</h1>
 
-    <script type="text/babel">
-        const NdeverColors = {
-            LOW: { name: 'Low Ndever', color: '#10B981' },
-            MEDIUM: { name: 'Medium Ndever', color: '#FBBF24' },
-            HIGH: { name: 'High Ndever', color: '#FB923C' },
-            MAX: { name: 'Max Ndever', color: '#EA580C' },
-        };
+    <div class="dashboard-container">
+        <div class="card">
+            <h2>Primary Web Server</h2>
+            <div class="status status-active">Active</div>
+            <ul>
+                <li>CPU Load: 15%</li>
+                <li>Memory Usage: 40%</li>
+                <li>Active Connections: 250</li>
+            </ul>
+            <a href="#" class="btn">View Details</a>
+        </div>
 
-        const getScoreColor = (score) => {
-            if (score >= 4) return NdeverColors.MAX;
-            if (score >= 3) return NdeverColors.HIGH;
-            if (score >= 2) return NdeverColors.MEDIUM;
-            return NdeverColors.LOW;
-        };
+        <div class="card">
+            <h2>Database Cluster</h2>
+            <div class="status status-pending">Pending Sync</div>
+            <ul>
+                <li>Replication Lag: 5s</li>
+                <li>Disk I/O: High</li>
+                <li>Slow Queries: 3</li>
+            </ul>
+            <a href="#" class="btn">Investigate</a>
+        </div>
 
-        const mockObjectives = [
-            {
-                id: 'prod1',
-                name: 'Lead Project "Horizon" Launch',
-                ndeScore: 4,
-                completion: 75,
-                type: 'Product Development',
-                goalConfig: {
-                    type: 'Hybrid',
-                    description: 'Successfully launch Project Horizon, meeting all key performance indicators and timelines.',
-                    completionWeight: 60,
-                    metricWeight: 40,
-                    linkedPlaybooks: ['Project Horizon Launch Plan', 'Go-to-Market Strategy'],
-                    linkedMilestones: ['Beta Release Complete (Achieved)', 'Marketing Assets Finalized (Pending)'],
-                    metrics: [
-                        { name: 'User Adoption (Week 1)', current: 15, target: 20, unit: '%', dataType: 'percentage', isAutomated: true, integrationSource: 'Product Analytics' },
-                        { name: 'Critical Bugs (Post-Launch)', current: 2, target: 0, unit: '', dataType: 'number', isAutomated: true, integrationSource: 'Jira' }
-                    ]
-                }
-            },
-            {
-                id: 'skill1',
-                name: 'Master Advanced Data Visualization',
-                ndeScore: 3,
-                completion: 60,
-                type: 'Skill Development',
-                goalConfig: {
-                    type: 'Completion-based',
-                    description: 'Complete advanced course and apply new visualization techniques in at least two reports.',
-                    linkedPlaybooks: ['Data Viz Masterclass'],
-                    linkedMilestones: ['Course Completion (Pending)', 'Two Reports Published (Pending)'],
-                    linkedTasks: ['Complete Module 3: Interactive Dashboards (Completed)', 'Start Capstone Project (Pending)', 'Schedule Peer Review of Dashboard (Pending)']
-                }
-            },
-            {
-                id: 'mentorship1',
-                name: 'Mentor Junior PM (Q3)',
-                ndeScore: 2,
-                completion: 50,
-                type: 'Leadership & Mentorship',
-                goalConfig: {
-                    type: 'Completion-based',
-                    description: 'Provide mentorship to a junior Product Manager, supporting their growth and integration.',
-                    linkedPlaybooks: ['Mentorship Program Guide'],
-                    linkedMilestones: ['Mentee Onboarding Complete (Achieved)', 'Mid-Quarter Check-in (Pending)'],
-                    linkedTasks: ['Schedule Bi-weekly 1:1s (Completed)', 'Review Mentee\'s PRD (Pending)', 'Share Industry Best Practices (Ongoing)']
-                }
-            },
-            {
-                id: 'wellness1',
-                name: 'Utilize Wellness Benefits',
-                ndeScore: 1,
-                completion: 80,
-                type: 'Personal Well-being',
-                goalConfig: {
-                    type: 'Metric-based',
-                    description: 'Actively engage with company wellness programs and benefits.',
-                    metrics: [
-                        { name: 'Gym Visits (Monthly)', current: 6, target: 8, unit: '', dataType: 'number', isAutomated: false },
-                        { name: 'Wellness Credits Used', current: 150, target: 200, unit: '$', dataType: 'currency', isAutomated: true, integrationSource: 'HR Benefits Portal' }
-                    ],
-                    primaryMetric: 'Wellness Credits Used'
-                }
-            },
-        ];
+        <div class="card">
+            <h2>Authentication Service</h2>
+            <div class="status status-down">Down</div>
+            <ul>
+                <li>Last Heartbeat: 15 min ago</li>
+                <li>Response Time: N/A</li>
+                <li>Error Rate: 100%</li>
+            </ul>
+            <a href="#" class="btn">Initiate Failover</a>
+        </div>
 
-        const mockTasks = [
-            { id: 'task1', name: 'Finalize Project Horizon Marketing Assets', dueDate: '2025-07-10', status: 'Pending', category: 'Product Launch', playbook: 'Project Horizon Launch Plan' },
-            { id: 'task2', name: 'Complete Data Viz Masterclass Capstone Project', dueDate: '2025-07-15', status: 'Pending', category: 'Skill Development', playbook: 'Data Viz Masterclass' },
-            { id: 'task3', name: 'Review Mentee\'s Q3 Objectives', dueDate: '2025-07-08', status: 'Pending', category: 'Mentorship', playbook: 'Mentorship Program Guide' },
-            { id: 'task4', name: 'Submit Expense Report for Conference', dueDate: '2025-07-05', status: 'Overdue', category: 'Admin', playbook: 'Expense Reporting Policy' },
-            { id: 'task5', name: 'Schedule 1:1 with Engineering Lead for Horizon', dueDate: '2025-07-03', status: 'Upcoming', category: 'Product Dev', playbook: 'Project Horizon Launch Plan' },
-            { id: 'task6', name: 'Book Q3 Wellness Class (Yoga)', dueDate: '2025-07-07', status: 'Pending', category: 'Personal Well-being', playbook: 'Wellness Program Guide' },
-        ];
+        <div class="card">
+            <h2>API Gateway</h2>
+            <div class="status status-active">Active</div>
+            <ul>
+                <li>Requests/sec: 1200</li>
+                <li>Error Rate (p99): 0.1%</li>
+                <li>Latency: 50ms</li>
+            </ul>
+            <a href="#" class="btn">View Metrics</a>
+        </div>
+    </div>
 
-        const mockPerks = [
-            { id: 'perk1', name: 'Gym Membership Reimbursement', status: 'Active', details: 'Up to $50/month. Last claimed: Jun 2025.', action: 'Claim Now', link: '#' },
-            { id: 'perk2', name: 'Professional Development Stipend', status: 'Available', details: '$1000/year for courses/conferences. Balance: $400.', action: 'Apply Now', link: '#' },
-            { id: 'perk3', name: 'Mental Wellness App Subscription', status: 'Active', details: 'Free access to Headspace/Calm.', action: 'Access App', link: '#' },
-            { id: 'perk4', name: 'Company Volunteer Day', status: 'Upcoming', details: 'Next event: Aug 15, 2025. Sign up by Aug 1.', action: 'Sign Up', link: '#' },
-        ];
-
-        const ObjectiveRing = ({ completion, color, size = 48, strokeWidth = 4 }) => {
-            const radius = (size - strokeWidth) / 2;
-            const circumference = radius * 2 * Math.PI;
-            const offset = circumference - (completion / 100) * circumference;
-
-            return (
-                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="transform -rotate-90">
-                    <circle
-                        className="text-gray-200"
-                        strokeWidth={strokeWidth}
-                        stroke="currentColor"
-                        fill="transparent"
-                        r={radius}
-                        cx={size / 2}
-                        cy={size / 2}
-                    />
-                    <circle
-                        stroke={color}
-                        strokeWidth={strokeWidth}
-                        strokeDasharray={circumference}
-                        strokeDashoffset={offset}
-                        strokeLinecap="round"
-                        fill="transparent"
-                        r={radius}
-                        cx={size / 2}
-                        cy={size / 2}
-                        className="transition-all duration-500 ease-in-out"
-                    />
-                </svg>
-            );
-        };
-
-        const CurrentObjectiveScoreChart = ({ objectives }) => {
-            // FIX: Use ndeScore instead of the non-existent complexityScore
-            const totalScore = objectives.reduce((sum, obj) => sum + obj.ndeScore, 0);
-            let cumulativeAngle = 0;
-
-            const segments = objectives.map((obj) => {
-                const angle = (obj.ndeScore / totalScore) * 360;
-                const startAngle = cumulativeAngle;
-                const endAngle = cumulativeAngle + angle;
-                cumulativeAngle = endAngle;
-
-                const completionRatio = obj.completion / 100;
+</body>
+</html>
