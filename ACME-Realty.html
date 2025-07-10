@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ACME Realty Dashboard - Ndever</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Feather Icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React + Babel + Recharts -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/recharts/umd/Recharts.min.js"></script>
+
+  <script type="text/babel">
+    // The entire application logic is wrapped in a DOMContentLoaded event listener
+    // to ensure all external scripts (React, ReactDOM, Recharts) are loaded before execution.
+    document.addEventListener('DOMContentLoaded', () => {
+      const { useState, useEffect, useMemo } = React;
+      const { createRoot } = ReactDOM;
+      const {
+        PieChart, Pie, Cell, ResponsiveContainer,
+        RadialBarChart, RadialBar, Tooltip
+      } = Recharts;
+
+      const OBJECTIVE_LEVELS = {
+        'Low Ndever': { color: '#22c55e', points: 1 },
+        'Medium Ndever': { color: '#f59e0b', points: 3 },
+        'High Ndever': { color: '#f97316', points: 5 },
+        'Max Ndever': { color: '#ef4444', points: 10 }
+      };
+
+      const ACME_OBJECTIVES_DATA = [
+        { id: 'exec-001', name: 'Increase Overall Agency Revenue (GCI) by 15% in FY2025', objectiveLevel: 'Max Ndever', complexityScore: 10, completionPercentage: 65, department: 'Executive', status: 'Active' },
+        { id: 'exec-002', name: 'Improve Operational Efficiency by 10% in Q4', objectiveLevel: 'High Ndever', complexityScore: 8, completionPercentage: 40, department: 'Executive', status: 'Active' },
+        { id: 'mkt-001', name: 'Increase Qualified Lead Volume by 20% in Q3', objectiveLevel: 'High Ndever', complexityScore: 7, completionPercentage: 80, department: 'Marketing', status: 'Active' },
+        { id: 'mkt-002', name: 'Improve Brand Engagement by 15% in Q4', objectiveLevel: 'Medium Ndever', complexityScore: 4, completionPercentage: 95, department: 'Marketing', status: 'Active' },
+        { id: 'hr-001', name: 'Reduce New Hire Time-to-Productivity by 20% in Q3', objectiveLevel: 'High Ndever', complexityScore: 9, completionPercentage: 70, department: 'Human Resources', status: 'Active' },
+        { id: 'hr-002', name: 'Improve Employee Retention by 5% in FY2025', objectiveLevel: 'High Ndever', complexityScore: 8, completionPercentage: 55, department: 'Human Resources', status: 'Active' },
+        { id: 'sales-reg-001', name: 'Increase Regional GCI by 18% in FY2025', objectiveLevel: 'Max Ndever', complexityScore: 10, completionPercentage: 60, department: 'Sales', status: 'Active' },
+        { id: 'sales-tl-001', name: 'Improve Team Lead Conversion Rate by 15% in Q3', objectiveLevel: 'High Ndever', complexityScore: 7, completionPercentage: 75, department: 'Sales', status: 'Active' },
+        { id: 'sales-agent-001', name: 'Close 10 Residential Deals in Q3', objectiveLevel: 'High Ndever', complexityScore: 6, completionPercentage: 90, department: 'Sales', status: 'Active' },
+        { id: 'sales-agent-002', name: 'Secure 3 New Luxury Listings in Q4', objectiveLevel: 'High Ndever', complexityScore: 7, completionPercentage: 20, department: 'Sales', status: 'Active' },
+        { id: 'finance-001', name: 'Improve Commission Payout Accuracy to 99.5% in Q4', objectiveLevel: 'Medium Ndever', complexityScore: 5, completionPercentage: 85, department: 'Finance', status: 'Active' },
+        { id: 'it-001', name: 'Enhance Cybersecurity Posture to 90% compliance by Q3', objectiveLevel: 'High Ndever', complexityScore: 7, completionPercentage: 70, department: 'IT', status: 'Active' },
+        { id: 'ops-001', name: 'Reduce Transaction Closing Time by 10% in H2', objectiveLevel: 'High Ndever', complexityScore: 8, completionPercentage: 50, department: 'Operations', status: 'Active' },
+        { id: 'sales-agent-003', name: 'Complete Advanced Negotiation Certification', objectiveLevel: 'Low Ndever', complexityScore: 3, completionPercentage: 100, department: 'Sales', status: 'Completed' },
+        { id: 'mkt-003', name: 'Launch New Agent Welcome Kit', objectiveLevel: 'Medium Ndever', complexityScore: 4, completionPercentage: 100, department: 'Marketing', status: 'Completed' }
+      ];
+
+      const Icon = ({ name, className }) => {
+        useEffect(() => {
+          feather.replace();
+        }, []);
+        return <i data-feather={name} className={className}></i>;
+      };
+
+      const ObjectiveLevelChart = ({ completionPercentage, objectiveLevel }) => {
+        const data = [{ value: completionPercentage }];
+        const color = OBJECTIVE_LEVELS[objectiveLevel].color;
+
+        return (
+          <div className="relative w-28 h-28">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadialBarChart
+                innerRadius="80%"
+                outerRadius="100%"
+                data={data}
+                startAngle={90}
+                endAngle={-270}
+                barSize={10}
+              >
+                <RadialBar background clockWise dataKey="value" fill={color} cornerRadius={5} />
+              </RadialBarChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-2xl font-bold text-gray-900">{`${completionPercentage}%`}</span>
+              <span className="text-xs font-semibold" style={{ color }}>{objectiveLevel}</span>
+            </div>
+          </div>
+        );
+      };
+
+      const CustomTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+          const data = payload[0].payload;
+          return (
+            <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
+              <p className="font-semibold text-gray-800">{data.name}</p>
+              <p className="text-sm text-gray-600">Complexity: {data.value}</p>
+              <p className="text-sm text-gray-600">Completion: {data.completionPercentage}%</p>
+            </div>
+          );
+        }
+        return null;
+      };
+
+      const ObjectivePortfolioProgress = ({ objectives }) => {
+        const activeObjectives = objectives.filter(obj => obj.status === 'Active');
+
+        const chartData = activeObjectives.map(obj => ({
+          name: obj.name,
+          value: obj.complexityScore,
+          color: OBJECTIVE_LEVELS[obj.objectiveLevel].color,
+          completionPercentage: obj.completionPercentage,
+        }));
+
+        const { weightedAverage } = useMemo(() => {
+          if (activeObjectives.length === 0) return { weightedAverage: 0 };
+
+          const totalComplexity = activeObjectives.reduce((sum, obj) => sum + obj.complexityScore, 0);
+          const totalCompletedComplexity = activeObjectives.reduce((sum, obj) => sum + (obj.complexityScore * obj.completionPercentage / 100), 0);
+
+          return {
+            weightedAverage: totalComplexity > 0 ? Math.round((totalCompletedComplexity / totalComplexity) * 100) : 0,
+          };
+        }, [activeObjectives]);
+
+        if (activeObjectives.length === 0) {
+          return <div className="flex items-center justify-center h-full text-gray-500">No active objectives.</div>;
+        }
+
+        return (
+          <div className="w-full h-full relative">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={80}
+                  outerRadius={110}
+                  paddingAngle={3}
+                  stroke="none"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span className="text-5xl font-bold text-gray-900">{weightedAverage}%</span>
+              <span className="text-sm font-medium text-gray-600 mt-1">Overall Progress</span>
+            </div>
+          </div>
+        );
+      };
+
+      const ObjectiveCard = ({ objective, onComplete }) => {
+        const isCompleted = objective.status === 'Completed';
+        return (
+          <div className={`bg-white p-6 rounded-xl shadow-sm flex flex-col justify-between transition-all duration-300 ${isCompleted ? 'opacity-60 bg-gray-50' : 'hover:shadow-lg hover:-translate-y-1'}`}>
+            <div>
+              <h3 className={`text-lg font-bold text-gray-900 mb-2 ${isCompleted ? 'line-through' : ''}`}>{objective.name}</h3>
+              <p className="text-sm text-gray-500 mb-4">Department: {objective.department}</p>
+            </div>
+            <div className="flex items-center justify-between mt-auto">
+              <ObjectiveLevelChart
+                completionPercentage={objective.completionPercentage}
+                objectiveLevel={objective.objectiveLevel}
+              />
+              {!isCompleted ? (
+                <button
+                  onClick={() => onComplete(objective.id)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75"
+                >
+                  Mark Complete
+                </button>
+              ) : (
+                <div className="flex items-center text-green-600 font-semibold">
+                  <Icon name="check-circle" className="w-5 h-5 mr-2" />
+                  <span>Achieved!</span>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      const SidebarLink = ({ icon, text, active = false }) => (
+        <li className="mb-2">
+          <a href="#" className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${active ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`}>
+            <Icon name={icon} className="w-5 h-5 mr-3" />
+            <span className="font-medium">{text}</span>
+          </a>
+        </li>
+      );
+
+      const App = () => {
+        const [objectives, setObjectives] = useState(ACME_OBJECTIVES_DATA);
+
+        const ndeverScore = useMemo(() => {
+          return objectives
+            .filter(obj => obj.status === 'Completed')
+            .reduce((sum, obj) => sum + (OBJECTIVE_LEVELS[obj.objectiveLevel]?.points || 0), 0);
+        }, [objectives]);
+
+        const completeObjective = (id) => {
+          setObjectives(prev => prev.map(obj =>
+            (obj.id === id && obj.status === 'Active')
+              ? { ...obj, completionPercentage: 100, status: 'Completed' }
+              : obj
+          ));
+        };
+
+        const activeObjectives = objectives.filter(obj => obj.status === 'Active');
+        const completedObjectives = objectives.filter(obj => obj.status === 'Completed');
+
+        useEffect(() => {
+          feather.replace();
+        }, []);
+
+        return (
+          <div className="min-h-screen bg-gray-50 flex">
+            <aside className="w-64 bg-gray-900 text-white p-5 flex flex-col rounded-r-xl shadow-2xl">
+              <div className="text-2xl font-bold mb-10 text-indigo-400 flex items-center">
+                <Icon name="zap" className="w-7 h-7 mr-2" /> Ndever
+              </div>
+              <nav className="flex-grow">
+                <ul>
+                  <SidebarLink icon="layout" text="Dashboard" />
+                  <SidebarLink icon="target" text="Objectives" active={true} />
+                  <SidebarLink icon="file-text" text="Playbooks" />
+                  <SidebarLink icon="users" text="Teams" />
+                  <SidebarLink icon="bar-chart-2" text="Reports" />
+                </ul>
+              </nav>
+              <div className="mt-auto">
+                <SidebarLink icon="settings" text="Settings" />
+                <SidebarLink icon="log-out" text="Logout" />
+              </div>
+            </aside>
+
+            <main className="flex-1 p-10 overflow-auto">
+              <header className="flex justify-between items-center mb-10">
+                <h1 className="text-4xl font-bold text-gray-900">ACME Realty Dashboard</h1>
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-700 font-medium">Welcome, Ian Coletti</span>
+                  <img src="https://placehold.co/40x40/e0e7ff/4338ca?text=IC" alt="User Avatar" className="w-10 h-10 rounded-full border-2 border-indigo-500" />
+                </div>
+              </header>
+
+              <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center justify-center border border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-700 mb-2">Cumulative Ndever Score</h2>
+                  <p className="text-6xl font-bold text-indigo-600">{ndeverScore}</p>
+                  <p className="text-sm text-gray-500 mt-2">Total achievement from completed objectives.</p>
+                </div>
+                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                  <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">Active Objective Portfolio</h2>
+                  <ObjectivePortfolioProgress objectives={activeObjectives} />
+                </div>
+              </section>
+
+              <section>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Active Objectives</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {activeObjectives.length > 0 ? (
+                    activeObjectives.map(obj => <ObjectiveCard key={obj.id} objective={obj} onComplete={completeObjective} />)
+                  ) : (
+                    <p className="text-gray-600 col-span-full text-center py-10">No active objectives found.</p>
+                  )}
+                </div>
+              </section>
+
+              <section className="mt-12">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Completed Objectives</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {completedObjectives.length > 0 ? (
+                    completedObjectives.map(obj => <ObjectiveCard key={obj.id} objective={obj} />)
+                  ) : (
+                    <p className="text-gray-600 col-span-full text-center py-10">No completed objectives yet.</p>
+                  )}
+                </div>
+              </section>
+            </main>
+          </div>
+        );
+      };
+
+      // Mount React App
+      const container = document.getElementById('root');
+      const root = createRoot(container);
+      root.render(<App />);
+    });
+  </script>
+</body>
+</html>
